@@ -102,6 +102,36 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
   }
 
+  // Share Celebration CTA
+  const shareBtn = document.getElementById('btn-share-celebration');
+  if (shareBtn) {
+    shareBtn.onclick = () => {
+      const shareUrl = window.location.href;
+      if (navigator.clipboard) {
+        navigator.clipboard.writeText(shareUrl).then(() => {
+          alert("॥ मङ्गलम् ॥ Celebration link copied to clipboard!\n\n" + shareUrl);
+          triggerCelebrationConfetti();
+        }).catch(() => {
+          prompt("Copy this celebration link:", shareUrl);
+        });
+      } else {
+        prompt("Copy this celebration link:", shareUrl);
+      }
+    };
+  }
+
+  // Vendor Filter Buttons
+  const filterPills = document.querySelectorAll('.vendor-filter-pill');
+  filterPills.forEach(pill => {
+    pill.addEventListener('click', () => {
+      filterPills.forEach(p => p.classList.remove('active', 'btn-primary'));
+      filterPills.forEach(p => p.classList.add('btn-secondary'));
+      pill.classList.remove('btn-secondary');
+      pill.classList.add('active', 'btn-primary');
+      renderVendors(pill.getAttribute('data-category'));
+    });
+  });
+
   // 6. Onboarding Wizard Dialog Controls
   setupOnboardingWizard();
 
@@ -146,6 +176,19 @@ function renderExecutiveOverview() {
 
   document.getElementById('overview-title').innerText = activeEvent.title;
   document.getElementById('overview-culture-city').innerText = `${activeEvent.culture} • ${activeEvent.city}`;
+
+  // Calculate Days Remaining for Countdown Ring
+  const targetDateStr = activeEvent.target_date || "2026-12-15";
+  const targetDate = new Date(targetDateStr);
+  const today = new Date();
+  const diffTime = targetDate - today;
+  const diffDays = Math.max(0, Math.ceil(diffTime / (1000 * 60 * 60 * 24)));
+
+  const daysEl = document.getElementById('overview-days-left');
+  if (daysEl) daysEl.innerText = diffDays;
+
+  const dateEl = document.getElementById('overview-target-date');
+  if (dateEl) dateEl.innerText = targetDate.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
 
   const targetBudget = activeEvent.target_budget || 0;
   const allocated = budgets.reduce((sum, b) => sum + (b.estimated_cost || 0), 0);
@@ -288,12 +331,16 @@ window.toggleTaskStatus = async (eventId, taskId, isChecked) => {
   }
 };
 
-function renderVendors() {
+function renderVendors(filterCategory = 'all') {
   const { vendors } = store.state;
   const container = document.getElementById('vendors-grid');
   if (!container) return;
 
-  container.innerHTML = vendors.map(v => `
+  const filtered = filterCategory === 'all'
+    ? vendors
+    : vendors.filter(v => v.category.toLowerCase().includes(filterCategory.toLowerCase()));
+
+  container.innerHTML = filtered.map(v => `
     <div class="card" style="display: flex; flex-direction: column; justify-content: space-between;">
       <div>
         <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.5rem;">

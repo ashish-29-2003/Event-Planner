@@ -55,8 +55,9 @@
         </select>
       </div>
 
-      <!-- Right Actions: Theme Toggle, New Celebration CTA -->
+      <!-- Right Actions: Theme Toggle, Share CTA, New Celebration CTA -->
       <div style="display: flex; align-items: center; gap: 0.75rem;">
+        <button id="btn-share-celebration" class="btn-secondary" style="padding: 0.5rem 0.85rem;" aria-label="Share Celebration Link">🔗 Share</button>
         <button id="theme-toggle" class="btn-secondary" style="padding: 0.5rem 0.75rem;" aria-label="Toggle Dark/Light Mode">🌙</button>
         <button id="btn-open-wizard" class="btn-primary" aria-haspopup="dialog">
           <span>✨</span> Plan New Celebration
@@ -71,11 +72,27 @@
 
     <!-- Executive Overview Card -->
     <section class="card" style="margin-bottom: 1.5rem; border-top: 4px solid var(--saffron);">
-      <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 1rem;">
+      <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1.5rem;">
         <div>
           <span style="font-size: 0.8rem; text-transform: uppercase; color: var(--temple-gold); font-weight: 700; letter-spacing: 0.05em;">Active Celebration Blueprint</span>
           <h2 id="overview-title" style="font-size: 1.6rem; font-weight: 700; margin: 0.2rem 0;">Riya & Kabir's Royal Vivaha & Sangeet</h2>
           <p id="overview-culture-city" style="color: var(--text-secondary); font-size: 0.95rem;">Marwari Hindu • Jaipur, Rajasthan</p>
+        </div>
+
+        <!-- Auspicious Countdown Ring Badge -->
+        <div style="display: flex; align-items: center; gap: 1rem; background: var(--bg-subtle); padding: 0.75rem 1.25rem; border-radius: var(--radius-lg); border: 1px solid var(--border-color);">
+          <div style="position: relative; width: 64px; height: 64px; display: flex; align-items: center; justify-content: center;">
+            <svg style="width: 100%; height: 100%; transform: rotate(-90deg);" viewBox="0 0 36 36">
+              <path style="stroke: var(--border-color); stroke-width: 3.5; fill: none;" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+              <path style="stroke: var(--saffron); stroke-width: 3.5; stroke-dasharray: 85, 100; stroke-linecap: round; fill: none;" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+            </svg>
+            <div id="overview-days-left" style="position: absolute; font-size: 1.15rem; font-weight: 700; color: var(--saffron);">52</div>
+          </div>
+          <div>
+            <div style="font-size: 0.75rem; text-transform: uppercase; color: var(--text-secondary); font-weight: 600;">Days To Celebration</div>
+            <div id="overview-target-date" style="font-size: 0.95rem; font-weight: 700; color: var(--text-primary);">15 Dec 2026</div>
+            <div style="font-size: 0.75rem; color: var(--tulsi-green);">॥ शुभ लग्न बेला ॥</div>
+          </div>
         </div>
 
         <div style="display: flex; gap: 1.5rem; text-align: right;">
@@ -216,9 +233,19 @@
 
     <!-- VIEW 4: Vendors Checklist -->
     <div id="view-vendors" class="view-panel" style="display: none;">
-      <div style="margin-bottom: 1rem; display: flex; justify-content: space-between; align-items: center;">
-        <h3 style="font-size: 1.3rem; font-weight: 700;">📋 Verified Vendor Procurement</h3>
-        <span style="font-size: 0.85rem; color: var(--text-secondary);">Showing fair-market estimates and shortlisted contacts</span>
+      <div style="margin-bottom: 1rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem;">
+        <div>
+          <h3 style="font-size: 1.3rem; font-weight: 700;">📋 Verified Vendor Procurement</h3>
+          <span style="font-size: 0.85rem; color: var(--text-secondary);">Showing fair-market estimates and shortlisted contacts</span>
+        </div>
+        <!-- Vendor Category Filters -->
+        <div id="vendor-filter-bar" style="display: flex; gap: 0.4rem; overflow-x: auto; padding-bottom: 0.2rem;">
+          <button class="vendor-filter-pill active btn-primary" data-category="all" style="padding: 0.3rem 0.75rem; font-size: 0.8rem;">All</button>
+          <button class="vendor-filter-pill btn-secondary" data-category="venue" style="padding: 0.3rem 0.75rem; font-size: 0.8rem;">Venue</button>
+          <button class="vendor-filter-pill btn-secondary" data-category="catering" style="padding: 0.3rem 0.75rem; font-size: 0.8rem;">Catering</button>
+          <button class="vendor-filter-pill btn-secondary" data-category="decor" style="padding: 0.3rem 0.75rem; font-size: 0.8rem;">Decor</button>
+          <button class="vendor-filter-pill btn-secondary" data-category="photography" style="padding: 0.3rem 0.75rem; font-size: 0.8rem;">Photography</button>
+        </div>
       </div>
       <div id="vendors-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem;"></div>
     </div>
