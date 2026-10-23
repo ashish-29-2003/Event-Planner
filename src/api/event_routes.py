@@ -1,5 +1,5 @@
 """
-Event & Entity CRUD Route Handlers for Utsav (उत्सव).
+Event & Entity CRUD Route Handlers for Samaroh (समारोह).
 """
 
 from fastapi import APIRouter, HTTPException

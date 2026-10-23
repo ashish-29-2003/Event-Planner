@@ -1,5 +1,5 @@
 """
-Export & Sharing Route Handlers for Utsav (उत्सव).
+Export & Sharing Route Handlers for Samaroh (समारोह).
 Generates RFC-5545 iCalendar (.ics) files and printable summaries.
 """
 
@@ -26,7 +26,7 @@ async def export_calendar_ics(event_id: str):
     return Response(
         content=ics_content,
         media_type="text/calendar",
-        headers={"Content-Disposition": f"attachment; filename=utsav-{event_id}.ics"},
+        headers={"Content-Disposition": f"attachment; filename=samaroh-{event_id}.ics"},
     )
 
 

@@ -1,5 +1,5 @@
 """
-Pytest configuration and shared test fixtures for Utsav (उत्सव).
+Pytest configuration and shared test fixtures for Samaroh (समारोह).
 """
 
 import pytest

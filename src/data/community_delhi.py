@@ -1,6 +1,6 @@
 """
 Seeded Demo Blueprint: Delhi NCR Society Diwali Mela & Dandiya Night
-Gulmohar Enclave Grand Diwali Mela & Dandiya Utsav
+Gulmohar Enclave Grand Diwali Mela & Dandiya Samaroh
 """
 
 from src.models.ai_plan import EventMasterPlan
@@ -10,7 +10,7 @@ from src.models.timeline import TaskItem, TaskPriority, TaskStatus
 from src.models.vendor import VendorItem, VendorStatus
 
 DELHI_COMMUNITY_SEED = EventMasterPlan(
-    celebration_title="Gulmohar Enclave Grand Diwali Mela & Dandiya Utsav",
+    celebration_title="Gulmohar Enclave Grand Diwali Mela & Dandiya Samaroh",
     event_type="community",
     cultural_summary="An 800-resident housing society Diwali Mela and Garba/Dandiya festival in Dwarka, New Delhi. Unites families with cultural stage shows, artisan handicraft stalls, eco-friendly LED diya illumination, and safety-certified community feasts.",
     target_budget=650000.0,

@@ -1,5 +1,5 @@
 """
-Configuration management for Utsav (उत्सव)
+Configuration management for Samaroh (समारोह)
 Loads environment variables securely with production fallbacks.
 """
 

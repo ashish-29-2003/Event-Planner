@@ -17,8 +17,8 @@ def create_google_calendar_url(
     """
     base_url = "https://calendar.google.com/calendar/render?action=TEMPLATE"
     params = {
-        "text": f"Utsav: {title}",
-        "details": f"{description}\n\nOrganized via Utsav (उत्सव) - GenAI Celebration Planner",
+        "text": f"Samaroh: {title}",
+        "details": f"{description}\n\nOrganized via Samaroh (समारोह) - GenAI Celebration Planner",
         "location": location,
     }
 
@@ -45,10 +45,10 @@ def generate_ics_calendar(event_title: str, tasks: list[TaskItem]) -> str:
     lines = [
         "BEGIN:VCALENDAR",
         "VERSION:2.0",
-        "PRODID:-//Utsav//GenAI Celebration Planner//EN",
+        "PRODID:-//Samaroh//GenAI Celebration Planner//EN",
         "CALSCALE:GREGORIAN",
         "METHOD:PUBLISH",
-        f"X-WR-CALNAME:Utsav - {event_title}",
+        f"X-WR-CALNAME:Samaroh - {event_title}",
     ]
 
     for task in tasks:
@@ -70,11 +70,11 @@ def generate_ics_calendar(event_title: str, tasks: list[TaskItem]) -> str:
         lines.extend(
             [
                 "BEGIN:VEVENT",
-                f"UID:utsav-task-{task.id}@utsav.app",
+                f"UID:samaroh-task-{task.id}@samaroh.app",
                 f"DTSTAMP:{now_stamp}",
                 f"DTSTART;VALUE=DATE:{date_fmt}",
                 f"DTEND;VALUE=DATE:{date_fmt}",
-                f"SUMMARY:Utsav: {summary}",
+                f"SUMMARY:Samaroh: {summary}",
                 f"DESCRIPTION:{desc}",
                 f"STATUS:{'COMPLETED' if task.status == 'done' else 'CONFIRMED'}",
                 "END:VEVENT",

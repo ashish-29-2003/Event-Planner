@@ -1,5 +1,5 @@
 /**
- * Utsav (उत्सव) - API Client
+ * Samaroh (समारोह) - API Client
  * Connects UI with Python FastAPI backend endpoints.
  */
 const API = {

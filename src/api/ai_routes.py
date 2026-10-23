@@ -1,5 +1,5 @@
 """
-AI Route Handlers for Utsav (उत्सव).
+AI Route Handlers for Samaroh (समारोह).
 Exposes endpoints for master plan generation, streaming chat,
 budget re-balancing, and auspicious muhurat windows.
 """

@@ -1,5 +1,5 @@
 /**
- * Utsav (उत्सव) - Master Application Controller
+ * Samaroh (समारोह) - Master Application Controller
  * Handles UI interactions, live calculations, tabs, and celebratory animations.
  */
 
@@ -530,7 +530,7 @@ function setupChatDrawer() {
     messagesContainer.innerHTML += `
       <div style="display: flex; justify-content: flex-start; margin-bottom: 0.75rem;">
         <div id="${botMsgId}" style="background: var(--bg-surface); border: 1px solid var(--border-color); padding: 0.6rem 1rem; border-radius: var(--radius-md); max-width: 85%;">
-          <span class="diya-flame-pulse">🪔</span> <em>Utsav AI is thinking...</em>
+          <span class="diya-flame-pulse">🪔</span> <em>Samaroh AI is thinking...</em>
         </div>
       </div>
     `;

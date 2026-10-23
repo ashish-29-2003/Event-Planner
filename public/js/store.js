@@ -1,5 +1,5 @@
 /**
- * Utsav (उत्सव) - Reactive Client Store
+ * Samaroh (समारोह) - Reactive Client Store
  */
 class EventStore {
   constructor() {

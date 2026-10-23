@@ -1,5 +1,5 @@
 """
-Google Gemini GenAI Orchestration Service for Utsav (उत्सव).
+Google Gemini GenAI Orchestration Service for Samaroh (समारोह).
 Uses the official Google GenAI Python SDK (google-genai).
 Handles structured plan generation, streaming chat, financial re-balancing,
 and self-healing fallback to curated blueprints on API quota exhaustion.
@@ -26,7 +26,7 @@ from src.models.budget import (
 from src.models.event import CelebrationBrief
 from src.utils.sanitizer import sanitize_prompt_input
 
-logger = logging.getLogger("utsav.gemini")
+logger = logging.getLogger("samaroh.gemini")
 
 
 class GeminiService:
