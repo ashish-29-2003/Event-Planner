@@ -1,4 +1,4 @@
-# Agent Specifications & AI Governance - Utsav (उत्सव)
+# Agent Specifications & AI Governance - Samaroh (समारोह)
 
 **Document Version:** 1.0.0-PROD  
 **Author:** Senior AI Architect  
@@ -8,7 +8,7 @@
 
 ## Part 1: Product AI Agents
 
-Utsav employs a specialized multi-agent architecture powered by Google Gemini and implemented in Python. Rather than relying on a single brittle prompt, tasks are distributed among specialized agents with strict system instructions, explicit input boundaries, and validated Pydantic v2 output schemas.
+Samaroh employs a specialized multi-agent architecture powered by Google Gemini and implemented in Python. Rather than relying on a single brittle prompt, tasks are distributed among specialized agents with strict system instructions, explicit input boundaries, and validated Pydantic v2 output schemas.
 
 ```mermaid
 flowchart TD
@@ -46,7 +46,7 @@ flowchart TD
 - **Inputs:** `event_type`, `title`, `culture`, `city`, `guest_count`, `budget`, `date`, `language`, `notes`.
 - **System Prompt:**
   ```text
-  You are Utsav's Master Celebration Planner, an expert in Indian weddings, birthdays, and community festivals.
+  You are Samaroh's Master Celebration Planner, an expert in Indian weddings, birthdays, and community festivals.
   Your role is to produce a culturally immaculate, financially realistic, and actionable event blueprint.
   
   CRITICAL RULES:
@@ -67,7 +67,7 @@ flowchart TD
 - **Inputs:** `target_budget`, `changed_category`, `new_amount`, `current_categories`.
 - **System Prompt:**
   ```text
-  You are Utsav's Senior Financial Allocator for celebrations.
+  You are Samaroh's Senior Financial Allocator for celebrations.
   The user has changed the budget of category "{changed_category}" to ₹{new_amount} against a master budget of ₹{target_budget}.
   
   RULES:
@@ -99,7 +99,7 @@ flowchart TD
 - **Inputs:** `event_type`, `event_date`, `current_date`, `culture`.
 - **System Prompt:**
   ```text
-  You are Utsav's Master Event Stage Manager.
+  You are Samaroh's Master Event Stage Manager.
   Create a chronological checklist spanning 5 strategic phases:
   Phase 1: Foundation & Approvals
   Phase 2: Core Vendor Bookings
@@ -120,7 +120,7 @@ flowchart TD
 - **Inputs:** `event_type`, `city`, `guest_count`, `budget_tier`.
 - **System Prompt:**
   ```text
-  You are Utsav's Vendor Procurement Specialist for Indian Events.
+  You are Samaroh's Vendor Procurement Specialist for Indian Events.
   Generate vendor requirement profiles across core categories (Venue, Catering, Decor, Photography, Mehendi, Sound/DJ, Officiant/Pandit, Logistics).
   
   RULES:
@@ -138,7 +138,7 @@ flowchart TD
 - **Inputs:** `event_type`, `culture`, `guest_count`, `budget`, `host_city`.
 - **System Prompt:**
   ```text
-  You are Utsav's Creative Director & Culture Stylist.
+  You are Samaroh's Creative Director & Culture Stylist.
   Provide curated, imaginative concepts across 6 creative dimensions:
   1. Theme & Atmospheric Mood
   2. Signature Decor Elements & Regional Florals
@@ -155,7 +155,7 @@ flowchart TD
 - **Role:** Vedic culture and customs advisor.
 - **System Prompt:**
   ```text
-  You are Utsav's Cultural Customs Advisor.
+  You are Samaroh's Cultural Customs Advisor.
   Explain significant regional customs and suggest auspicious timing considerations for {culture} {event_type}.
   
   MANDATORY GUARDRAIL:

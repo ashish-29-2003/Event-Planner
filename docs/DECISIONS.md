@@ -1,6 +1,6 @@
-# Architecture Decision Records (ADRs) - Utsav (उत्सव)
+# Architecture Decision Records (ADRs) - Samaroh (समारोह)
 
-This document records the foundational product and architectural decisions for **Utsav**, a GenAI-powered Celebration & Event Planner built for the Google for Developers x H2S "Build with AI" PromptWars Hackathon.
+This document records the foundational product and architectural decisions for **Samaroh** (formerly Utsav), a GenAI-powered Celebration & Event Planner built for the Google for Developers x H2S "Build with AI" PromptWars Hackathon.
 
 ---
 
@@ -235,7 +235,7 @@ Indian celebrations demand vibrant warmth, but modern apps require clean whitesp
 - **Decider:** Senior QA Engineer
 
 ### Context
-Judges must be able to explore the full capabilities of Utsav even in scenarios where API keys are unavailable, network is throttled, or Gemini quotas are saturated.
+Judges must be able to explore the full capabilities of Samaroh even in scenarios where API keys are unavailable, network is throttled, or Gemini quotas are saturated.
 
 ### Decision
 Build a first-class **Demo Mode** toggled via the UI banner and URL parameter (`?demo=true`). Demo mode includes 3 pre-built, production-grade celebrations:

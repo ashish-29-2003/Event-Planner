@@ -1,4 +1,4 @@
-# Security Architecture & Comprehensive Testing Plan - Utsav (उत्सव)
+# Security Architecture & Comprehensive Testing Plan - Samaroh (समारोह)
 
 **Document Version:** 1.0.0-PROD  
 **Author:** Senior Cybersecurity Engineer & Lead QA Architect  
@@ -9,7 +9,7 @@
 ## Part 1: Security Architecture & Threat Model
 
 ### 1.1 STRIDE Threat Modeling Analysis
-| Threat Category | Potential Attack Vector | Applied Countermeasure in Utsav |
+| Threat Category | Potential Attack Vector | Applied Countermeasure in Samaroh |
 |---|---|---|
 | **Spoofing** | Attacker impersonating another host to view guest lists. | Authenticated session token verified on every route; guest mode generates high-entropy UUIDs. |
 | **Tampering** | Man-in-the-middle tampering with budget amounts or quotes. | Mandatory HTTPS on Netlify CDN; strict Pydantic v2 type casting and range limits (`gt=0`). |

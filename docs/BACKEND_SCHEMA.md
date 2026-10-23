@@ -1,4 +1,4 @@
-# Database Schema & Pydantic Data Models - Utsav (उत्सव)
+# Database Schema & Pydantic Data Models - Samaroh (समारोह)
 
 **Document Version:** 1.0.0-PROD  
 **Author:** Senior Backend Engineer & Data Architect  
@@ -230,7 +230,7 @@ class EventMasterPlan(BaseModel):
 
 ### 3.3 Delhi NCR Society Diwali Mela & Dandiya Night
 - **ID:** `demo-community-delhi`
-- **Title:** *Gulmohar Enclave Grand Diwali Mela & Dandiya Utsav*
+- **Title:** *Gulmohar Enclave Grand Diwali Mela & Dandiya Samaroh*
 - **Budget:** ₹6,50,000 | **Guests:** 800 | **City:** Dwarka, New Delhi
 - **Tradition:** Inter-community Northern / Western Celebration.
 - **Key Categories:** RWA Amphitheatre, Fire & Sound Municipal Clearances, Dandiya Live Troupe, Rangoli Competition Stalls, 100% LED Diya Illumination.

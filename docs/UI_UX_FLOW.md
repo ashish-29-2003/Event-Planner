@@ -1,4 +1,4 @@
-# UI/UX Specification & Design System - Utsav (उत्सव)
+# UI/UX Specification & Design System - Samaroh (समारोह)
 
 **Document Version:** 1.0.0-PROD  
 **Author:** Senior UX/UI Designer  
@@ -8,7 +8,7 @@
 
 ## 1. Design Direction & Cultural Philosophy
 
-Utsav blends high-craft digital product aesthetics (inspired by Apple, Linear, and Stripe) with the timeless warmth, sacred geometry, and celebratory richness of Indian heritage. The interface avoids caricature, kitsch, or clichéd royal tropes. Instead, it feels dignified, modern, intuitive, and deeply personal.
+Samaroh blends high-craft digital product aesthetics (inspired by Apple, Linear, and Stripe) with the timeless warmth, sacred geometry, and celebratory richness of Indian heritage. The interface avoids caricature, kitsch, or clichéd royal tropes. Instead, it feels dignified, modern, intuitive, and deeply personal.
 
 ### 1.1 Cultural Motifs & Visual Elements
 1. **Mandala Line-Art:** Low-opacity, fine-stroke vector mandalas used as subtle atmospheric watermarks on hero banners and modal backdrops (`opacity: 0.04` in light mode, `0.08` in dark mode).
@@ -19,7 +19,7 @@ Utsav blends high-craft digital product aesthetics (inspired by Apple, Linear, a
 ### 1.2 Classical Sanskrit Expressions (Meaningful & Contextual)
 Every Sanskrit touch is short, meaningful, grammatically verified, and always presented with an accompanying English translation:
 - **Onboarding Header:** *शुभ आरम्भ* (*Shubh Aarambh* — "An auspicious beginning")
-- **Product Title:** *उत्सव* (*Utsav* — "Celebration, festival, joyous gathering")
+- **Product Title:** *उत्सव* (*Samaroh* — "Celebration, festival, joyous gathering")
 - **Success State:** *मङ्गलम्* (*Mangalam* — "May auspiciousness prevail")
 - **Welcome Greeting:** *स्वागतम्* (*Swagatam* — "A warm welcome")
 - **Completion / Export:** *धन्यवादः* (*Dhanyavadah* — "With gratitude")
@@ -93,7 +93,7 @@ Every Sanskrit touch is short, meaningful, grammatically verified, and always pr
 ### 3.1 Screen 1: Landing Page & Cultural Hero
 ```
 +-----------------------------------------------------------------------------------+
-|  [Logo: UTSAV उत्सव]            [शुभ संध्या, Ashish]   [☀️/🌙] [Demo Mode] [Sign In]|
+|  [Logo: SAMAROH समारोह]            [शुभ संध्या, Ashish]   [☀️/🌙] [Demo Mode] [Sign In]|
 +-----------------------------------------------------------------------------------+
 |                                                                                   |
 |         ॥ शुभ आरम्भ: every celebration begins well ॥                              |

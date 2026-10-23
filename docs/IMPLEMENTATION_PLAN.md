@@ -1,4 +1,4 @@
-# Implementation & Hackathon Execution Plan - Utsav (उत्सव)
+# Implementation & Hackathon Execution Plan - Samaroh (समारोह)
 
 **Document Version:** 1.0.0-PROD  
 **Author:** Technical Lead & Staff Product Manager  
@@ -34,11 +34,11 @@ This initializes FastAPI, loads seed datasets, verifies environment variables, s
 # Initialize git repository
 git init
 git add .
-git commit -m "feat(scaffold): initialize Utsav GenAI celebration planner"
+git commit -m "feat(scaffold): initialize Samaroh GenAI celebration planner"
 
 # Connect to GitHub remote and push
 git branch -M main
-git remote add origin https://github.com/<username>/utsav-celebration-planner.git
+git remote add origin https://github.com/<username>/Event-Planner.git
 git push -u origin main
 ```
 Netlify automatically detects `netlify.toml`, deploys the `public/` folder to the global edge network, and wraps the FastAPI application inside `netlify/functions/api.py`.
@@ -85,15 +85,15 @@ Netlify automatically detects `netlify.toml`, deploys the `public/` folder to th
 **Objective:** Walk the judges through the 4 pillars in under 180 seconds, highlighting Google GenAI reasoning, cultural authenticity, and financial precision.
 
 ### Scene 1: Arrival & Auspicious Beginning (0:00 - 0:35)
-1. **Host Action:** Open `utsav-ai.netlify.app` (or `http://localhost:8000`).
+1. **Host Action:** Open `samaroh.netlify.app` (or `http://localhost:8000`).
 2. **Audio/Narration:**
-   > *"Welcome to Utsav (उत्सव) — where every celebration begins with शुभ आरम्भ. Planning an Indian celebration across weddings, birthdays, and community festivals is notoriously chaotic. Today, we demonstrate how Google Gemini and our Python architecture turn a brief into an actionable celebration master plan in seconds."*
+   > *"Welcome to Samaroh (समारोह) — where every celebration begins with शुभ आरम्भ. Planning an Indian celebration across weddings, birthdays, and community festivals is notoriously chaotic. Today, we demonstrate how Google Gemini and our Python architecture turn a brief into an actionable celebration master plan in seconds."*
 3. **Visual Highlights:** Point out the time-of-day greeting (*शुभ संध्या, Ashish*), the daily Sanskrit Subhashita, and the warm ivory cultural palette.
 
 ### Scene 2: Four Pillars in Action (Jaipur Royal Wedding) (0:35 - 1:45)
 1. **Host Action:** Click *"Explore Jaipur Royal Wedding"* (or input brief in Onboarding Wizard).
 2. **Narration:**
-   > *"In one click, Utsav generates the Four Core Pillars:*
+   > *"In one click, Samaroh generates the Four Core Pillars:*
    > *Pillar 1: An authentic ₹45 Lakh Marwari wedding budget with live category breakdowns.*
    > *Pillar 2: A 6-month countdown timeline with Day-Of Muhurat milestones, exportable directly to Google Calendar.*
    > *Pillar 3: A categorized vendor checklist with real-market quotes and scope of work.*
@@ -107,7 +107,7 @@ Netlify automatically detects `netlify.toml`, deploys the `public/` folder to th
 ### Scene 4: Export, Sharing & Resilience (2:30 - 3:00)
 1. **Host Action:** Navigate to Export Sheet. Add a personal blessing note: *"With love and blessings from Nanaji & Nanima."* Click Print/PDF preview.
 2. **Narration:**
-   > *"Finally, the user generates a royal, printable celebration master sheet complete with their personal family blessing. And if API quotas are ever exhausted, Utsav's deterministic fallback engine ensures 100% uptime for every family. शुभ आरम्भ: every celebration begins well."*
+   > *"Finally, the user generates a royal, printable celebration master sheet complete with their personal family blessing. And if API quotas are ever exhausted, Samaroh's deterministic fallback engine ensures 100% uptime for every family. शुभ आरम्भ: every celebration begins well."*
 
 ---
 

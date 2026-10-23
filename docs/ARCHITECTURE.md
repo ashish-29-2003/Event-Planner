@@ -1,6 +1,6 @@
-# Technical Architecture Specification - Utsav (उत्सव)
+# Technical Architecture Specification - Samaroh (समारोह)
 
-**Product Name:** Utsav (उत्सव)  
+**Product Name:** Samaroh (समारोह)  
 **System Architecture Version:** 1.0.0-PROD  
 **Author:** Senior Software Architect  
 **Date:** 2026-10-23  
@@ -9,7 +9,7 @@
 
 ## 1. High-Level System Architecture
 
-Utsav is architected as an asynchronous **Python-Native Full-Stack Application** powered by **FastAPI**, **Pydantic v2**, and the official **Google GenAI Python SDK**. It is engineered for dual execution: locally via a high-performance **Uvicorn** server, and in cloud production via **Netlify Serverless Functions** (powered by Mangum / AWS Lambda) coupled with a global edge CDN for static assets.
+Samaroh is architected as an asynchronous **Python-Native Full-Stack Application** powered by **FastAPI**, **Pydantic v2**, and the official **Google GenAI Python SDK**. It is engineered for dual execution: locally via a high-performance **Uvicorn** server, and in cloud production via **Netlify Serverless Functions** (powered by Mangum / AWS Lambda) coupled with a global edge CDN for static assets.
 
 ### 1.1 Architecture Topology Diagram
 
@@ -137,7 +137,7 @@ sequenceDiagram
 The repository maintains strict Python best practices:
 
 ```
-utsav-event-planner/
+samaroh-event-planner/
 ├── .github/
 │   └── workflows/
 │       └── ci.yml               # Automated Lint, Mypy, Pytest & Netlify Deploy Check

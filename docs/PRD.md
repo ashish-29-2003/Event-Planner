@@ -1,6 +1,6 @@
-# Product Requirements Document (PRD) - Utsav (उत्सव)
+# Product Requirements Document (PRD) - Samaroh (समारोह)
 
-**Product Name:** Utsav (उत्सव)  
+**Product Name:** Samaroh (समारोह)  
 **Tagline:** *शुभ आरम्भ: every celebration begins well.*  
 **Target Event:** PromptWars Virtual (Google for Developers x H2S, "Build with AI")  
 **Product Version:** 1.0.0-PROD  
@@ -20,12 +20,12 @@ Crucially, off-the-shelf Western event planning software completely ignores the 
 - Indian financial realities (Lakh/Crore budgeting, cash vs. UPI advances, complex vendor milestones).
 - Community dynamics (RWA permissions, society committee approvals, Prasad distribution, cultural competitions).
 
-**Utsav** bridges this gap as a world-class GenAI Celebration & Event Planner. By combining Google Gemini's advanced reasoning (via the official Google GenAI Python SDK) with an authentic, respectful cultural design system, Utsav transforms an unstructured prompt or conversational brief into an actionable, end-to-end celebration blueprint in under 10 seconds.
+**Samaroh** bridges this gap as a world-class GenAI Celebration & Event Planner. By combining Google Gemini's advanced reasoning (via the official Google GenAI Python SDK) with an authentic, respectful cultural design system, Samaroh transforms an unstructured prompt or conversational brief into an actionable, end-to-end celebration blueprint in under 10 seconds.
 
 ### 1.2 Target Audience
 1. **Indian Families:** Organizing milestone life events (Weddings, Engagements, Anniversaries, Upanyanam/Thread ceremonies, Griha Pravesh).
 2. **Parents:** Organizing thematic birthdays, naming ceremonies (Namkaran), and milestone celebrations.
-3. **Resident Welfare Associations (RWAs) & Community Leaders:** Organizing housing society festivals (Diwali, Holi, Ganesh Utsav, Navratri, Durga Puja, Eid, Christmas).
+3. **Resident Welfare Associations (RWAs) & Community Leaders:** Organizing housing society festivals (Diwali, Holi, Ganesh Samaroh, Navratri, Durga Puja, Eid, Christmas).
 4. **Independent Boutique Event Planners:** Seeking a fast, intelligent client pitching and co-planning workspace.
 
 ### 1.3 Strategic Goals & Hackathon Success Metrics
@@ -47,28 +47,28 @@ Crucially, off-the-shelf Western event planning software completely ignores the 
 - **Event:** Daughter's 3-Day Wedding (Vivaha) — 350 Guests, Budget: ₹35,00,000
 - **Motivations:** Wants an auspicious, culturally immaculate wedding honoring Marwari traditions while avoiding budget runaway.
 - **Pain Points:** Overwhelmed by vendor follow-ups, unclear vendor quotes, anxious about missing ritual items (*samagri*), family WhatsApp chaos.
-- **Goal in Utsav:** Generate a 6-month countdown checklist, allocate budget across Mehendi, Sangeet, and Reception, and track vendor advances.
+- **Goal in Samaroh:** Generate a 6-month countdown checklist, allocate budget across Mehendi, Sangeet, and Reception, and track vendor advances.
 
 ### Persona 2: Vikram & Neha Nair (34 & 32) – The Techie Parents
 - **Location:** Bengaluru, Karnataka
 - **Event:** Son Aarav's 5th Birthday — 40 Kids & Parents, Budget: ₹60,000
 - **Motivations:** Desires an unforgettable, creative theme ("Little Astronauts in Space") with engaging games, kid-safe food, and zero plastic return gifts.
 - **Pain Points:** Time-constrained due to demanding tech jobs; lacks ideas for structured 3-hour toddler schedules.
-- **Goal in Utsav:** Rapidly get an hour-by-hour timeline, themed menu, game playlist, and return-gift recommendations in 2 minutes.
+- **Goal in Samaroh:** Rapidly get an hour-by-hour timeline, themed menu, game playlist, and return-gift recommendations in 2 minutes.
 
 ### Persona 3: Rajesh Sharma (46) – The Society RWA Secretary
 - **Location:** Dwarka, New Delhi
 - **Event:** Annual Society Diwali Mela & Cultural Evening — 600 Residents, Budget: ₹4,00,000
 - **Motivations:** Delivering a safe, vibrant community event that unites residents across all age groups within committee-approved budgets.
 - **Pain Points:** Tracking police/fire clearance deadlines, stage audio setup, stall vendor allocations, and avoiding overspending on lighting.
-- **Goal in Utsav:** Society-specific vendor checklist (generator backup, tent, security), committee-shareable PDF summary, and volunteer assignment.
+- **Goal in Samaroh:** Society-specific vendor checklist (generator backup, tent, security), committee-shareable PDF summary, and volunteer assignment.
 
 ### Persona 4: Tanya Mehta (27) – Modern Boutique Event Planner
 - **Location:** Mumbai / Remote
 - **Event:** Multiple parallel clients (Engagements, Roce ceremonies, Cocktail evenings)
 - **Motivations:** Rapidly drafts mood boards, initial budgets, and vendor checklists to pitch prospective clients within 15 minutes of an intake call.
 - **Pain Points:** Repetitive manual drafting of initial proposals; needs polished, shareable PDF and .ics exports.
-- **Goal in Utsav:** Fast conversational AI drafting, live budget re-balancing slider, and client-ready export sheets.
+- **Goal in Samaroh:** Fast conversational AI drafting, live budget re-balancing slider, and client-ready export sheets.
 
 ---
 
@@ -76,7 +76,7 @@ Crucially, off-the-shelf Western event planning software completely ignores the 
 
 ### 3.1 Mapping the Four Core Pillars Across the Three Event Types
 
-To guarantee **100% Problem Statement Alignment**, Utsav treats the Four Pillars as first-class, dedicated modules across Weddings, Birthdays, and Community Celebrations:
+To guarantee **100% Problem Statement Alignment**, Samaroh treats the Four Pillars as first-class, dedicated modules across Weddings, Birthdays, and Community Celebrations:
 
 | Core Pillar | Weddings (e.g. Jaipur Destination / Traditional Vivaha) | Birthdays (e.g. Themed Kid / Milestone Adult) | Community Events (e.g. Society Diwali / Dandiya Mela) |
 |---|---|---|---|

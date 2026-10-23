@@ -1,4 +1,4 @@
-# End-to-End User & System Application Flows - Utsav (उत्सव)
+# End-to-End User & System Application Flows - Samaroh (समारोह)
 
 **Document Version:** 1.0.0-PROD  
 **Author:** Senior UX Architect & System Engineer  
@@ -10,7 +10,7 @@
 
 ```mermaid
 stateDiagram-v2
-    [*] --> LandingPage: User visits utsav-ai.netlify.app or localhost:8000
+    [*] --> LandingPage: User visits samaroh.netlify.app or localhost:8000
     LandingPage --> AuthModal: Clicks "Begin Planning" or "Explore Demo"
     
     state AuthChoice {
@@ -158,7 +158,7 @@ flowchart TD
     
     Action -->|Export to Calendar| CalendarCTA{Export Selection}
     CalendarCTA -->|Download .ics| BuildICS[Client / Python generates RFC-5545 .ics file]
-    BuildICS --> SaveFile[Trigger browser file download: utsav-timeline.ics]
+    BuildICS --> SaveFile[Trigger browser file download: samaroh-timeline.ics]
     
     CalendarCTA -->|Add to Google Calendar| GCalLink[Open Google Calendar URL for single milestone]
     GCalLink --> OpenBrowserTab[Opens calendar.google.com in new tab with pre-filled details]

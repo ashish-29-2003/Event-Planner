@@ -1,5 +1,5 @@
 """
-Netlify Functions ASGI Entrypoint for Utsav (उत्सव)
+Netlify Functions ASGI Entrypoint for Samaroh (समारोह)
 Wraps FastAPI application with Mangum for serverless execution.
 """
 

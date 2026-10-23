@@ -1,6 +1,6 @@
-# Technical Requirements Document (TRD) - Utsav (उत्सव)
+# Technical Requirements Document (TRD) - Samaroh (समारोह)
 
-**Product Name:** Utsav (उत्सव)  
+**Product Name:** Samaroh (समारोह)  
 **Document Version:** 1.0.0-PROD  
 **Author:** Senior Software Architect & Lead DevOps Engineer  
 **Date:** 2026-10-23  
@@ -35,7 +35,7 @@ The user interface must remain snappy, fluid, and responsive on standard Indian 
 
 ## 2. Browser & Device Compatibility Matrix
 
-Utsav is built mobile-first to accommodate Indian family planners coordinating on smartphones.
+Samaroh is built mobile-first to accommodate Indian family planners coordinating on smartphones.
 
 | Platform / OS | Supported Versions | Testing Baseline |
 |---|---|---|
