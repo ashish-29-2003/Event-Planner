@@ -1,0 +1,215 @@
+/*
+ * Utsav (उत्सव) - Design System & Cultural Styling
+ * Combines Apple/Linear design precision with Indian celebratory richness.
+ */
+
+:root {
+  /* Warm Ivory Light Theme */
+  --bg-primary: #FAF7F2;
+  --bg-surface: #FFFFFF;
+  --bg-card: #FFFFFF;
+  --bg-subtle: #F5EFEB;
+  --border-color: #E8DDD0;
+  --border-focus: #D97706;
+  
+  --text-primary: #1C1917;
+  --text-secondary: #78716C;
+  --text-muted: #A8A29E;
+
+  /* Cultural Celebratory Accents */
+  --saffron: #EA580C;
+  --marigold: #F59E0B;
+  --vermilion: #E11D48;
+  --temple-gold: #D97706;
+  --peacock-blue: #0284C7;
+  --tulsi-green: #059669;
+
+  /* Elevation & Motion */
+  --shadow-sm: 0 1px 3px rgba(28, 25, 23, 0.05);
+  --shadow-md: 0 4px 20px -2px rgba(28, 25, 23, 0.08);
+  --shadow-lg: 0 10px 30px -4px rgba(28, 25, 23, 0.12);
+  --shadow-gold: 0 0 25px -2px rgba(245, 158, 11, 0.35);
+
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 18px;
+  --radius-full: 9999px;
+  
+  --transition-smooth: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+[data-theme="dark"] {
+  /* Twilight Midnight Dark Theme */
+  --bg-primary: #0B0F19;
+  --bg-surface: #131B2E;
+  --bg-card: #151F36;
+  --bg-subtle: #1C2742;
+  --border-color: #243254;
+  --border-focus: #F59E0B;
+
+  --text-primary: #F8FAFC;
+  --text-secondary: #94A3B8;
+  --text-muted: #64748B;
+
+  --saffron: #FB923C;
+  --marigold: #FBBF24;
+  --vermilion: #FB7185;
+  --temple-gold: #F59E0B;
+  --peacock-blue: #38BDF8;
+  --tulsi-green: #34D399;
+
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 4px 24px -2px rgba(0, 0, 0, 0.5);
+  --shadow-lg: 0 12px 36px -4px rgba(0, 0, 0, 0.6);
+  --shadow-gold: 0 0 30px -2px rgba(251, 191, 36, 0.25);
+}
+
+/* Base Global Reset */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+body {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  min-height: 100vh;
+  line-height: 1.5;
+  transition: var(--transition-smooth);
+  overflow-x: hidden;
+}
+
+/* Devanagari Headings */
+.devanagari-title, h1, h2, h3, .brand-font {
+  font-family: 'Noto Serif Devanagari', 'Playfair Display', Georgia, serif;
+  line-height: 1.4;
+}
+
+/* Sanskrit Motifs & Watermarks */
+.mandala-bg {
+  background-image: radial-gradient(circle at center, rgba(217, 119, 6, 0.05) 0%, transparent 70%);
+}
+
+/* Diya Flame Pulsing Animation */
+@keyframes diyaPulse {
+  0% { transform: scale(1); filter: drop-shadow(0 0 8px rgba(245, 158, 11, 0.4)); }
+  50% { transform: scale(1.08); filter: drop-shadow(0 0 22px rgba(234, 88, 12, 0.7)); }
+  100% { transform: scale(1); filter: drop-shadow(0 0 8px rgba(245, 158, 11, 0.4)); }
+}
+
+.diya-flame-pulse {
+  animation: diyaPulse 1.8s infinite ease-in-out;
+}
+
+/* Buttons */
+.btn-primary {
+  background: linear-gradient(135deg, var(--saffron), var(--marigold));
+  color: #FFFFFF;
+  border: none;
+  padding: 0.65rem 1.4rem;
+  border-radius: var(--radius-md);
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition-smooth);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.btn-primary:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-gold);
+}
+
+.btn-secondary {
+  background-color: var(--bg-subtle);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+  padding: 0.65rem 1.2rem;
+  border-radius: var(--radius-md);
+  font-weight: 500;
+  cursor: pointer;
+  transition: var(--transition-smooth);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.btn-secondary:hover {
+  background-color: var(--border-color);
+}
+
+/* Cards */
+.card {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: 1.5rem;
+  box-shadow: var(--shadow-md);
+  transition: var(--transition-smooth);
+}
+
+.card:hover {
+  border-color: var(--temple-gold);
+}
+
+/* Modals */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(11, 15, 25, 0.75);
+  backdrop-filter: blur(6px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 1rem;
+}
+
+.modal-content {
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  max-width: 650px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: var(--shadow-lg);
+  padding: 2rem;
+}
+
+/* Form inputs */
+input, select, textarea {
+  width: 100%;
+  padding: 0.65rem 0.9rem;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-color);
+  background-color: var(--bg-surface);
+  color: var(--text-primary);
+  font-size: 0.95rem;
+  outline: none;
+  transition: var(--transition-smooth);
+}
+
+input:focus, select:focus, textarea:focus {
+  border-color: var(--border-focus);
+  box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.15);
+}
+
+/* Print Stylesheet for Luxury PDF Export */
+@media print {
+  body {
+    background-color: #FFFFFF !important;
+    color: #000000 !important;
+  }
+  .no-print {
+    display: none !important;
+  }
+  .card {
+    box-shadow: none !important;
+    border: 1px solid #CCC !important;
+    page-break-inside: avoid;
+  }
+}

@@ -1,0 +1,234 @@
+"""
+Seeded Demo Blueprint: Delhi NCR Society Diwali Mela & Dandiya Night
+Gulmohar Enclave Grand Diwali Mela & Dandiya Utsav
+"""
+from src.models.ai_plan import EventMasterPlan
+from src.models.budget import BudgetItem, PaymentStatus
+from src.models.timeline import TaskItem, TaskPriority, TaskStatus
+from src.models.vendor import VendorItem, VendorStatus
+from src.models.ideas import IdeaItem
+
+DELHI_COMMUNITY_SEED = EventMasterPlan(
+    celebration_title="Gulmohar Enclave Grand Diwali Mela & Dandiya Utsav",
+    event_type="community",
+    cultural_summary="An 800-resident housing society Diwali Mela and Garba/Dandiya festival in Dwarka, New Delhi. Unites families with cultural stage shows, artisan handicraft stalls, eco-friendly LED diya illumination, and safety-certified community feasts.",
+    target_budget=650000.0,
+    guest_count=800,
+    budget_breakdown=[
+        BudgetItem(
+            id="b-comm-01",
+            category="Stage, Audio & Sound",
+            name="Main Amphitheatre Sound Rig, Line-Arrays & Lighting Tower",
+            estimated_cost=150000.0,
+            actual_cost=140000.0,
+            advance_paid=50000.0,
+            status=PaymentStatus.PARTIAL,
+            notes="Includes acoustic limits (sound clearance until 10:00 PM), mics, and DJ console."
+        ),
+        BudgetItem(
+            id="b-comm-02",
+            category="Tents, Shamiana & Stalls",
+            name="25 Artisan & Food Stalls, Canopy Waterproofing & Seating for Seniors",
+            estimated_cost=180000.0,
+            actual_cost=175000.0,
+            advance_paid=60000.0,
+            status=PaymentStatus.PARTIAL,
+            notes="Covers resident entrepreneur stalls, fire extinguisher stands per stall."
+        ),
+        BudgetItem(
+            id="b-comm-03",
+            category="Generator & Electricals",
+            name="125 kVA Silent DG Set & Society Perimeter LED Diya Strings",
+            estimated_cost=80000.0,
+            actual_cost=75000.0,
+            advance_paid=25000.0,
+            status=PaymentStatus.PARTIAL,
+            notes="Zero load disruption, 8 hours diesel backup, fire department safety certification."
+        ),
+        BudgetItem(
+            id="b-comm-04",
+            category="Security & Traffic Management",
+            name="10 Certified Bouncers, Traffic Marshals & First-Aid Ambulance Standby",
+            estimated_cost=55000.0,
+            actual_cost=50000.0,
+            advance_paid=20000.0,
+            status=PaymentStatus.PARTIAL,
+            notes="Gate scanning, metal detector gates, ambulance on call with EMT."
+        ),
+        BudgetItem(
+            id="b-comm-05",
+            category="Cultural Troupe & Live Dandiya",
+            name="Live Gujarati Folk Dandiya Orchestra & Dhol Tasha Troupe",
+            estimated_cost=95000.0,
+            actual_cost=90000.0,
+            advance_paid=30000.0,
+            status=PaymentStatus.PARTIAL,
+            notes="4-piece folk ensemble with traditional instruments."
+        ),
+        BudgetItem(
+            id="b-comm-06",
+            category="Prasad, Sweets & Waste Disposal",
+            name="Community Prasad Distribution & Green-Waste Composting Crew",
+            estimated_cost=50000.0,
+            actual_cost=48000.0,
+            advance_paid=20000.0,
+            status=PaymentStatus.PARTIAL,
+            notes="Dry fruit besan laddoos for 800 residents, segregated color-coded dustbins."
+        ),
+        BudgetItem(
+            id="b-comm-07",
+            category="Municipal Permissions & Legal",
+            name="Delhi Police, Fire Department & MCD Green Firecracker Permits",
+            estimated_cost=40000.0,
+            actual_cost=35000.0,
+            advance_paid=35000.0,
+            status=PaymentStatus.PAID,
+            notes="All statutory NOCs secured 14 days in advance."
+        ),
+    ],
+    timeline_tasks=[
+        TaskItem(
+            id="t-comm-01",
+            phase="Phase 1: Approvals & Notices (6 Weeks Out)",
+            title="File MCD & Delhi Police Sound Clearance Application",
+            description="Submit layout plan, sound decibel limits, and emergency exits to ACP office.",
+            due_date="2026-09-20",
+            owner_role="RWA Secretary",
+            priority=TaskPriority.HIGH,
+            status=TaskStatus.DONE
+        ),
+        TaskItem(
+            id="t-comm-02",
+            phase="Phase 2: Stall Bookings (4 Weeks Out)",
+            title="Allot 25 Society Home-Baker & Artisan Stalls",
+            description="Issue guidelines on food safety hygiene and electric load caps (1 kW/stall).",
+            due_date="2026-10-05",
+            owner_role="Cultural Committee",
+            priority=TaskPriority.HIGH,
+            status=TaskStatus.DONE
+        ),
+        TaskItem(
+            id="t-comm-03",
+            phase="Phase 3: Logistics & Safety (2 Weeks Out)",
+            title="Inspect Silent Generator & Fire Hose Hydrants",
+            description="Run 30-minute load test on society perimeter circuits with electricians.",
+            due_date="2026-10-18",
+            owner_role="Maintenance Head",
+            priority=TaskPriority.HIGH,
+            status=TaskStatus.DONE
+        ),
+        TaskItem(
+            id="t-comm-04",
+            phase="Phase 4: Day-Of Setup (Morning)",
+            title="Conduct Gate Security Briefing & Sound Check",
+            description="Instruct traffic marshals on resident visitor parking protocol.",
+            due_date="2026-11-01",
+            owner_role="Security Lead",
+            priority=TaskPriority.HIGH,
+            status=TaskStatus.TODO
+        ),
+        TaskItem(
+            id="t-comm-05",
+            phase="Phase 5: Event Schedule (05:00 PM - 10:00 PM)",
+            title="06:30 PM - Grand Maha Aarti & 5,000 Diya Illumination",
+            description="Society children and elders gather at amphitheatre for unified Deepotsav prayer.",
+            due_date="2026-11-01",
+            owner_role="President / Pandit",
+            priority=TaskPriority.HIGH,
+            status=TaskStatus.TODO
+        ),
+    ],
+    vendor_checklist=[
+        VendorItem(
+            id="v-comm-01",
+            category="venue",
+            business_name="Gulmohar Enclave Society Central Park",
+            contact_person="RWA Estate Office",
+            phone="+91 11 2808 0000",
+            quote_amount=0.0,
+            status=VendorStatus.BOOKED,
+            notes="Society amenity space approved by General Body Meeting (GBM).",
+            address="Sector 12, Dwarka, New Delhi",
+            rating=5.0,
+            is_estimate=False
+        ),
+        VendorItem(
+            id="v-comm-02",
+            category="music_entertainment",
+            business_name="Swara Tarang Sound & Light Engineers",
+            contact_person="Vikram Sachdeva",
+            phone="+91 98111 22334",
+            quote_amount=140000.0,
+            status=VendorStatus.BOOKED,
+            notes="Dual 15kW speakers, wireless mics, moving head lights, digital mixer.",
+            address="Janakpuri, New Delhi",
+            rating=4.8,
+            is_estimate=False
+        ),
+        VendorItem(
+            id="v-comm-03",
+            category="decor",
+            business_name="Delhi Shahi Tent House & Fabrication",
+            contact_person="Charan Singh",
+            phone="+91 98100 88990",
+            quote_amount=175000.0,
+            status=VendorStatus.BOOKED,
+            notes="Waterproof German hanger canopies for stalls, 250 senior citizen banquet chairs.",
+            address="Palam, New Delhi",
+            rating=4.7,
+            is_estimate=False
+        ),
+    ],
+    personalized_ideas=[
+        IdeaItem(
+            id="i-comm-01",
+            tab_category="theme_mood",
+            title="Vedic Deepotsav: 5,000 Terracotta Diyas & Zero Smoke",
+            description="Illuminating central park trees and pathways with oil lamps made by local potters from Uttam Nagar.",
+            cultural_context="Deepawali's authentic victory-of-light symbolism without air pollution.",
+            cost_bracket="₹"
+        ),
+        IdeaItem(
+            id="i-comm-02",
+            tab_category="decor",
+            title="Mega Rangoli Mandala Competition",
+            description="Inter-tower floral and organic color rangoli art competition centered on harmony and prosperity.",
+            cultural_context="Unites resident artists across all age brackets.",
+            cost_bracket="₹"
+        ),
+        IdeaItem(
+            id="i-comm-03",
+            tab_category="menu",
+            title="Old Delhi Chaat Street & Kesar Kulhad Jalebis",
+            description="Live hygienic counters offering Chandni Chowk style Dahi Bhalle, Golgappe, and sizzling hot Jalebi.",
+            cultural_context="Celebrates Delhi's historic street culinary treasures.",
+            cost_bracket="₹₹"
+        ),
+        IdeaItem(
+            id="i-comm-04",
+            tab_category="games",
+            title="Inter-Tower Tambola & Best Traditional Attire Awards",
+            description="Grand society-wide Tambola with silver coin prizes, followed by prizes for Best Kurta and Best Saree.",
+            cultural_context="Fosters neighborly bonding and festive camaraderie.",
+            cost_bracket="₹"
+        ),
+        IdeaItem(
+            id="i-comm-05",
+            tab_category="rituals",
+            title="Maha Lakshmi Puja & Elder Felicitations",
+            description="Collective community invocation prayer honoring the society's octogenarian residents with shawls.",
+            cultural_context="Respect for elders (*Matru Devo Bhava, Pitru Devo Bhava*).",
+            cost_bracket="₹"
+        ),
+        IdeaItem(
+            id="i-comm-06",
+            tab_category="gifts",
+            title="Tulsi Sapling & Eco-friendly Terracotta Diya Boxes",
+            description="Every resident family receives a sacred Krishna Tulsi plant in a clay pot and 4 handmade diyas.",
+            cultural_context="Green, living gift that purifies the home environment.",
+            cost_bracket="₹"
+        ),
+    ],
+    auspicious_guidance="Amavasya Pradosh Kaal (05:45 PM - 08:15 PM) is the most auspicious window for Maha Lakshmi Pujan and communal Deepa Daan.",
+    disclaimer="Notice: Sound permits strictly end at 10:00 PM per Delhi Noise Pollution Regulations."
+)

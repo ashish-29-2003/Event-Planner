@@ -1,0 +1,36 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "utsav-celebration-planner"
+version = "1.0.0"
+description = "GenAI Celebration & Event Planner for weddings, birthdays, and community festivals"
+authors = [{ name = "Utsav AI Team" }]
+license = { text = "MIT" }
+requires-python = ">=3.10"
+dependencies = [
+    "fastapi>=0.110.0",
+    "uvicorn[standard]>=0.28.0",
+    "pydantic>=2.6.0",
+    "google-generativeai>=0.8.0",
+    "mangum>=0.17.0",
+    "httpx>=0.27.0",
+    "python-multipart>=0.0.9",
+    "python-dotenv>=1.0.1",
+    "icalendar>=5.0.11",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+asyncio_mode = "auto"
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+
+[tool.mypy]
+python_version = "3.10"
+strict = true
+ignore_missing_imports = true
