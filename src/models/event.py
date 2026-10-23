@@ -3,7 +3,7 @@ Event entity data models using Pydantic v2.
 """
 from enum import Enum
 from typing import Optional
-from datetime import date, datetime
+from datetime import date, datetime, timezone
 from pydantic import BaseModel, Field
 
 class EventType(str, Enum):
@@ -30,5 +30,5 @@ class EventCreate(CelebrationBrief):
 
 class EventResponse(EventCreate):
     id: str = Field(..., description="Unique celebration ID")
-    created_at: datetime = Field(default_factory=datetime.utcnow)
-    updated_at: datetime = Field(default_factory=datetime.utcnow)
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))

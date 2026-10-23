@@ -189,7 +189,7 @@ ORIGINAL RAW JSON:
                 updated_items.append(item)
             else:
                 scale = (cat_totals[item.category] / sum(it.estimated_cost for it in current_items if it.category == item.category)) if sum(it.estimated_cost for it in current_items if it.category == item.category) > 0 else 1.0
-                updated_item = item.copy(update={"estimated_cost": round(item.estimated_cost * scale, -2)})
+                updated_item = item.model_copy(update={"estimated_cost": round(item.estimated_cost * scale, -2)})
                 updated_items.append(updated_item)
 
         total_allocated = sum(cat_totals.values())
