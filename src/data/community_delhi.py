@@ -2,11 +2,12 @@
 Seeded Demo Blueprint: Delhi NCR Society Diwali Mela & Dandiya Night
 Gulmohar Enclave Grand Diwali Mela & Dandiya Utsav
 """
+
 from src.models.ai_plan import EventMasterPlan
 from src.models.budget import BudgetItem, PaymentStatus
+from src.models.ideas import IdeaItem
 from src.models.timeline import TaskItem, TaskPriority, TaskStatus
 from src.models.vendor import VendorItem, VendorStatus
-from src.models.ideas import IdeaItem
 
 DELHI_COMMUNITY_SEED = EventMasterPlan(
     celebration_title="Gulmohar Enclave Grand Diwali Mela & Dandiya Utsav",
@@ -23,7 +24,7 @@ DELHI_COMMUNITY_SEED = EventMasterPlan(
             actual_cost=140000.0,
             advance_paid=50000.0,
             status=PaymentStatus.PARTIAL,
-            notes="Includes acoustic limits (sound clearance until 10:00 PM), mics, and DJ console."
+            notes="Includes acoustic limits (sound clearance until 10:00 PM), mics, and DJ console.",
         ),
         BudgetItem(
             id="b-comm-02",
@@ -33,7 +34,7 @@ DELHI_COMMUNITY_SEED = EventMasterPlan(
             actual_cost=175000.0,
             advance_paid=60000.0,
             status=PaymentStatus.PARTIAL,
-            notes="Covers resident entrepreneur stalls, fire extinguisher stands per stall."
+            notes="Covers resident entrepreneur stalls, fire extinguisher stands per stall.",
         ),
         BudgetItem(
             id="b-comm-03",
@@ -43,7 +44,7 @@ DELHI_COMMUNITY_SEED = EventMasterPlan(
             actual_cost=75000.0,
             advance_paid=25000.0,
             status=PaymentStatus.PARTIAL,
-            notes="Zero load disruption, 8 hours diesel backup, fire department safety certification."
+            notes="Zero load disruption, 8 hours diesel backup, fire department safety certification.",
         ),
         BudgetItem(
             id="b-comm-04",
@@ -53,7 +54,7 @@ DELHI_COMMUNITY_SEED = EventMasterPlan(
             actual_cost=50000.0,
             advance_paid=20000.0,
             status=PaymentStatus.PARTIAL,
-            notes="Gate scanning, metal detector gates, ambulance on call with EMT."
+            notes="Gate scanning, metal detector gates, ambulance on call with EMT.",
         ),
         BudgetItem(
             id="b-comm-05",
@@ -63,7 +64,7 @@ DELHI_COMMUNITY_SEED = EventMasterPlan(
             actual_cost=90000.0,
             advance_paid=30000.0,
             status=PaymentStatus.PARTIAL,
-            notes="4-piece folk ensemble with traditional instruments."
+            notes="4-piece folk ensemble with traditional instruments.",
         ),
         BudgetItem(
             id="b-comm-06",
@@ -73,7 +74,7 @@ DELHI_COMMUNITY_SEED = EventMasterPlan(
             actual_cost=48000.0,
             advance_paid=20000.0,
             status=PaymentStatus.PARTIAL,
-            notes="Dry fruit besan laddoos for 800 residents, segregated color-coded dustbins."
+            notes="Dry fruit besan laddoos for 800 residents, segregated color-coded dustbins.",
         ),
         BudgetItem(
             id="b-comm-07",
@@ -83,7 +84,7 @@ DELHI_COMMUNITY_SEED = EventMasterPlan(
             actual_cost=35000.0,
             advance_paid=35000.0,
             status=PaymentStatus.PAID,
-            notes="All statutory NOCs secured 14 days in advance."
+            notes="All statutory NOCs secured 14 days in advance.",
         ),
     ],
     timeline_tasks=[
@@ -95,7 +96,7 @@ DELHI_COMMUNITY_SEED = EventMasterPlan(
             due_date="2026-09-20",
             owner_role="RWA Secretary",
             priority=TaskPriority.HIGH,
-            status=TaskStatus.DONE
+            status=TaskStatus.DONE,
         ),
         TaskItem(
             id="t-comm-02",
@@ -105,7 +106,7 @@ DELHI_COMMUNITY_SEED = EventMasterPlan(
             due_date="2026-10-05",
             owner_role="Cultural Committee",
             priority=TaskPriority.HIGH,
-            status=TaskStatus.DONE
+            status=TaskStatus.DONE,
         ),
         TaskItem(
             id="t-comm-03",
@@ -115,7 +116,7 @@ DELHI_COMMUNITY_SEED = EventMasterPlan(
             due_date="2026-10-18",
             owner_role="Maintenance Head",
             priority=TaskPriority.HIGH,
-            status=TaskStatus.DONE
+            status=TaskStatus.DONE,
         ),
         TaskItem(
             id="t-comm-04",
@@ -125,7 +126,7 @@ DELHI_COMMUNITY_SEED = EventMasterPlan(
             due_date="2026-11-01",
             owner_role="Security Lead",
             priority=TaskPriority.HIGH,
-            status=TaskStatus.TODO
+            status=TaskStatus.TODO,
         ),
         TaskItem(
             id="t-comm-05",
@@ -135,7 +136,7 @@ DELHI_COMMUNITY_SEED = EventMasterPlan(
             due_date="2026-11-01",
             owner_role="President / Pandit",
             priority=TaskPriority.HIGH,
-            status=TaskStatus.TODO
+            status=TaskStatus.TODO,
         ),
     ],
     vendor_checklist=[
@@ -150,7 +151,7 @@ DELHI_COMMUNITY_SEED = EventMasterPlan(
             notes="Society amenity space approved by General Body Meeting (GBM).",
             address="Sector 12, Dwarka, New Delhi",
             rating=5.0,
-            is_estimate=False
+            is_estimate=False,
         ),
         VendorItem(
             id="v-comm-02",
@@ -163,7 +164,7 @@ DELHI_COMMUNITY_SEED = EventMasterPlan(
             notes="Dual 15kW speakers, wireless mics, moving head lights, digital mixer.",
             address="Janakpuri, New Delhi",
             rating=4.8,
-            is_estimate=False
+            is_estimate=False,
         ),
         VendorItem(
             id="v-comm-03",
@@ -176,7 +177,7 @@ DELHI_COMMUNITY_SEED = EventMasterPlan(
             notes="Waterproof German hanger canopies for stalls, 250 senior citizen banquet chairs.",
             address="Palam, New Delhi",
             rating=4.7,
-            is_estimate=False
+            is_estimate=False,
         ),
     ],
     personalized_ideas=[
@@ -186,7 +187,7 @@ DELHI_COMMUNITY_SEED = EventMasterPlan(
             title="Vedic Deepotsav: 5,000 Terracotta Diyas & Zero Smoke",
             description="Illuminating central park trees and pathways with oil lamps made by local potters from Uttam Nagar.",
             cultural_context="Deepawali's authentic victory-of-light symbolism without air pollution.",
-            cost_bracket="₹"
+            cost_bracket="₹",
         ),
         IdeaItem(
             id="i-comm-02",
@@ -194,7 +195,7 @@ DELHI_COMMUNITY_SEED = EventMasterPlan(
             title="Mega Rangoli Mandala Competition",
             description="Inter-tower floral and organic color rangoli art competition centered on harmony and prosperity.",
             cultural_context="Unites resident artists across all age brackets.",
-            cost_bracket="₹"
+            cost_bracket="₹",
         ),
         IdeaItem(
             id="i-comm-03",
@@ -202,7 +203,7 @@ DELHI_COMMUNITY_SEED = EventMasterPlan(
             title="Old Delhi Chaat Street & Kesar Kulhad Jalebis",
             description="Live hygienic counters offering Chandni Chowk style Dahi Bhalle, Golgappe, and sizzling hot Jalebi.",
             cultural_context="Celebrates Delhi's historic street culinary treasures.",
-            cost_bracket="₹₹"
+            cost_bracket="₹₹",
         ),
         IdeaItem(
             id="i-comm-04",
@@ -210,7 +211,7 @@ DELHI_COMMUNITY_SEED = EventMasterPlan(
             title="Inter-Tower Tambola & Best Traditional Attire Awards",
             description="Grand society-wide Tambola with silver coin prizes, followed by prizes for Best Kurta and Best Saree.",
             cultural_context="Fosters neighborly bonding and festive camaraderie.",
-            cost_bracket="₹"
+            cost_bracket="₹",
         ),
         IdeaItem(
             id="i-comm-05",
@@ -218,7 +219,7 @@ DELHI_COMMUNITY_SEED = EventMasterPlan(
             title="Maha Lakshmi Puja & Elder Felicitations",
             description="Collective community invocation prayer honoring the society's octogenarian residents with shawls.",
             cultural_context="Respect for elders (*Matru Devo Bhava, Pitru Devo Bhava*).",
-            cost_bracket="₹"
+            cost_bracket="₹",
         ),
         IdeaItem(
             id="i-comm-06",
@@ -226,9 +227,9 @@ DELHI_COMMUNITY_SEED = EventMasterPlan(
             title="Tulsi Sapling & Eco-friendly Terracotta Diya Boxes",
             description="Every resident family receives a sacred Krishna Tulsi plant in a clay pot and 4 handmade diyas.",
             cultural_context="Green, living gift that purifies the home environment.",
-            cost_bracket="₹"
+            cost_bracket="₹",
         ),
     ],
     auspicious_guidance="Amavasya Pradosh Kaal (05:45 PM - 08:15 PM) is the most auspicious window for Maha Lakshmi Pujan and communal Deepa Daan.",
-    disclaimer="Notice: Sound permits strictly end at 10:00 PM per Delhi Noise Pollution Regulations."
+    disclaimer="Notice: Sound permits strictly end at 10:00 PM per Delhi Noise Pollution Regulations.",
 )

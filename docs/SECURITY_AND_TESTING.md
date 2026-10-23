@@ -26,7 +26,7 @@
    ```python
    def sanitize_prompt_input(raw_text: str) -> str:
        # Strip markdown command injection and system overrides
-       cleaned = re.sub(r'[\r\n]{3,}', '\n\n', raw_text.strip())
+       cleaned = re.sub(r"[\r\n]{3,}", "\n\n", raw_text.strip())
        cleaned = cleaned.replace("SYSTEM:", "").replace("ASSISTANT:", "")
        return cleaned[:1000]
    ```

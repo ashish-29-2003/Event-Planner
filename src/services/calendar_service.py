@@ -2,12 +2,16 @@
 Google Calendar & RFC-5545 iCalendar (.ics) Service.
 Enables instant synchronization of celebration milestones and ritual schedules.
 """
-from datetime import datetime, timezone, timedelta
+
 import urllib.parse
-from typing import Optional
+from datetime import datetime, timedelta, timezone
+
 from src.models.timeline import TaskItem
 
-def create_google_calendar_url(title: str, description: str, date_str: Optional[str] = None, location: str = "") -> str:
+
+def create_google_calendar_url(
+    title: str, description: str, date_str: str | None = None, location: str = ""
+) -> str:
     """
     Creates a deep-link URL to add an event directly into Google Calendar.
     """
@@ -17,7 +21,7 @@ def create_google_calendar_url(title: str, description: str, date_str: Optional[
         "details": f"{description}\n\nOrganized via Utsav (उत्सव) - GenAI Celebration Planner",
         "location": location,
     }
-    
+
     if date_str:
         try:
             dt = datetime.strptime(date_str, "%Y-%m-%d")
@@ -27,8 +31,9 @@ def create_google_calendar_url(title: str, description: str, date_str: Optional[
             params["dates"] = f"{start_str}/{end_str}"
         except ValueError:
             pass
-            
+
     return f"{base_url}&{urllib.parse.urlencode(params)}"
+
 
 def generate_ics_calendar(event_title: str, tasks: list[TaskItem]) -> str:
     """
@@ -36,7 +41,7 @@ def generate_ics_calendar(event_title: str, tasks: list[TaskItem]) -> str:
     Can be downloaded and imported into Google Calendar, Apple Calendar, or Outlook.
     """
     now_stamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
-    
+
     lines = [
         "BEGIN:VCALENDAR",
         "VERSION:2.0",
@@ -45,32 +50,36 @@ def generate_ics_calendar(event_title: str, tasks: list[TaskItem]) -> str:
         "METHOD:PUBLISH",
         f"X-WR-CALNAME:Utsav - {event_title}",
     ]
-    
+
     for task in tasks:
         due_date = task.due_date
         if not due_date:
             due_date = datetime.now(timezone.utc).strftime("%Y-%m-%d")
-            
+
         try:
             dt = datetime.strptime(due_date, "%Y-%m-%d")
             date_fmt = dt.strftime("%Y%m%d")
         except ValueError:
             date_fmt = datetime.now(timezone.utc).strftime("%Y%m%d")
-            
+
         summary = task.title.replace("\n", " ").replace(";", "\\;")
-        desc = f"{task.phase} | Owner: {task.owner_role} | {task.description}".replace("\n", " ").replace(";", "\\;")
-        
-        lines.extend([
-            "BEGIN:VEVENT",
-            f"UID:utsav-task-{task.id}@utsav.app",
-            f"DTSTAMP:{now_stamp}",
-            f"DTSTART;VALUE=DATE:{date_fmt}",
-            f"DTEND;VALUE=DATE:{date_fmt}",
-            f"SUMMARY:Utsav: {summary}",
-            f"DESCRIPTION:{desc}",
-            f"STATUS:{'COMPLETED' if task.status == 'done' else 'CONFIRMED'}",
-            "END:VEVENT"
-        ])
-        
+        desc = f"{task.phase} | Owner: {task.owner_role} | {task.description}".replace(
+            "\n", " "
+        ).replace(";", "\\;")
+
+        lines.extend(
+            [
+                "BEGIN:VEVENT",
+                f"UID:utsav-task-{task.id}@utsav.app",
+                f"DTSTAMP:{now_stamp}",
+                f"DTSTART;VALUE=DATE:{date_fmt}",
+                f"DTEND;VALUE=DATE:{date_fmt}",
+                f"SUMMARY:Utsav: {summary}",
+                f"DESCRIPTION:{desc}",
+                f"STATUS:{'COMPLETED' if task.status == 'done' else 'CONFIRMED'}",
+                "END:VEVENT",
+            ]
+        )
+
     lines.append("END:VCALENDAR")
     return "\r\n".join(lines) + "\r\n"

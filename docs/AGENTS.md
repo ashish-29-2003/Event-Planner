@@ -83,6 +83,7 @@ flowchart TD
       allocated_amount: float
       percentage_of_total: float
 
+
   class BudgetRebalanceResponse(BaseModel):
       categories: list[CategoryAllocation]
       total_allocated: float

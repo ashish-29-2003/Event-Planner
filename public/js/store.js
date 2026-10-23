@@ -11,7 +11,7 @@ class EventStore {
       tasks: [],
       vendors: [],
       ideas: [],
-      theme: localStorage.getItem('utsav-theme') || 'light',
+      theme: localStorage.getItem('samaroh-theme') || 'light',
       isSynthesizing: false
     };
     this.listeners = [];
@@ -36,7 +36,7 @@ class EventStore {
   setTheme(theme) {
     this.state.theme = theme;
     document.documentElement.setAttribute('data-theme', theme);
-    localStorage.setItem('utsav-theme', theme);
+    localStorage.setItem('samaroh-theme', theme);
     this.notify();
   }
 

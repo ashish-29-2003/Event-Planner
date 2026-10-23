@@ -2,6 +2,7 @@
 Indian Rupee (INR) and Lakh/Crore Number Formatting Utilities.
 """
 
+
 def format_inr(amount: float) -> str:
     """
     Formats a number into standard Indian numbering grouping.
@@ -9,25 +10,26 @@ def format_inr(amount: float) -> str:
     """
     if amount < 0:
         return f"-₹{format_inr(-amount)[1:]}"
-    
-    amount_int = int(round(amount))
+
+    amount_int = round(amount)
     s = str(amount_int)
-    
+
     if len(s) <= 3:
         return f"₹{s}"
-    
+
     last_three = s[-3:]
     remaining = s[:-3]
-    
+
     parts = []
     while len(remaining) > 2:
         parts.insert(0, remaining[-2:])
         remaining = remaining[:-2]
     if remaining:
         parts.insert(0, remaining)
-        
+
     parts.append(last_three)
     return f"₹{','.join(parts)}"
+
 
 def format_lakhs_crores(amount: float) -> str:
     """

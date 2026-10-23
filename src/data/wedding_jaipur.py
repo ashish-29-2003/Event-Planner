@@ -1,11 +1,12 @@
 """
 Seeded Demo Blueprint: Jaipur Royal Destination Wedding (Marwari Vivaha)
 """
+
 from src.models.ai_plan import EventMasterPlan
 from src.models.budget import BudgetItem, PaymentStatus
+from src.models.ideas import IdeaItem
 from src.models.timeline import TaskItem, TaskPriority, TaskStatus
 from src.models.vendor import VendorItem, VendorStatus
-from src.models.ideas import IdeaItem
 
 JAIPUR_WEDDING_SEED = EventMasterPlan(
     celebration_title="Riya & Kabir's Royal Vivaha & Sangeet",
@@ -22,7 +23,7 @@ JAIPUR_WEDDING_SEED = EventMasterPlan(
             actual_cost=1800000.0,
             advance_paid=600000.0,
             status=PaymentStatus.PARTIAL,
-            notes="Includes Royal Lawns, Sangeet Amphitheatre, and poolside Mehendi cabanas."
+            notes="Includes Royal Lawns, Sangeet Amphitheatre, and poolside Mehendi cabanas.",
         ),
         BudgetItem(
             id="b-wed-02",
@@ -32,7 +33,7 @@ JAIPUR_WEDDING_SEED = EventMasterPlan(
             actual_cost=1150000.0,
             advance_paid=400000.0,
             status=PaymentStatus.PARTIAL,
-            notes="Pure vegetarian royal thali, Dal Baati Churma live counter, Ker Sangri, Jalebi live tawa."
+            notes="Pure vegetarian royal thali, Dal Baati Churma live counter, Ker Sangri, Jalebi live tawa.",
         ),
         BudgetItem(
             id="b-wed-03",
@@ -42,7 +43,7 @@ JAIPUR_WEDDING_SEED = EventMasterPlan(
             actual_cost=520000.0,
             advance_paid=200000.0,
             status=PaymentStatus.PARTIAL,
-            notes="Eco-friendly temple flowers, brass diyas, and mirrored toranas."
+            notes="Eco-friendly temple flowers, brass diyas, and mirrored toranas.",
         ),
         BudgetItem(
             id="b-wed-04",
@@ -52,7 +53,7 @@ JAIPUR_WEDDING_SEED = EventMasterPlan(
             actual_cost=300000.0,
             advance_paid=100000.0,
             status=PaymentStatus.PARTIAL,
-            notes="3-day coverage, teaser film in 48 hours, full 4K documentary."
+            notes="3-day coverage, teaser film in 48 hours, full 4K documentary.",
         ),
         BudgetItem(
             id="b-wed-05",
@@ -62,7 +63,7 @@ JAIPUR_WEDDING_SEED = EventMasterPlan(
             actual_cost=240000.0,
             advance_paid=100000.0,
             status=PaymentStatus.PARTIAL,
-            notes="Live Shenai for morning rituals, Bollywood DJ for Sangeet night."
+            notes="Live Shenai for morning rituals, Bollywood DJ for Sangeet night.",
         ),
         BudgetItem(
             id="b-wed-06",
@@ -72,7 +73,7 @@ JAIPUR_WEDDING_SEED = EventMasterPlan(
             actual_cost=110000.0,
             advance_paid=50000.0,
             status=PaymentStatus.PARTIAL,
-            notes="Organic Marwari henna cones, floral jewelry for Haldi."
+            notes="Organic Marwari henna cones, floral jewelry for Haldi.",
         ),
         BudgetItem(
             id="b-wed-07",
@@ -82,7 +83,7 @@ JAIPUR_WEDDING_SEED = EventMasterPlan(
             actual_cost=50000.0,
             advance_paid=20000.0,
             status=PaymentStatus.PARTIAL,
-            notes="Sanskrit Vedic recitations with English explanations for younger guests."
+            notes="Sanskrit Vedic recitations with English explanations for younger guests.",
         ),
         BudgetItem(
             id="b-wed-08",
@@ -92,7 +93,7 @@ JAIPUR_WEDDING_SEED = EventMasterPlan(
             actual_cost=180000.0,
             advance_paid=90000.0,
             status=PaymentStatus.PARTIAL,
-            notes="Custom laser-etched royal boxes for all 350 attending families."
+            notes="Custom laser-etched royal boxes for all 350 attending families.",
         ),
     ],
     timeline_tasks=[
@@ -104,7 +105,7 @@ JAIPUR_WEDDING_SEED = EventMasterPlan(
             due_date="2026-06-15",
             owner_role="Host",
             priority=TaskPriority.HIGH,
-            status=TaskStatus.DONE
+            status=TaskStatus.DONE,
         ),
         TaskItem(
             id="t-wed-02",
@@ -114,7 +115,7 @@ JAIPUR_WEDDING_SEED = EventMasterPlan(
             due_date="2026-06-25",
             owner_role="Parents",
             priority=TaskPriority.HIGH,
-            status=TaskStatus.DONE
+            status=TaskStatus.DONE,
         ),
         TaskItem(
             id="t-wed-03",
@@ -124,7 +125,7 @@ JAIPUR_WEDDING_SEED = EventMasterPlan(
             due_date="2026-09-10",
             owner_role="Host",
             priority=TaskPriority.HIGH,
-            status=TaskStatus.DONE
+            status=TaskStatus.DONE,
         ),
         TaskItem(
             id="t-wed-04",
@@ -134,7 +135,7 @@ JAIPUR_WEDDING_SEED = EventMasterPlan(
             due_date="2026-09-20",
             owner_role="Couple",
             priority=TaskPriority.MEDIUM,
-            status=TaskStatus.DONE
+            status=TaskStatus.DONE,
         ),
         TaskItem(
             id="t-wed-05",
@@ -144,7 +145,7 @@ JAIPUR_WEDDING_SEED = EventMasterPlan(
             due_date="2026-11-15",
             owner_role="Host",
             priority=TaskPriority.HIGH,
-            status=TaskStatus.IN_PROGRESS
+            status=TaskStatus.IN_PROGRESS,
         ),
         TaskItem(
             id="t-wed-06",
@@ -154,7 +155,7 @@ JAIPUR_WEDDING_SEED = EventMasterPlan(
             due_date="2026-12-08",
             owner_role="Maternal Uncle",
             priority=TaskPriority.HIGH,
-            status=TaskStatus.TODO
+            status=TaskStatus.TODO,
         ),
         TaskItem(
             id="t-wed-07",
@@ -164,7 +165,7 @@ JAIPUR_WEDDING_SEED = EventMasterPlan(
             due_date="2026-12-15",
             owner_role="Pandit / Host",
             priority=TaskPriority.HIGH,
-            status=TaskStatus.TODO
+            status=TaskStatus.TODO,
         ),
         TaskItem(
             id="t-wed-08",
@@ -174,7 +175,7 @@ JAIPUR_WEDDING_SEED = EventMasterPlan(
             due_date="2026-12-15",
             owner_role="Groom's Side",
             priority=TaskPriority.HIGH,
-            status=TaskStatus.TODO
+            status=TaskStatus.TODO,
         ),
         TaskItem(
             id="t-wed-09",
@@ -184,7 +185,7 @@ JAIPUR_WEDDING_SEED = EventMasterPlan(
             due_date="2026-12-15",
             owner_role="Officiant",
             priority=TaskPriority.HIGH,
-            status=TaskStatus.TODO
+            status=TaskStatus.TODO,
         ),
     ],
     vendor_checklist=[
@@ -200,7 +201,7 @@ JAIPUR_WEDDING_SEED = EventMasterPlan(
             notes="Includes lawns, 40 suites, generator backup, and lighting permits.",
             address="Goner Road, Jaipur, Rajasthan",
             rating=4.9,
-            is_estimate=False
+            is_estimate=False,
         ),
         VendorItem(
             id="v-wed-02",
@@ -214,7 +215,7 @@ JAIPUR_WEDDING_SEED = EventMasterPlan(
             notes="350 Pax, 6 feasts, copper chafing dishes, kulhad chai counters.",
             address="MI Road, Jaipur",
             rating=4.9,
-            is_estimate=False
+            is_estimate=False,
         ),
         VendorItem(
             id="v-wed-03",
@@ -228,7 +229,7 @@ JAIPUR_WEDDING_SEED = EventMasterPlan(
             notes="Marigold chandeliers, brass diya pathways, temple lotus mandap.",
             address="C-Scheme, Jaipur",
             rating=4.8,
-            is_estimate=True
+            is_estimate=True,
         ),
         VendorItem(
             id="v-wed-04",
@@ -242,7 +243,7 @@ JAIPUR_WEDDING_SEED = EventMasterPlan(
             notes="3 candid photographers, 2 cinematographers, drone operator.",
             address="Vaishali Nagar, Jaipur",
             rating=4.9,
-            is_estimate=False
+            is_estimate=False,
         ),
     ],
     personalized_ideas=[
@@ -252,7 +253,7 @@ JAIPUR_WEDDING_SEED = EventMasterPlan(
             title="Gulabi Nagari Royal Heritage Elegance",
             description="Warm terracotta, pale pink, and antique brass tones reflecting the Pink City's architecture, lit by 1,000 flickering clay diyas at dusk.",
             cultural_context="Honors historic Rajputana palace aesthetics with sustainable local terracotta crafts.",
-            cost_bracket="₹₹"
+            cost_bracket="₹₹",
         ),
         IdeaItem(
             id="i-wed-02",
@@ -260,7 +261,7 @@ JAIPUR_WEDDING_SEED = EventMasterPlan(
             title="Torana of Mango Leaves & Marigold Shimmer",
             description="Entrance gates adorned with auspicious mango leaves (Amra pallava) and layered saffron genda phool to invite divine blessings.",
             cultural_context="Traditional Indian welcome symbolism dispelling negative energies.",
-            cost_bracket="₹"
+            cost_bracket="₹",
         ),
         IdeaItem(
             id="i-wed-03",
@@ -268,7 +269,7 @@ JAIPUR_WEDDING_SEED = EventMasterPlan(
             title="Live Ker Sangri & Kesari Ghevar Stations",
             description="Authentic Rajasthani desert delicacies prepared hot on live griddles, paired with saffron-infused rabri in eco-friendly clay bowls.",
             cultural_context="Signature celebratory dessert of Rajasthan symbolizing sweetness in married life.",
-            cost_bracket="₹₹"
+            cost_bracket="₹₹",
         ),
         IdeaItem(
             id="i-wed-04",
@@ -276,7 +277,7 @@ JAIPUR_WEDDING_SEED = EventMasterPlan(
             title="Mayra (Bhaat) Maternal Blessing Ceremony",
             description="Grand maternal uncle procession carrying traditional silver gifts, brass cookware, and handwoven Bandhej sarees to honor the bride's lineage.",
             cultural_context="Essential Marwari kinship ritual honoring maternal family ties.",
-            cost_bracket="₹₹"
+            cost_bracket="₹₹",
         ),
         IdeaItem(
             id="i-wed-05",
@@ -284,7 +285,7 @@ JAIPUR_WEDDING_SEED = EventMasterPlan(
             title="Palki Arrival & Antakshari Jugalbandi",
             description="Friendly musical face-off between Bride's and Groom's families featuring classic Bollywood and Rajasthani folk lyrics.",
             cultural_context="Breaks the ice between families before formal Pheras begin.",
-            cost_bracket="₹"
+            cost_bracket="₹",
         ),
         IdeaItem(
             id="i-wed-06",
@@ -292,9 +293,9 @@ JAIPUR_WEDDING_SEED = EventMasterPlan(
             title="Handcrafted Blue Pottery & Attar Vials",
             description="Authentic Jaipur GI-tagged blue pottery spice jars paired with pure Kannauj Gulab attar in embroidered silk pouches.",
             cultural_context="Supports local heritage artisans and provides guests with an everlasting fragrant keepsake.",
-            cost_bracket="₹₹"
+            cost_bracket="₹₹",
         ),
     ],
     auspicious_guidance="Godhuli Vela (dusk sunset window, 05:45 PM - 06:30 PM) is considered supreme for Lagna and Saptapadi vows in Rajasthan during Rohini Nakshatra.",
-    disclaimer="Notice: Timings, muhurat guidance, and vendor quotes are AI-assisted estimates for budgeting purposes only."
+    disclaimer="Notice: Timings, muhurat guidance, and vendor quotes are AI-assisted estimates for budgeting purposes only.",
 )

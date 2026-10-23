@@ -6,7 +6,7 @@ This document records the foundational product and architectural decisions for *
 
 ## ADR 001: Product Identity, Naming, and Cultural Positioning
 
-- **Status:** Accepted
+- **Status:** Accepted (Updated per user instruction)
 - **Date:** 2026-10-23
 - **Decider:** Staff Product Manager & UX Lead
 
@@ -14,19 +14,19 @@ This document records the foundational product and architectural decisions for *
 The challenge requires a GenAI-powered planning assistant for Indian celebrations (weddings, birthdays, community/society events, housewarmings, and festivals). The brand must feel dignified, modern, warm, and deeply authentic—avoiding kitsch, caricature, or clichéd tropes.
 
 ### Decision
-Adopt the name **Utsav** (उत्सव — Sanskrit/Hindi for celebration, festival, joyful gathering) with the primary tagline:
+Adopt the prestigious name **Samaroh** (समारोह — Sanskrit/Hindi for grand ceremony, celebration, festive occasion) with the primary tagline:
 > *"शुभ आरम्भ: every celebration begins well."*
 
 The brand tone couples high-craft digital product aesthetics (inspired by Apple, Linear, and Stripe) with classical Indian celebratory motifs (diya warmth, torana marigolds, mandala geometry, and authentic Devanagari typography with *Noto Serif Devanagari*). Sanskrit phrases (*शुभ आरम्भ*, *स्वागतम्*, *मङ्गलम्*, *धन्यवाद*) are used meaningfully with nearby English translations.
 
 ### Alternatives Considered
-1. *ShubhPlan / ShubhArambh*: Too functional; sounds like an enterprise checklist tool rather than an inspiring event companion.
-2. *Parv / Samaroh*: Too formal and archaic for younger families planning modern hybrid events.
+1. *Utsav*: Initial working title; good but common.
+2. *ShubhPlan / ShubhArambh*: Too functional; sounds like an enterprise checklist tool rather than an inspiring event companion.
 3. *FestivAI*: Too generic, dilutes Indian cultural grounding, fails to evoke warmth.
 
 ### Consequences
-- **Positive:** Memorable, highly resonant with Indian diaspora and domestic demographics; communicates both family warmth and grand celebrations.
-- **Negative:** "Utsav" is a common word, requiring distinctive visual typography and domain qualification (`utsav-ai.netlify.app` or similar).
+- **Positive:** Distinctive, highly resonant with Indian families and diaspora across weddings, birthdays, and society functions; evokes grandeur and auspicious grace.
+- **Negative:** Requires updating branding assets and domain target (`samaroh-ai.netlify.app`).
 
 ---
 

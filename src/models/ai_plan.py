@@ -1,12 +1,14 @@
 """
 Unified EventMasterPlan schema used for Google Gemini structured outputs.
 """
-from typing import Optional
+
 from pydantic import BaseModel, Field
+
 from .budget import BudgetItem
+from .ideas import IdeaItem
 from .timeline import TaskItem
 from .vendor import VendorItem
-from .ideas import IdeaItem
+
 
 class EventMasterPlan(BaseModel):
     celebration_title: str = Field(..., description="Personalized celebration title")
@@ -18,8 +20,8 @@ class EventMasterPlan(BaseModel):
     timeline_tasks: list[TaskItem] = Field(..., description="Phased timeline milestones")
     vendor_checklist: list[VendorItem] = Field(..., description="Key vendor requirements")
     personalized_ideas: list[IdeaItem] = Field(..., description="Curated ideas across 6 dimensions")
-    auspicious_guidance: Optional[str] = Field(None, description="Auspicious muhurat or seasonal tips")
+    auspicious_guidance: str | None = Field(None, description="Auspicious muhurat or seasonal tips")
     disclaimer: str = Field(
         "Notice: Timings, muhurat guidance, and vendor quotes are AI-assisted estimates for budgeting purposes only.",
-        description="Mandatory planning disclaimer"
+        description="Mandatory planning disclaimer",
     )

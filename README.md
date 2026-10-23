@@ -1,4 +1,4 @@
-# Utsav (उत्सव) — GenAI Celebration & Event Planner
+# Samaroh (समारोह) — GenAI Celebration & Event Planner
 
 > **॥ शुभ आरम्भ: every celebration begins well ॥**  
 > An intelligent, culturally grounded celebration planning assistant for weddings, birthdays, and community festivals, powered by Google Gemini and built in Python.
@@ -15,7 +15,7 @@ Built for **PromptWars Virtual** (Google for Developers x H2S, "Build with AI", 
 
 ## 🌟 Overview & Key Features
 
-Utsav eliminates the chaos of disjointed spreadsheets, notes, and WhatsApp chats by transforming an event brief into an actionable celebration master plan in seconds:
+Samaroh eliminates the chaos of disjointed spreadsheets, notes, and WhatsApp chats by transforming an event brief into an actionable celebration master plan in seconds:
 
 1. **💰 Dynamic Budget Planner with AI Re-Balancing:**
    - Real-time Lakh & Crore budget tracking across Venue, Catering, Decor, Photography, Entertainment, and Logistics.
@@ -52,10 +52,10 @@ Utsav eliminates the chaos of disjointed spreadsheets, notes, and WhatsApp chats
 
 ## 🏗️ Technical Architecture & Google Services
 
-Utsav is built as an asynchronous **Python-Native Full-Stack Application** designed for seamless local development and cloud serverless hosting:
+Samaroh is built as an asynchronous **Python-Native Full-Stack Application** designed for seamless local development and cloud serverless hosting:
 
 - **Backend:** Python 3.10+ with **FastAPI**, **Pydantic v2**, and **Uvicorn**.
-- **GenAI Engine:** Official **Google GenAI Python SDK** (`google-genai` / `google-generativeai`) using `gemini-1.5-flash` with structured Pydantic schema decoding and streaming SSE chat.
+- **GenAI Engine:** Official **Google GenAI Python SDK** (`google-genai`) using `gemini-1.5-flash` with structured Pydantic schema decoding and streaming SSE chat.
 - **Frontend:** Premium, responsive UI served directly by FastAPI and Netlify CDN, featuring Tailwind CSS, Google Fonts (*Noto Serif Devanagari* and *Plus Jakarta Sans*), and Lucide icons.
 - **Cloud Deployment:** **Netlify** (via `netlify.toml` and Mangum serverless adapter for Python).
 - **Google Services Integrated:**
@@ -74,8 +74,8 @@ Utsav is built as an asynchronous **Python-Native Full-Stack Application** desig
 
 ### 1. Clone the Repository
 ```bash
-git clone https://github.com/<username>/utsav-celebration-planner.git
-cd utsav-celebration-planner
+git clone https://github.com/ashish-29-2003/Event-Planner.git
+cd Event-Planner
 ```
 
 ### 2. Set Up Environment Variables
@@ -87,7 +87,7 @@ Add your Google Gemini API key:
 ```env
 GEMINI_API_KEY="your-gemini-api-key-here"
 ```
-*(Note: If no API key is supplied, Utsav gracefully falls back to its curated celebration blueprints!)*
+*(Note: If no API key is supplied, Samaroh gracefully falls back to its curated celebration blueprints!)*
 
 ### 3. Launch the Application
 Run the single root launcher:
@@ -102,19 +102,16 @@ This automatically verifies dependencies, starts the FastAPI server at `http://1
 
 ```bash
 # Run the complete pytest suite
-pytest -v
-
-# Run with test coverage
-pytest --cov=src -v
+python -m pytest tests/ -v
 ```
 
 ---
 
 ## 🌐 Deploying to Netlify
 
-Utsav is configured out of the box for Netlify deployment:
+Samaroh is configured out of the box for Netlify deployment:
 
-1. Push your code to a GitHub repository.
+1. Push your code to your GitHub repository (`https://github.com/ashish-29-2003/Event-Planner.git`).
 2. In Netlify, click **"Add new site"** → **"Import an existing project"** and select your GitHub repository.
 3. Netlify will automatically detect `netlify.toml`:
    - **Publish directory:** `public`

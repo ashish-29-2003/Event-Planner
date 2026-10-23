@@ -1,9 +1,12 @@
 """
 Integration tests for FastAPI route handlers.
 """
+
 import pytest
-from httpx import AsyncClient, ASGITransport
+from httpx import ASGITransport, AsyncClient
+
 from src.main import app
+
 
 @pytest.mark.asyncio
 async def test_list_events():
@@ -16,6 +19,7 @@ async def test_list_events():
         event_ids = [e["id"] for e in events]
         assert "demo-wedding-jaipur" in event_ids
 
+
 @pytest.mark.asyncio
 async def test_get_event_budget():
     transport = ASGITransport(app=app)
@@ -26,6 +30,7 @@ async def test_get_event_budget():
         assert len(items) > 0
         assert items[0]["estimated_cost"] > 0
 
+
 @pytest.mark.asyncio
 async def test_get_event_tasks():
     transport = ASGITransport(app=app)
@@ -34,6 +39,7 @@ async def test_get_event_tasks():
         assert res.status_code == 200
         tasks = res.json()
         assert len(tasks) > 0
+
 
 @pytest.mark.asyncio
 async def test_muhurat_endpoint():
@@ -45,6 +51,7 @@ async def test_muhurat_endpoint():
         assert "windows" in data
         assert "disclaimer" in data
         assert "Notice: Muhurat windows" in data["disclaimer"]
+
 
 @pytest.mark.asyncio
 async def test_calendar_export_endpoint():

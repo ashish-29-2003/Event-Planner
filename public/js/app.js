@@ -395,7 +395,7 @@ function renderExportSheet() {
       </div>
 
       <div style="text-align: center; font-size: 0.85rem; color: #78716C; border-top: 1px solid #E8DDD0; padding-top: 1rem;">
-        Generated via Utsav (उत्सव) • Google Gemini AI Celebration Planner • धन्यवादः ॥
+        Generated via Samaroh (समारोह) • Google Gemini AI Celebration Planner • धन्यवादः ॥
       </div>
     </div>
   `;

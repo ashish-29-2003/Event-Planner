@@ -1,28 +1,31 @@
 """
-FastAPI Application Entrypoint for Utsav (उत्सव).
+FastAPI Application Entrypoint for Samaroh (समारोह).
 GenAI Celebration & Event Planner.
 """
+
 from pathlib import Path
+
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse, FileResponse
+from fastapi.responses import FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 
-from src.config import settings
 from src.api.ai_routes import router as ai_router
 from src.api.event_routes import router as event_router
 from src.api.export_routes import router as export_router
+from src.config import settings
 
 PUBLIC_DIR = Path(__file__).resolve().parent.parent / "public"
 
+
 def create_app() -> FastAPI:
     app = FastAPI(
-        title="Utsav (उत्सव) API",
+        title="Samaroh (समारोह) API",
         description="GenAI Celebration & Event Planner for Indian weddings, birthdays, and community festivals",
         version=settings.VERSION,
         docs_url="/api/docs",
         redoc_url="/api/redoc",
-        openapi_url="/api/openapi.json"
+        openapi_url="/api/openapi.json",
     )
 
     # CORS configuration
@@ -53,10 +56,10 @@ def create_app() -> FastAPI:
     async def health_check():
         return {
             "status": "healthy",
-            "project": "Utsav (उत्सव)",
+            "project": "Samaroh (समारोह)",
             "version": settings.VERSION,
             "environment": settings.ENVIRONMENT,
-            "gemini_configured": bool(settings.GEMINI_API_KEY)
+            "gemini_configured": bool(settings.GEMINI_API_KEY),
         }
 
     # Serve static assets if public directory exists
@@ -68,8 +71,9 @@ def create_app() -> FastAPI:
             index_path = PUBLIC_DIR / "index.html"
             if index_path.exists():
                 return FileResponse(index_path)
-            return JSONResponse({"message": "Utsav API operational. UI initializing..."})
+            return JSONResponse({"message": "Samaroh API operational. UI initializing..."})
 
     return app
+
 
 app = create_app()

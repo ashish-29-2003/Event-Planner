@@ -114,6 +114,7 @@ from typing import Optional
 from datetime import date, datetime
 from pydantic import BaseModel, Field
 
+
 class EventType(str, Enum):
     WEDDING = "wedding"
     BIRTHDAY = "birthday"
@@ -121,10 +122,13 @@ class EventType(str, Enum):
     FESTIVAL = "festival"
     OTHER = "other"
 
+
 class EventBase(BaseModel):
     title: str = Field(..., min_length=2, max_length=100, description="Celebration title")
     event_type: EventType = Field(..., description="Category of celebration")
-    culture: str = Field(..., min_length=2, max_length=60, description="Cultural or regional tradition")
+    culture: str = Field(
+        ..., min_length=2, max_length=60, description="Cultural or regional tradition"
+    )
     city: str = Field(..., min_length=2, max_length=60, description="Host city")
     target_date: Optional[date] = Field(None, description="Event date (YYYY-MM-DD)")
     target_budget: float = Field(..., gt=0, le=100_000_000, description="Budget in INR")
@@ -132,8 +136,10 @@ class EventBase(BaseModel):
     language_preference: str = Field("en", description="UI/AI language ('en' or 'hi')")
     blessing_note: Optional[str] = Field(None, max_length=300, description="Family blessing note")
 
+
 class EventCreate(EventBase):
     pass
+
 
 class EventResponse(EventBase):
     id: str
@@ -148,6 +154,7 @@ class PaymentStatus(str, Enum):
     PENDING = "pending"
     PARTIAL = "partial"
     PAID = "paid"
+
 
 class BudgetItem(BaseModel):
     id: str = Field(..., description="Unique line item ID")
@@ -168,10 +175,12 @@ class TaskPriority(str, Enum):
     MEDIUM = "medium"
     LOW = "low"
 
+
 class TaskStatus(str, Enum):
     TODO = "todo"
     IN_PROGRESS = "in_progress"
     DONE = "done"
+
 
 class TaskItem(BaseModel):
     id: str

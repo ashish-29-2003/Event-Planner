@@ -2,9 +2,12 @@
 Loop Safety, Resilience, and Quota Exhaustion Fallback Tests.
 Guarantees AI generation terminates at max-iteration (1 retry) and enforces timeout caps.
 """
+
 import pytest
+
 from src.models.event import CelebrationBrief, EventType
 from src.services.gemini_service import gemini_service
+
 
 @pytest.mark.asyncio
 async def test_quota_exhaustion_deterministic_fallback():
@@ -18,11 +21,11 @@ async def test_quota_exhaustion_deterministic_fallback():
         culture="Punjabi",
         city="Chandigarh",
         target_budget=2500000.0,
-        guest_count=200
+        guest_count=200,
     )
-    
+
     plan, is_fallback = await gemini_service.generate_master_plan(brief)
-    
+
     # Must succeed with fallback flag set to True
     assert is_fallback is True
     assert plan.celebration_title == "Offline Test Wedding"
@@ -30,6 +33,7 @@ async def test_quota_exhaustion_deterministic_fallback():
     assert len(plan.timeline_tasks) > 0
     assert len(plan.vendor_checklist) > 0
     assert len(plan.personalized_ideas) > 0
+
 
 @pytest.mark.asyncio
 async def test_birthday_seed_fallback():
@@ -39,8 +43,8 @@ async def test_birthday_seed_fallback():
         culture="Urban Contemporary",
         city="Bengaluru",
         target_budget=60000.0,
-        guest_count=35
+        guest_count=35,
     )
-    plan, is_fallback = await gemini_service.generate_master_plan(brief)
+    plan, _is_fallback = await gemini_service.generate_master_plan(brief)
     assert plan.event_type == "birthday"
     assert len(plan.budget_breakdown) > 0
