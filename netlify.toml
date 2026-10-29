@@ -5,9 +5,16 @@
 [functions]
   python_version = "3.11"
 
+# Route API requests to Mangum serverless entrypoint
 [[redirects]]
   from = "/api/*"
-  to = "/.netlify/functions/api/:splat"
+  to = "/.netlify/functions/api/api/:splat"
+  status = 200
+
+# Route static asset requests directly to published public files
+[[redirects]]
+  from = "/static/*"
+  to = "/:splat"
   status = 200
 
 [[headers]]

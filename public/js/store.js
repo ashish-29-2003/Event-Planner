@@ -1,5 +1,6 @@
 /**
  * Samaroh (समारोह) - Reactive Client Store
+ * Manages celebration state, active user, guest list, language, and theme.
  */
 class EventStore {
   constructor() {
@@ -11,6 +12,14 @@ class EventStore {
       tasks: [],
       vendors: [],
       ideas: [],
+      guests: [],
+      currentUser: {
+        uid: 'demo-user',
+        name: 'Guest Explorer',
+        email: 'guest@samaroh.app',
+        is_demo: true
+      },
+      language: localStorage.getItem('samaroh-lang') || 'en',
       theme: localStorage.getItem('samaroh-theme') || 'light',
       isSynthesizing: false
     };
@@ -42,6 +51,17 @@ class EventStore {
 
   toggleTheme() {
     this.setTheme(this.state.theme === 'dark' ? 'light' : 'dark');
+  }
+
+  setLanguage(lang) {
+    this.state.language = lang;
+    localStorage.setItem('samaroh-lang', lang);
+    this.notify();
+  }
+
+  setCurrentUser(user) {
+    this.state.currentUser = user;
+    this.notify();
   }
 }
 

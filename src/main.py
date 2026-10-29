@@ -71,6 +71,7 @@ def create_app() -> FastAPI:
 
     # Health check endpoint
     @app.get("/api/health")
+    @app.get("/health")
     async def health_check():
         return {
             "status": "healthy",

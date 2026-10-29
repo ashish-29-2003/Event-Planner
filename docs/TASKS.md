@@ -35,9 +35,8 @@
   *Role:* Backend Lead | *Status:* Done | *Evidence:* Implemented `src/services/places_service.py` and `src/api/places_routes.py` with `/api/places/search`, verified Google Maps parsing and curated catalog fallback with 3 tests in `tests/test_places.py`.
 - [x] **R1-T06:** Write Hosting Architecture ADR (Cloud Run vs Netlify serverless) in `docs/DECISIONS.md`.  
   *Role:* Architect | *Status:* Done | *Evidence:* Authored ADR-013 in `docs/DECISIONS.md`, created multi-stage `Dockerfile` with non-root user and healthchecks, updated `netlify/functions/requirements.txt`.
-- [ ] **R1-T07:** Deploy live working application URL and verify with smoke test.  
-  *Role:* DevOps Lead | *Est:* 2h | *Deps:* R1-T06  
-  *Acceptance:* Live URL responsive, documented in README and STAGE_STATUS.md.
+- [x] **R1-T07:** Deploy live working application URL and verify with smoke test.  
+  *Role:* DevOps Lead | *Status:* Done | *Evidence:* Verified live deployment on Netlify (`https://utsav-ai.netlify.app`), fixed Mangum root_path resolution in `netlify/functions/api.py`, configured static redirect in `netlify.toml`, verified frontend loads in 200 OK.
 
 ---
 
