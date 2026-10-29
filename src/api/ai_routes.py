@@ -13,7 +13,7 @@ from src.models.event import CelebrationBrief
 from src.services.gemini_service import gemini_service
 from src.services.storage_service import storage_service
 from src.utils.app_check import verify_app_check_token
-from src.utils.auth import AuthenticatedUser, require_authenticated_user
+from src.utils.auth import AuthenticatedUser, get_current_user_or_demo, require_authenticated_user
 from src.utils.rate_limiter import SlidingWindowRateLimiter
 
 router = APIRouter(prefix="/api/ai", tags=["AI Orchestration"])
@@ -56,6 +56,7 @@ async def create_event_plan(
 @router.post("/rebalance-budget", response_model=BudgetRebalanceResponse)
 async def rebalance_budget(
     req: BudgetRebalanceRequest,
+    user: AuthenticatedUser = Depends(require_authenticated_user),
     _app_check: bool = Depends(verify_app_check_token),
 ):
     """
@@ -66,7 +67,10 @@ async def rebalance_budget(
 
 
 @router.post("/chat")
-async def chat_streaming(req: ChatRequest):
+async def chat_streaming(
+    req: ChatRequest,
+    user: AuthenticatedUser = Depends(get_current_user_or_demo),
+):
     """
     Streaming conversational event planner via Server-Sent Events (SSE).
     """
@@ -76,7 +80,11 @@ async def chat_streaming(req: ChatRequest):
 
 
 @router.get("/muhurat")
-async def get_muhurat_guidance(culture: str = "Marwari", event_type: str = "wedding"):
+async def get_muhurat_guidance(
+    culture: str = "Marwari",
+    event_type: str = "wedding",
+    user: AuthenticatedUser = Depends(get_current_user_or_demo),
+):
     """
     Auspicious seasonal windows and nakshatra guidance with mandatory Vedic disclaimer.
     """

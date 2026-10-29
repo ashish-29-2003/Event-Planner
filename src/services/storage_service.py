@@ -81,6 +81,16 @@ class BaseStorageService(ABC):
     def update_guest_rsvp(self, event_id: str, guest_id: str, status: RSVPStatus) -> bool:
         """Updates RSVP status for a specific guest."""
 
+    @abstractmethod
+    def delete_event(self, event_id: str) -> bool:
+        """Deletes an event and its associated subcollections."""
+
+    @abstractmethod
+    def clone_event(
+        self, source_event_id: str, new_user_id: str, new_title: str | None = None
+    ) -> str:
+        """Clones a celebration and its subcollections into a user's private space."""
+
 
 class InMemoryStorageService(BaseStorageService):
     """
@@ -313,6 +323,47 @@ class InMemoryStorageService(BaseStorageService):
                 return True
         return False
 
+    def delete_event(self, event_id: str) -> bool:
+        """Deletes an event and all associated subcollections. Demo celebrations cannot be deleted."""
+        if event_id.startswith("demo-"):
+            return False
+        if event_id in self._events:
+            del self._events[event_id]
+            self._budgets.pop(event_id, None)
+            self._tasks.pop(event_id, None)
+            self._vendors.pop(event_id, None)
+            self._ideas.pop(event_id, None)
+            self._guests.pop(event_id, None)
+            self._save_to_disk()
+            return True
+        return False
+
+    def clone_event(
+        self, source_event_id: str, new_user_id: str, new_title: str | None = None
+    ) -> str:
+        """Clones a celebration and its subcollections into a user's private space."""
+        source = self.get_event(source_event_id)
+        if not source:
+            raise ValueError(f"Source celebration '{source_event_id}' not found")
+
+        new_id = f"event-{uuid.uuid4().hex[:8]}"
+        cloned_data = dict(source)
+        cloned_data["id"] = new_id
+        cloned_data["user_id"] = new_user_id
+        if new_title:
+            cloned_data["title"] = new_title
+        else:
+            cloned_data["title"] = f"{source.get('title', 'Celebration')} (My Plan)"
+
+        self._events[new_id] = cloned_data
+        self._budgets[new_id] = [b.model_copy(deep=True) for b in self.get_budget_items(source_event_id)]
+        self._tasks[new_id] = [t.model_copy(deep=True) for t in self.get_tasks(source_event_id)]
+        self._vendors[new_id] = [v.model_copy(deep=True) for v in self.get_vendors(source_event_id)]
+        self._ideas[new_id] = [i.model_copy(deep=True) for i in self.get_ideas(source_event_id)]
+        self._guests[new_id] = [g.model_copy(deep=True) for g in self.get_guests(source_event_id)]
+        self._save_to_disk()
+        return new_id
+
 
 class FirestoreStorageService(BaseStorageService):
     """
@@ -514,6 +565,14 @@ class FirestoreStorageService(BaseStorageService):
 
     def update_guest_rsvp(self, event_id: str, guest_id: str, status: RSVPStatus) -> bool:
         return self._fallback.update_guest_rsvp(event_id, guest_id, status)
+
+    def delete_event(self, event_id: str) -> bool:
+        return self._fallback.delete_event(event_id)
+
+    def clone_event(
+        self, source_event_id: str, new_user_id: str, new_title: str | None = None
+    ) -> str:
+        return self._fallback.clone_event(source_event_id, new_user_id, new_title)
 
 
 def get_storage_service() -> BaseStorageService:

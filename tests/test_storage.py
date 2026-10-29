@@ -111,9 +111,34 @@ async def test_guest_api_endpoints():
         )
         assert res_unauth.status_code == 401
 
-        # 3. Add guest with token to demo event (or user event)
-        res_auth = await client.post(
+        # 3. Add guest with token to demo event returns 403 Forbidden
+        res_demo = await client.post(
             "/api/events/demo-wedding-jaipur/guests",
+            headers={"Authorization": "Bearer test-token-demo"},
+            json={
+                "id": "g-new-1",
+                "name": "Aarushi Mehta",
+                "phone": "+91 99887 76655",
+                "affiliation": "friend",
+                "rsvp_status": "attending",
+                "plus_ones": 1,
+                "dietary_preference": "Vegetarian",
+            },
+        )
+        assert res_demo.status_code == 403
+
+        # 4. Clone celebration to private workspace
+        res_clone = await client.post(
+            "/api/events/demo-wedding-jaipur/clone",
+            headers={"Authorization": "Bearer test-token-demo"},
+            json={"title": "Private Celebration For Guests"},
+        )
+        assert res_clone.status_code == 200
+        user_event_id = res_clone.json()["event_id"]
+
+        # 5. Add guest to private event
+        res_auth = await client.post(
+            f"/api/events/{user_event_id}/guests",
             headers={"Authorization": "Bearer test-token-demo"},
             json={
                 "id": "g-new-1",
@@ -128,9 +153,10 @@ async def test_guest_api_endpoints():
         assert res_auth.status_code == 200
         assert res_auth.json()["success"] is True
 
-        # 4. Update RSVP status
+        # 6. Update RSVP status on private event
         res_rsvp = await client.post(
-            "/api/events/demo-wedding-jaipur/guests/g-new-1/rsvp",
+            f"/api/events/{user_event_id}/guests/g-new-1/rsvp",
+            headers={"Authorization": "Bearer test-token-demo"},
             json={"status": "attending"},
         )
         assert res_rsvp.status_code == 200

@@ -5,8 +5,8 @@ actors (owner, unauthenticated, cross-tenant intruder), all 5 subcollections,
 path-traversal edge cases, and public seed templates.
 """
 
-from pathlib import Path
 import re
+from pathlib import Path
 
 import pytest
 

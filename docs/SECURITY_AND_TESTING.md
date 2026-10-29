@@ -50,6 +50,46 @@ Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
 
 ---
 
+
+---
+
+### 1.4 Authentication Coverage Matrix & Route Guards
+
+All API endpoints are strictly governed by FastAPI dependency injection. Non-allowlisted routes require either verified Firebase ID token authentication or user/demo resolution.
+
+#### Public Allowlist
+The following routes are explicitly exempt from token requirements:
+- `GET /api/health` and `GET /health` (Operational health probe)
+- `GET /` (Static frontend landing page)
+- `GET /static/*` (Static CSS, JS, image assets)
+- `GET /api/docs`, `GET /api/redoc`, `GET /api/openapi.json` (OpenAPI documentation)
+
+#### Guarded Route Matrix
+| HTTP Method | Route | Auth Dependency | Access Rule / Purpose | Test Name |
+|---|---|---|---|---|
+| `POST` | `/api/ai/plan` | `require_authenticated_user` | Mutating: synthesizes plan, persists under `user_id`. Requires valid Bearer token. | `test_mutating_routes_require_authentication` |
+| `POST` | `/api/ai/rebalance-budget` | `require_authenticated_user` | Mutating: rebalances category costs via Gemini financial agent. | `test_mutating_routes_require_authentication` |
+| `POST` | `/api/ai/chat` | `get_current_user_or_demo` | Read/Streaming: conversational assistant via SSE. | `test_every_route_has_auth_guard_or_is_allowlisted` |
+| `GET` | `/api/ai/muhurat` | `get_current_user_or_demo` | Read: auspicious seasonal timing with Vedic disclaimer. | `test_every_route_has_auth_guard_or_is_allowlisted` |
+| `GET` | `/api/places/search` | `get_current_user_or_demo` | Read: proxied venue/vendor discovery without leaking API keys. | `test_every_route_has_auth_guard_or_is_allowlisted` |
+| `GET` | `/api/events` | `get_current_user_or_demo` | Read: lists user's private celebrations + public demo templates. | `test_every_route_has_auth_guard_or_is_allowlisted` |
+| `GET` | `/api/events/{id}` | `get_current_user_or_demo` | Read: demo-* public; private events require matching `user_id` (403 IDOR). | `test_private_celebration_idor_enforcement` |
+| `DELETE` | `/api/events/{id}` | `require_authenticated_user` | Mutating: delete celebration. demo-* returns 403; private requires owner. | `test_demo_celebrations_are_strictly_read_only`, `test_private_celebration_idor_enforcement` |
+| `POST` | `/api/events/{id}/clone` | `require_authenticated_user` | Mutating: clones demo or own celebration into caller's workspace. | `test_clone_demo_celebration_to_user` |
+| `GET` | `/api/events/{id}/budget` | `get_current_user_or_demo` | Read: demo-* public; private events require matching `user_id`. | `test_private_celebration_idor_enforcement` |
+| `PUT` | `/api/events/{id}/budget` | `require_authenticated_user` | Mutating: update budget line items. demo-* returns 403; private requires owner. | `test_demo_celebrations_are_strictly_read_only` |
+| `GET` | `/api/events/{id}/tasks` | `get_current_user_or_demo` | Read: demo-* public; private events require matching `user_id`. | `test_private_celebration_idor_enforcement` |
+| `POST` | `/api/events/{id}/tasks/{id}/toggle` | `require_authenticated_user` | Mutating: toggle milestone status. demo-* returns 403; private requires owner. | `test_demo_celebrations_are_strictly_read_only` |
+| `GET` | `/api/events/{id}/vendors` | `get_current_user_or_demo` | Read: demo-* public; private events require matching `user_id`. | `test_every_route_has_auth_guard_or_is_allowlisted` |
+| `GET` | `/api/events/{id}/ideas` | `get_current_user_or_demo` | Read: demo-* public; private events require matching `user_id`. | `test_every_route_has_auth_guard_or_is_allowlisted` |
+| `GET` | `/api/events/{id}/guests` | `get_current_user_or_demo` | Read: demo-* public; private events require matching `user_id`. | `test_private_celebration_idor_enforcement` |
+| `POST` | `/api/events/{id}/guests` | `require_authenticated_user` | Mutating: add guest. demo-* returns 403; private requires owner. | `test_demo_celebrations_are_strictly_read_only` |
+| `POST` | `/api/events/{id}/guests/{id}/rsvp` | `require_authenticated_user` | Mutating: update RSVP. demo-* returns 403; private requires owner. | `test_demo_celebrations_are_strictly_read_only` |
+| `GET` | `/api/export/{id}/calendar` | `get_current_user_or_demo` | Read: RFC-5545 .ics generation. demo-* public; private requires owner. | `test_private_celebration_idor_enforcement` |
+| `GET` | `/api/export/{id}/next-milestone-link` | `get_current_user_or_demo` | Read: GCal link for next milestone. demo-* public; private requires owner. | `test_every_route_has_auth_guard_or_is_allowlisted` |
+| `GET` | `/api/export/{id}/summary` | `get_current_user_or_demo` | Read: printable celebration export. demo-* public; private requires owner. | `test_private_celebration_idor_enforcement` |
+
+
 ## Part 2: Comprehensive Testing Strategy
 
 ```mermaid

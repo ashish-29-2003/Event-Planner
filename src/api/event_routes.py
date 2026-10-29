@@ -1,9 +1,9 @@
 """
 Event & Entity CRUD Route Handlers for Samaroh (समारोह).
-Enforces owner verification, tenant isolation, and Firebase identity.
+Enforces owner verification, tenant isolation, read-only demo protections, and Firebase identity.
 """
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import BaseModel
 
 from src.models.budget import BudgetItem
@@ -26,6 +26,10 @@ class GuestRSVPRequest(BaseModel):
     status: RSVPStatus
 
 
+class CloneEventRequest(BaseModel):
+    title: str | None = None
+
+
 @router.get("")
 async def list_celebrations(
     user: AuthenticatedUser = Depends(get_current_user_or_demo),
@@ -45,10 +49,56 @@ async def get_celebration(
         raise HTTPException(status_code=404, detail="Celebration not found")
     if not event_id.startswith("demo-") and event.get("user_id") != user.uid:
         raise HTTPException(
-            status_code=403,
+            status_code=status.HTTP_403_FORBIDDEN,
             detail="Access denied: celebration belongs to another user",
         )
     return event
+
+
+@router.delete("/{event_id}")
+async def delete_celebration(
+    event_id: str,
+    user: AuthenticatedUser = Depends(require_authenticated_user),
+):
+    """Deletes a celebration. Requires owner authentication. Demo celebrations cannot be deleted."""
+    if event_id.startswith("demo-"):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Demo celebrations are read-only templates and cannot be deleted.",
+        )
+    event = storage_service.get_event(event_id)
+    if not event:
+        raise HTTPException(status_code=404, detail="Celebration not found")
+    if event.get("user_id") != user.uid:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Access denied: cannot delete another user's celebration",
+        )
+    success = storage_service.delete_event(event_id)
+    return {"success": success, "deleted": event_id}
+
+
+@router.post("/{event_id}/clone")
+async def clone_celebration(
+    event_id: str,
+    req: CloneEventRequest | None = None,
+    user: AuthenticatedUser = Depends(require_authenticated_user),
+):
+    """Clones an existing celebration (including demo templates) into the user's private space."""
+    event = storage_service.get_event(event_id)
+    if not event:
+        raise HTTPException(status_code=404, detail="Celebration not found")
+    if not event_id.startswith("demo-") and event.get("user_id") != user.uid:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Access denied: cannot clone private celebration of another user",
+        )
+    new_id = storage_service.clone_event(
+        source_event_id=event_id,
+        new_user_id=user.uid,
+        new_title=req.title if req else None,
+    )
+    return {"success": True, "event_id": new_id}
 
 
 @router.get("/{event_id}/budget")
@@ -62,7 +112,7 @@ async def get_event_budget(
         raise HTTPException(status_code=404, detail="Celebration not found")
     if not event_id.startswith("demo-") and event.get("user_id") != user.uid:
         raise HTTPException(
-            status_code=403,
+            status_code=status.HTTP_403_FORBIDDEN,
             detail="Access denied: celebration belongs to another user",
         )
     return storage_service.get_budget_items(event_id)
@@ -74,13 +124,18 @@ async def update_event_budget(
     items: list[BudgetItem],
     user: AuthenticatedUser = Depends(require_authenticated_user),
 ):
-    """Updates budget items after manual edits or AI re-balancing. Requires authentication."""
+    """Updates budget items. Demo celebrations are read-only and return 403."""
+    if event_id.startswith("demo-"):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Demo celebrations are read-only templates. Clone or create your own celebration to edit.",
+        )
     event = storage_service.get_event(event_id)
     if not event:
         raise HTTPException(status_code=404, detail="Celebration not found")
-    if not event_id.startswith("demo-") and event.get("user_id") != user.uid:
+    if event.get("user_id") != user.uid:
         raise HTTPException(
-            status_code=403,
+            status_code=status.HTTP_403_FORBIDDEN,
             detail="Access denied: cannot modify another user's budget",
         )
     storage_service.update_budget_items(event_id, items)
@@ -98,7 +153,7 @@ async def get_event_tasks(
         raise HTTPException(status_code=404, detail="Celebration not found")
     if not event_id.startswith("demo-") and event.get("user_id") != user.uid:
         raise HTTPException(
-            status_code=403,
+            status_code=status.HTTP_403_FORBIDDEN,
             detail="Access denied: celebration belongs to another user",
         )
     return storage_service.get_tasks(event_id)
@@ -111,13 +166,18 @@ async def toggle_task_status(
     req: TaskToggleRequest,
     user: AuthenticatedUser = Depends(require_authenticated_user),
 ):
-    """Toggles task status between todo, in_progress, and done. Requires authentication."""
+    """Toggles task status. Demo celebrations are read-only and return 403."""
+    if event_id.startswith("demo-"):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Demo celebrations are read-only templates. Clone or create your own celebration to edit.",
+        )
     event = storage_service.get_event(event_id)
     if not event:
         raise HTTPException(status_code=404, detail="Celebration not found")
-    if not event_id.startswith("demo-") and event.get("user_id") != user.uid:
+    if event.get("user_id") != user.uid:
         raise HTTPException(
-            status_code=403,
+            status_code=status.HTTP_403_FORBIDDEN,
             detail="Access denied: cannot modify another user's tasks",
         )
     success = storage_service.update_task_status(event_id, task_id, req.status)
@@ -137,7 +197,7 @@ async def get_event_vendors(
         raise HTTPException(status_code=404, detail="Celebration not found")
     if not event_id.startswith("demo-") and event.get("user_id") != user.uid:
         raise HTTPException(
-            status_code=403,
+            status_code=status.HTTP_403_FORBIDDEN,
             detail="Access denied: celebration belongs to another user",
         )
     return storage_service.get_vendors(event_id)
@@ -154,7 +214,7 @@ async def get_event_ideas(
         raise HTTPException(status_code=404, detail="Celebration not found")
     if not event_id.startswith("demo-") and event.get("user_id") != user.uid:
         raise HTTPException(
-            status_code=403,
+            status_code=status.HTTP_403_FORBIDDEN,
             detail="Access denied: celebration belongs to another user",
         )
     return storage_service.get_ideas(event_id)
@@ -171,7 +231,7 @@ async def get_event_guests(
         raise HTTPException(status_code=404, detail="Celebration not found")
     if not event_id.startswith("demo-") and event.get("user_id") != user.uid:
         raise HTTPException(
-            status_code=403,
+            status_code=status.HTTP_403_FORBIDDEN,
             detail="Access denied: celebration belongs to another user",
         )
     return storage_service.get_guests(event_id)
@@ -183,13 +243,18 @@ async def add_event_guest(
     guest: GuestItem,
     user: AuthenticatedUser = Depends(require_authenticated_user),
 ):
-    """Adds a new guest to the celebration guest list. Requires authentication."""
+    """Adds a guest to the guest list. Demo celebrations are read-only and return 403."""
+    if event_id.startswith("demo-"):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Demo celebrations are read-only templates. Clone or create your own celebration to edit.",
+        )
     event = storage_service.get_event(event_id)
     if not event:
         raise HTTPException(status_code=404, detail="Celebration not found")
-    if not event_id.startswith("demo-") and event.get("user_id") != user.uid:
+    if event.get("user_id") != user.uid:
         raise HTTPException(
-            status_code=403,
+            status_code=status.HTTP_403_FORBIDDEN,
             detail="Access denied: cannot add guests to another user's event",
         )
     created = storage_service.add_guest(event_id, guest)
@@ -201,16 +266,21 @@ async def update_guest_rsvp(
     event_id: str,
     guest_id: str,
     req: GuestRSVPRequest,
-    user: AuthenticatedUser = Depends(get_current_user_or_demo),
+    user: AuthenticatedUser = Depends(require_authenticated_user),
 ):
-    """Updates a guest's RSVP status."""
+    """Updates a guest's RSVP status. Demo celebrations are read-only and return 403."""
+    if event_id.startswith("demo-"):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Demo celebrations are read-only templates. Clone or create your own celebration to edit.",
+        )
     event = storage_service.get_event(event_id)
     if not event:
         raise HTTPException(status_code=404, detail="Celebration not found")
-    if not event_id.startswith("demo-") and event.get("user_id") != user.uid:
+    if event.get("user_id") != user.uid:
         raise HTTPException(
-            status_code=403,
-            detail="Access denied",
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Access denied: cannot update another user's guest RSVP",
         )
     success = storage_service.update_guest_rsvp(event_id, guest_id, req.status)
     if not success:

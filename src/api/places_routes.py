@@ -4,9 +4,10 @@ Enables secure client-side discovery of celebration venues and vendors
 without exposing Google Cloud API keys in frontend assets.
 """
 
-from fastapi import APIRouter, Query
+from fastapi import APIRouter, Depends, Query
 
 from src.services.places_service import places_service
+from src.utils.auth import AuthenticatedUser, get_current_user_or_demo
 
 router = APIRouter(prefix="/api/places", tags=["Google Places Discovery"])
 
@@ -16,6 +17,7 @@ async def search_places(
     query: str = Query(..., description="Celebration venue or vendor query (e.g. Palace Banquet, Marwari Halwai)"),
     city: str = Query("Jaipur", description="Target city for the celebration"),
     category: str = Query("venue", description="Category: venue, catering, decor, photography, priest"),
+    user: AuthenticatedUser = Depends(get_current_user_or_demo),
 ):
     """
     Searches for verified celebration venues and vendors.
