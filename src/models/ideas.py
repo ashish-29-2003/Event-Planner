@@ -1,10 +1,10 @@
 """
-Personalized cultural ideas data models.
+Personalized cultural ideas data models with strict input boundaries.
 """
 
 from enum import Enum
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class IdeaCategory(str, Enum):
@@ -17,12 +17,14 @@ class IdeaCategory(str, Enum):
 
 
 class IdeaItem(BaseModel):
-    id: str = Field(..., description="Unique idea ID")
-    event_id: str | None = Field(None, description="Associated celebration ID")
+    model_config = ConfigDict(extra="forbid")
+
+    id: str = Field(..., min_length=1, max_length=64, description="Unique idea ID")
+    event_id: str | None = Field(None, max_length=64, description="Associated celebration ID")
     tab_category: str = Field(
-        ..., description="One of: theme_mood, decor, menu, rituals, games, gifts"
+        ..., min_length=2, max_length=64, description="One of: theme_mood, decor, menu, rituals, games, gifts"
     )
-    title: str = Field(..., description="Idea concept headline")
-    description: str = Field(..., description="Detailed description and execution suggestions")
-    cultural_context: str = Field(..., description="Regional or celebratory cultural significance")
-    cost_bracket: str = Field("₹₹", description="Cost tier: ₹ (Low), ₹₹ (Moderate), ₹₹₹ (Luxury)")
+    title: str = Field(..., min_length=2, max_length=150, description="Idea concept headline")
+    description: str = Field(..., min_length=2, max_length=1000, description="Detailed description and execution suggestions")
+    cultural_context: str = Field(..., min_length=2, max_length=500, description="Regional or celebratory cultural significance")
+    cost_bracket: str = Field("₹₹", max_length=10, description="Cost tier: ₹ (Low), ₹₹ (Moderate), ₹₹₹ (Luxury)")

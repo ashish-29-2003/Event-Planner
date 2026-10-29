@@ -6,7 +6,7 @@ budget re-balancing, and auspicious muhurat windows.
 
 from fastapi import APIRouter, Depends, HTTPException, Request, Response, status
 from fastapi.responses import StreamingResponse
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict, Field
 
 from src.models.budget import BudgetRebalanceRequest, BudgetRebalanceResponse
 from src.models.event import CelebrationBrief
@@ -21,8 +21,9 @@ rate_limiter = global_rate_limiter
 
 
 class ChatRequest(BaseModel):
-    message: str
-    event_id: str = "demo-wedding-jaipur"
+    model_config = ConfigDict(extra="forbid")
+    message: str = Field(..., min_length=1, max_length=1000)
+    event_id: str = Field("demo-wedding-jaipur", min_length=2, max_length=64)
 
 
 @router.post("/plan")

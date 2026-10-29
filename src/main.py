@@ -61,6 +61,23 @@ def create_app() -> FastAPI:
         allow_headers=["*"],
     )
 
+    # Request Body Size Limit Middleware (Max 1MB)
+    max_body_bytes = 1024 * 1024
+
+    @app.middleware("http")
+    async def request_body_size_limit_middleware(request: Request, call_next):
+        content_length = request.headers.get("content-length")
+        if content_length:
+            try:
+                if int(content_length) > max_body_bytes:
+                    return JSONResponse(
+                        status_code=413,
+                        content={"detail": "Request payload exceeds maximum allowed size of 1 MB."},
+                    )
+            except ValueError:
+                pass
+        return await call_next(request)
+
     # Security Headers Middleware
     @app.middleware("http")
     async def add_security_headers(request: Request, call_next):

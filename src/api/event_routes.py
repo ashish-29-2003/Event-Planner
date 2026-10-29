@@ -4,7 +4,7 @@ Enforces owner verification, tenant isolation, read-only demo protections, and F
 """
 
 from fastapi import APIRouter, Depends, HTTPException, status
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict, Field
 
 from src.models.budget import BudgetItem
 from src.models.guest import GuestItem, RSVPStatus
@@ -19,15 +19,18 @@ router = APIRouter(prefix="/api/events", tags=["Celebrations"])
 
 
 class TaskToggleRequest(BaseModel):
-    status: str
+    model_config = ConfigDict(extra="forbid")
+    status: str = Field(..., min_length=2, max_length=20)
 
 
 class GuestRSVPRequest(BaseModel):
+    model_config = ConfigDict(extra="forbid")
     status: RSVPStatus
 
 
 class CloneEventRequest(BaseModel):
-    title: str | None = None
+    model_config = ConfigDict(extra="forbid")
+    title: str | None = Field(None, min_length=2, max_length=100)
 
 
 @router.get("")
