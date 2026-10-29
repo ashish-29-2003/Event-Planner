@@ -93,7 +93,7 @@
 ---
 
 ### Stage R1-C Closure Log (in progress)
-- [ ] C1: Playwright + Auth Emulator test proves real browser sign-in, session persistence, and sign-out.
+- [x] C1: Browser Firebase auth client (`public/js/auth.js`), demo mode banner, user profile menu, token refresh, and tests (`tests/test_browser_auth.py`).
 - [ ] C2: STORAGE_BACKEND explicit; production refuses startup without Firestore; emulator CRUD and restart tests.
 - [ ] C3: Firestore rules tests run against emulator; rename text-parsing tests.
 - [ ] C4: Route auth matrix in docs/SECURITY_AND_TESTING.md; route guard test; demo-* read-only for guests.

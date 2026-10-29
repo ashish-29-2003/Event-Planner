@@ -453,3 +453,39 @@ input[type="checkbox"] {
     page-break-inside: avoid;
   }
 }
+
+/* Demo Mode Banner & Auth Menu */
+.demo-mode-banner {
+  background: var(--bg-subtle);
+  border-bottom: 1px solid var(--border-color);
+  padding: 0.45rem 1.5rem;
+  font-size: 0.8rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  color: var(--text-secondary);
+}
+
+.demo-mode-banner span {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.btn-signin-small {
+  background: var(--accent-primary);
+  color: var(--accent-primary-text);
+  border: none;
+  padding: 0.3rem 0.75rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: var(--transition-fast);
+}
+
+.btn-signin-small:hover {
+  opacity: 0.9;
+}

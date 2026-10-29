@@ -24,6 +24,12 @@
     <strong>॥ सर्वे भवन्तु सुखिनः सर्वे सन्तु निरामयाः ॥</strong> — May all beings be prosperous, peaceful and healthy.
   </div>
 
+  <!-- Demo Mode Banner -->
+  <div id="demo-mode-banner" class="demo-mode-banner" role="status">
+    <span>✨ <strong>Demo mode:</strong> Exploring pre-seeded celebrations. Sign in with Google to create and save private celebration plans.</span>
+    <button id="banner-signin-btn" class="btn-signin-small" onclick="Auth.signInWithGoogle()">Sign in with Google</button>
+  </div>
+
   <!-- Main Navigation Header -->
   <header class="site-header" role="banner">
     <div class="header-inner">
@@ -40,7 +46,7 @@
       <!-- Center: Greeting & Event Switcher -->
       <div style="display: flex; align-items: center; gap: 0.85rem; flex-wrap: wrap;">
         <span id="cultural-greeting" style="font-size: 0.825rem; color: var(--text-secondary);">
-          <strong style="color: var(--text-primary);">शुभ संध्या</strong>, Ashish
+          <strong style="color: var(--text-primary);">शुभ आरम्भ</strong>, Guest Explorer
         </span>
 
         <select id="celebration-switcher" aria-label="Select celebration" style="width: auto; padding: 0.4rem 0.75rem; font-size: 0.825rem; font-weight: 500;">
@@ -50,10 +56,24 @@
         </select>
       </div>
 
-      <!-- Right Actions: Share, Theme, Plan -->
+      <!-- Right Actions: Share, Theme, User Auth, Plan -->
       <div style="display: flex; align-items: center; gap: 0.5rem;">
         <button id="btn-share-celebration" class="btn-secondary" title="Share Celebration Link">Share</button>
         <button id="theme-toggle" class="btn-secondary" title="Toggle Theme" style="padding: 0.5rem 0.65rem;">🌙</button>
+        
+        <!-- Auth Profile & Sign In -->
+        <button id="btn-auth-signin" class="btn-secondary" onclick="Auth.signInWithGoogle()" style="display: inline-flex; align-items: center; gap: 0.35rem; font-size: 0.8rem; padding: 0.45rem 0.75rem;">
+          <svg width="13" height="13" viewBox="0 0 24 24"><path fill="currentColor" d="M12.24 10.285V14.4h6.806c-.275 1.765-2.056 5.174-6.806 5.174-4.095 0-7.439-3.389-7.439-7.574s3.345-7.574 7.439-7.574c2.33 0 3.891.989 4.785 1.849l3.254-3.138C18.189 1.186 15.479 0 12.24 0c-6.635 0-12 5.365-12 12s5.365 12 12 12c6.926 0 11.52-4.869 11.52-11.726 0-.788-.085-1.39-.189-1.989H12.24z"/></svg>
+          <span>Sign In</span>
+        </button>
+
+        <div id="user-profile-menu" style="display: none; align-items: center; gap: 0.4rem;">
+          <img id="user-avatar" src="" alt="User avatar" style="width: 26px; height: 26px; border-radius: 50%; object-fit: cover; border: 1px solid var(--border-color); display: none;">
+          <div id="user-avatar-fallback" style="width: 26px; height: 26px; border-radius: 50%; background: var(--accent-gold); color: #fff; font-weight: 700; font-size: 0.75rem; display: flex; align-items: center; justify-content: center;">U</div>
+          <span id="user-display-name" style="font-size: 0.8rem; font-weight: 600; max-width: 90px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">User</span>
+          <button id="btn-auth-signout" class="btn-secondary" onclick="Auth.signOutUser()" style="padding: 0.35rem 0.55rem; font-size: 0.75rem;" title="Sign Out">Sign Out</button>
+        </div>
+
         <button id="btn-open-wizard" class="btn-primary" aria-haspopup="dialog">+ New Plan</button>
       </div>
 
@@ -367,8 +387,13 @@
   </div>
 
   <!-- Scripts -->
+  <!-- Firebase App & Auth Web SDK (Compat) -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+  
   <script src="/static/js/store.js"></script>
   <script src="/static/js/api.js"></script>
+  <script src="/static/js/auth.js"></script>
   <script src="/static/js/app.js"></script>
 </body>
 </html>
