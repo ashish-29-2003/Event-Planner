@@ -58,11 +58,18 @@ Samaroh is built as an asynchronous **Python-Native Full-Stack Application** des
 - **GenAI Engine:** Official **Google GenAI Python SDK** (`google-genai`) using `gemini-1.5-flash` with structured Pydantic schema decoding and streaming SSE chat.
 - **Frontend:** Premium, responsive UI served directly by FastAPI and Netlify CDN, featuring Tailwind CSS, Google Fonts (*Noto Serif Devanagari* and *Plus Jakarta Sans*), and Lucide icons.
 - **Cloud Deployment:** **Netlify** (via `netlify.toml` and Mangum serverless adapter for Python).
-- **Google Services Integrated:**
-  1. Google Gemini API (Planning, re-balancing, streaming assistant)
-  2. Google Calendar Integration (.ics export & calendar deep links)
-  3. Google Maps Platform (Vendor geocoding & discovery fallback)
-  4. Google Fonts (Noto Serif Devanagari & Plus Jakarta Sans)
+### 🌐 Google Services Integration Matrix
+
+| # | Google Service | Purpose in Samaroh | Implementation File Paths | Required Environment Variables | Test Command |
+|---|---|---|---|---|---|
+| 1 | **Gemini API** (`google-genai`) | Multi-agent celebration planning, structured schema generation, SSE streaming chat, and budget re-balancing | `src/services/gemini_service.py`<br>`src/api/ai_routes.py` | `GEMINI_API_KEY`<br>`GEMINI_MODEL` | `pytest tests/test_gemini_mock.py` |
+| 2 | **Firebase Authentication** (`firebase-admin`) | User identity verification, Bearer ID token validation, Google Sign-In popup/redirect, tenant isolation | `src/utils/auth.py`<br>`public/js/auth.js`<br>`src/api/event_routes.py` | `FIREBASE_PROJECT_ID`<br>`FIREBASE_CREDENTIALS_PATH`<br>`ENABLE_AUTH_ENFORCEMENT` | `pytest tests/test_browser_auth.py`<br>`pytest tests/test_route_auth_guards.py` |
+| 3 | **Cloud Firestore** (`google-cloud-firestore`) | Durable multi-tenant NoSQL persistence for celebrations, subcollections (budgets, tasks, vendors, ideas, guests), and security rules enforcement | `src/services/storage_service.py`<br>`firestore.rules` | `STORAGE_BACKEND=firestore`<br>`FIREBASE_PROJECT_ID` | `pytest tests/test_firestore_backend.py`<br>`pytest tests/test_firestore_rules_matrix.py` |
+| 4 | **Firebase App Check** (`firebase-admin`) | Cryptographic abuse prevention and bot protection on AI plan generation endpoints with fail-closed production verification | `src/utils/app_check.py`<br>`src/api/ai_routes.py` | `ENABLE_APP_CHECK`<br>`APP_CHECK_DEV_BYPASS` | `pytest tests/test_app_check.py`<br>`pytest tests/test_logging_redaction.py` |
+| 5 | **Google Maps Platform Places API** (`httpx`) | Client-side proxied venue & vendor discovery with address, rating, and opening status; gracefully falls back to curated catalog | `src/services/places_service.py`<br>`src/api/places_routes.py` | `GOOGLE_MAPS_API_KEY` | `pytest tests/test_places_contract.py` |
+| 6 | **Google Calendar** (RFC-5545 & Deep Links) | Phased celebration timeline sync, milestone due date deep linking, and RFC-5545 `.ics` export | `src/services/calendar_service.py`<br>`src/api/export_routes.py` | None (Direct URL schema & standard RFC export) | `pytest tests/test_calendar.py` |
+| 7 | **Google Fonts** (Web CDN) | Cultural typography: *Rozha One* (Devanagari headings), *Cinzel* (sacred invocations), and *Plus Jakarta Sans* / *Poppins* (body text) | `public/index.html`<br>`public/css/styles.css` | None (Served via `fonts.googleapis.com` & `fonts.gstatic.com`) | `pytest tests/test_browser_auth.py` |
+
 
 ---
 
