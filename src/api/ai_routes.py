@@ -4,7 +4,7 @@ Exposes endpoints for master plan generation, streaming chat,
 budget re-balancing, and auspicious muhurat windows.
 """
 
-from fastapi import APIRouter, Depends, HTTPException, Request, status
+from fastapi import APIRouter, Depends, HTTPException, Request, Response, status
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
 
@@ -14,10 +14,10 @@ from src.services.gemini_service import gemini_service
 from src.services.storage_service import storage_service
 from src.utils.app_check import verify_app_check_token
 from src.utils.auth import AuthenticatedUser, get_current_user_or_demo, require_authenticated_user
-from src.utils.rate_limiter import SlidingWindowRateLimiter
+from src.utils.rate_limiter import enforce_rate_limit, global_rate_limiter
 
 router = APIRouter(prefix="/api/ai", tags=["AI Orchestration"])
-rate_limiter = SlidingWindowRateLimiter(max_requests=25, window_seconds=600)
+rate_limiter = global_rate_limiter
 
 
 class ChatRequest(BaseModel):
@@ -29,21 +29,17 @@ class ChatRequest(BaseModel):
 async def create_event_plan(
     brief: CelebrationBrief,
     request: Request,
+    response: Response,
     user: AuthenticatedUser = Depends(require_authenticated_user),
     _app_check: bool = Depends(verify_app_check_token),
 ):
     """
     Synthesizes a complete celebration master plan from a user's brief.
-    Enforces rate limits, validates Firebase authentication and App Check,
-    and returns both the plan and the saved event ID.
+    Enforces shared-store rate limits with X-RateLimit-* and Retry-After headers,
+    validates Firebase authentication and App Check, and persists under user scope.
     """
-    client_ip = request.client.host if request.client else "127.0.0.1"
-    allowed, _remaining = rate_limiter.is_allowed(client_ip)
-    if not allowed:
-        raise HTTPException(
-            status_code=429,
-            detail="Rate limit reached for AI plan generation. Please explore our instant demo celebrations.",
-        )
+    # Enforce dual-key (IP + User) rate limiting with standardized headers
+    enforce_rate_limit(request=request, response=response, user=user)
 
     # Per-user quota check (prevents unbounded persistence abuse)
     existing_events = [
