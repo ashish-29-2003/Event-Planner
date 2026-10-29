@@ -72,16 +72,29 @@ Samaroh is built as an asynchronous **Python-Native Full-Stack Application** des
 - Python 3.10 or higher installed.
 - Git.
 
-### 1. Clone the Repository
+### 1. Clone the Repository & Set Up Virtual Environment
 ```bash
 git clone https://github.com/ashish-29-2003/Event-Planner.git
 cd Event-Planner
+
+# Create and activate virtual environment
+python -m venv .venv
+# On Windows (PowerShell):
+.\.venv\Scripts\Activate.ps1
+# On Linux / macOS:
+source .venv/bin/activate
+
+# Install dependencies
+pip install -r requirements.txt
 ```
 
 ### 2. Set Up Environment Variables
 Copy `.env.example` to `.env`:
 ```bash
+# On Linux / macOS:
 cp .env.example .env
+# On Windows (PowerShell):
+Copy-Item .env.example .env
 ```
 Add your Google Gemini API key:
 ```env
@@ -98,11 +111,14 @@ This automatically verifies dependencies, starts the FastAPI server at `http://1
 
 ---
 
-## 🧪 Running Automated Tests
+## 🧪 Running Automated Tests & Code Quality
 
 ```bash
-# Run the complete pytest suite
-python -m pytest tests/ -v
+# Run tests with real coverage analysis
+python -m pytest -q --cov=src --cov-report=term-missing
+
+# Run Ruff linter
+python -m ruff check .
 ```
 
 ---
