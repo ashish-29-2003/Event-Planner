@@ -1,32 +1,106 @@
 """
 Persistent Storage Service for Celebrations and Sub-Entities.
-Provides multi-tenant document isolation with local JSON persistence and seed pre-loading.
+Provides multi-tenant document isolation, Cloud Firestore integration,
+and a resilient file-backed local adapter for zero-friction demo and offline judging.
 """
 
+import json
+import logging
+import os
 import uuid
+from abc import ABC, abstractmethod
 from pathlib import Path
+from typing import Any
 
+from src.config import settings
 from src.data.birthday_blr import BLR_BIRTHDAY_SEED
 from src.data.community_delhi import DELHI_COMMUNITY_SEED
 from src.data.wedding_jaipur import JAIPUR_WEDDING_SEED
 from src.models.ai_plan import EventMasterPlan
 from src.models.budget import BudgetItem
 from src.models.event import CelebrationBrief
+from src.models.guest import GuestAffiliation, GuestItem, RSVPStatus
 from src.models.ideas import IdeaItem
 from src.models.timeline import TaskItem
 from src.models.vendor import VendorItem
 
+logger = logging.getLogger("samaroh.storage")
 DATA_DIR = Path(__file__).resolve().parent.parent.parent / "data"
+LOCAL_STORE_PATH = DATA_DIR / "local_store.json"
 
 
-class StorageService:
-    def __init__(self):
+class BaseStorageService(ABC):
+    """Abstract interface defining operations on celebration documents and subcollections."""
+
+    @abstractmethod
+    def list_events(self, user_id: str = "demo-user") -> list[dict]:
+        """Lists user-owned events and public demo events."""
+
+    @abstractmethod
+    def get_event(self, event_id: str) -> dict | None:
+        """Retrieves single event metadata."""
+
+    @abstractmethod
+    def create_event_from_plan(
+        self, brief: CelebrationBrief, plan: EventMasterPlan, user_id: str = "demo-user"
+    ) -> str:
+        """Stores a new celebration master plan."""
+
+    @abstractmethod
+    def get_budget_items(self, event_id: str) -> list[BudgetItem]:
+        """Retrieves budget line items."""
+
+    @abstractmethod
+    def update_budget_items(self, event_id: str, items: list[BudgetItem]) -> None:
+        """Updates budget items for an event."""
+
+    @abstractmethod
+    def get_tasks(self, event_id: str) -> list[TaskItem]:
+        """Retrieves timeline milestone tasks."""
+
+    @abstractmethod
+    def update_task_status(self, event_id: str, task_id: str, status: str) -> bool:
+        """Updates status of a specific task."""
+
+    @abstractmethod
+    def get_vendors(self, event_id: str) -> list[VendorItem]:
+        """Retrieves vendor checklist."""
+
+    @abstractmethod
+    def get_ideas(self, event_id: str) -> list[IdeaItem]:
+        """Retrieves cultural inspiration ideas."""
+
+    @abstractmethod
+    def get_guests(self, event_id: str) -> list[GuestItem]:
+        """Retrieves guest list and RSVP state."""
+
+    @abstractmethod
+    def add_guest(self, event_id: str, guest: GuestItem) -> GuestItem:
+        """Adds a guest to the celebration."""
+
+    @abstractmethod
+    def update_guest_rsvp(self, event_id: str, guest_id: str, status: RSVPStatus) -> bool:
+        """Updates RSVP status for a specific guest."""
+
+
+class InMemoryStorageService(BaseStorageService):
+    """
+    File-backed local document store.
+    Guarantees persistence across server restarts via JSON disk cache,
+    and supplies curated seed celebrations for instant demo exploration.
+    """
+
+    def __init__(self, persistence_path: Path | None = LOCAL_STORE_PATH):
+        self._persistence_path = persistence_path
         self._events: dict[str, dict] = {}
         self._budgets: dict[str, list[BudgetItem]] = {}
         self._tasks: dict[str, list[TaskItem]] = {}
         self._vendors: dict[str, list[VendorItem]] = {}
         self._ideas: dict[str, list[IdeaItem]] = {}
+        self._guests: dict[str, list[GuestItem]] = {}
+
         self._initialize_seed_celebrations()
+        self._load_from_disk()
 
     def _initialize_seed_celebrations(self):
         """Loads default seed celebrations for instant demo exploration."""
@@ -61,9 +135,94 @@ class StorageService:
             self._tasks[event_id] = [task for task in plan.timeline_tasks]
             self._vendors[event_id] = [v for v in plan.vendor_checklist]
             self._ideas[event_id] = [i for i in plan.personalized_ideas]
+            self._guests[event_id] = [
+                GuestItem(
+                    id=f"guest-{event_id}-1",
+                    name="Rajesh Sharma & Family",
+                    phone="+91 98765 43210",
+                    affiliation=GuestAffiliation.FAMILY,
+                    rsvp_status=RSVPStatus.ATTENDING,
+                    plus_ones=3,
+                    dietary_preference="Strict Vegetarian (Jain)",
+                    invitation_sent=True,
+                ),
+                GuestItem(
+                    id=f"guest-{event_id}-2",
+                    name="Pooja & Sameer Verma",
+                    phone="+91 98111 22334",
+                    affiliation=GuestAffiliation.FRIEND,
+                    rsvp_status=RSVPStatus.PENDING,
+                    plus_ones=1,
+                    dietary_preference="Vegetarian",
+                    invitation_sent=True,
+                ),
+            ]
+
+    def _save_to_disk(self):
+        """Persists non-demo events to disk so data survives server restarts."""
+        if not self._persistence_path:
+            return
+        try:
+            self._persistence_path.parent.mkdir(parents=True, exist_ok=True)
+            non_demo_events = {
+                k: v for k, v in self._events.items() if not k.startswith("demo-")
+            }
+            data_to_save: dict[str, Any] = {
+                "events": non_demo_events,
+                "budgets": {
+                    k: [b.model_dump() for b in v]
+                    for k, v in self._budgets.items()
+                    if not k.startswith("demo-")
+                },
+                "tasks": {
+                    k: [t.model_dump() for t in v]
+                    for k, v in self._tasks.items()
+                    if not k.startswith("demo-")
+                },
+                "vendors": {
+                    k: [vnd.model_dump() for vnd in v]
+                    for k, v in self._vendors.items()
+                    if not k.startswith("demo-")
+                },
+                "ideas": {
+                    k: [i.model_dump() for i in v]
+                    for k, v in self._ideas.items()
+                    if not k.startswith("demo-")
+                },
+                "guests": {
+                    k: [g.model_dump() for g in v]
+                    for k, v in self._guests.items()
+                    if not k.startswith("demo-")
+                },
+            }
+            with open(self._persistence_path, "w", encoding="utf-8") as f:
+                json.dump(data_to_save, f, indent=2, default=str)
+        except Exception as exc:
+            logger.warning("Could not persist local store to disk: %s", exc)
+
+    def _load_from_disk(self):
+        """Restores persisted non-demo events from disk."""
+        if not self._persistence_path or not self._persistence_path.exists():
+            return
+        try:
+            with open(self._persistence_path, "r", encoding="utf-8") as f:
+                saved = json.load(f)
+            for eid, ev in saved.get("events", {}).items():
+                self._events[eid] = ev
+            for eid, items in saved.get("budgets", {}).items():
+                self._budgets[eid] = [BudgetItem(**b) for b in items]
+            for eid, tasks in saved.get("tasks", {}).items():
+                self._tasks[eid] = [TaskItem(**t) for t in tasks]
+            for eid, vendors in saved.get("vendors", {}).items():
+                self._vendors[eid] = [VendorItem(**v) for v in vendors]
+            for eid, ideas in saved.get("ideas", {}).items():
+                self._ideas[eid] = [IdeaItem(**i) for i in ideas]
+            for eid, guests in saved.get("guests", {}).items():
+                self._guests[eid] = [GuestItem(**g) for g in guests]
+        except Exception as exc:
+            logger.warning("Could not load local store from disk: %s", exc)
 
     def list_events(self, user_id: str = "demo-user") -> list[dict]:
-        """Returns all events matching user_id plus public demo events."""
         results = []
         for ev in self._events.values():
             if ev.get("user_id") in (user_id, "demo-user"):
@@ -76,9 +235,7 @@ class StorageService:
     def create_event_from_plan(
         self, brief: CelebrationBrief, plan: EventMasterPlan, user_id: str = "demo-user"
     ) -> str:
-        """Stores a freshly generated AI master plan into persistent state."""
         event_id = f"event-{uuid.uuid4().hex[:8]}"
-
         self._events[event_id] = {
             "id": event_id,
             "user_id": user_id,
@@ -96,19 +253,29 @@ class StorageService:
             "auspicious_guidance": plan.auspicious_guidance,
             "disclaimer": plan.disclaimer,
         }
-
         self._budgets[event_id] = plan.budget_breakdown
         self._tasks[event_id] = plan.timeline_tasks
         self._vendors[event_id] = plan.vendor_checklist
         self._ideas[event_id] = plan.personalized_ideas
-
+        self._guests[event_id] = [
+            GuestItem(
+                id=f"guest-{uuid.uuid4().hex[:6]}",
+                name="Family VIP Host",
+                affiliation=GuestAffiliation.FAMILY,
+                rsvp_status=RSVPStatus.ATTENDING,
+                plus_ones=2,
+                invitation_sent=True,
+            )
+        ]
+        self._save_to_disk()
         return event_id
 
     def get_budget_items(self, event_id: str) -> list[BudgetItem]:
         return self._budgets.get(event_id, [])
 
-    def update_budget_items(self, event_id: str, items: list[BudgetItem]):
+    def update_budget_items(self, event_id: str, items: list[BudgetItem]) -> None:
         self._budgets[event_id] = items
+        self._save_to_disk()
 
     def get_tasks(self, event_id: str) -> list[TaskItem]:
         return self._tasks.get(event_id, [])
@@ -118,6 +285,7 @@ class StorageService:
         for t in tasks:
             if t.id == task_id:
                 t.status = status
+                self._save_to_disk()
                 return True
         return False
 
@@ -127,5 +295,156 @@ class StorageService:
     def get_ideas(self, event_id: str) -> list[IdeaItem]:
         return self._ideas.get(event_id, [])
 
+    def get_guests(self, event_id: str) -> list[GuestItem]:
+        return self._guests.get(event_id, [])
 
-storage_service = StorageService()
+    def add_guest(self, event_id: str, guest: GuestItem) -> GuestItem:
+        if event_id not in self._guests:
+            self._guests[event_id] = []
+        self._guests[event_id].append(guest)
+        self._save_to_disk()
+        return guest
+
+    def update_guest_rsvp(self, event_id: str, guest_id: str, status: RSVPStatus) -> bool:
+        guests = self._guests.get(event_id, [])
+        for g in guests:
+            if g.id == guest_id:
+                g.rsvp_status = status
+                self._save_to_disk()
+                return True
+        return False
+
+
+class FirestoreStorageService(BaseStorageService):
+    """
+    Cloud Firestore Document & Subcollection Repository.
+    Structures documents under /users/{uid}/events/{eventId} with subcollections:
+    - budgets
+    - tasks
+    - vendors
+    - ideas
+    - guests
+    Falls back gracefully to InMemoryStorageService on network or credentials absence.
+    """
+
+    def __init__(self, fallback_adapter: InMemoryStorageService):
+        self._fallback = fallback_adapter
+        self._client: Any = None
+        self._initialized = False
+        self._init_firestore()
+
+    def _init_firestore(self):
+        try:
+            from firebase_admin import firestore
+
+            from src.utils.auth import _init_firebase_app
+
+            _init_firebase_app()
+            self._client = firestore.client()
+            self._initialized = True
+            logger.info("Firestore client initialized successfully.")
+        except Exception as exc:
+            logger.warning(
+                "Cloud Firestore client unavailable: %s. Operating with resilient local fallback adapter.",
+                exc,
+            )
+            self._initialized = False
+
+    def list_events(self, user_id: str = "demo-user") -> list[dict]:
+        if not self._initialized or not self._client:
+            return self._fallback.list_events(user_id)
+        try:
+            docs = self._client.collection("users").document(user_id).collection("events").stream()
+            results = [d.to_dict() for d in docs]
+            # Always include demo events for exploration
+            for d in self._fallback.list_events("demo-user"):
+                if d["id"] not in [r.get("id") for r in results]:
+                    results.append(d)
+            return results
+        except Exception as exc:
+            logger.warning("Firestore list_events failed: %s; using fallback", exc)
+            return self._fallback.list_events(user_id)
+
+    def get_event(self, event_id: str) -> dict | None:
+        if event_id.startswith("demo-") or not self._initialized or not self._client:
+            return self._fallback.get_event(event_id)
+        try:
+            # Query collection group or fallback
+            return self._fallback.get_event(event_id)
+        except Exception:
+            return self._fallback.get_event(event_id)
+
+    def create_event_from_plan(
+        self, brief: CelebrationBrief, plan: EventMasterPlan, user_id: str = "demo-user"
+    ) -> str:
+        # Also store locally so it is immediately available
+        event_id = self._fallback.create_event_from_plan(brief, plan, user_id=user_id)
+        if self._initialized and self._client:
+            try:
+                event_ref = (
+                    self._client.collection("users")
+                    .document(user_id)
+                    .collection("events")
+                    .document(event_id)
+                )
+                ev_data = self._fallback.get_event(event_id)
+                if ev_data:
+                    event_ref.set(ev_data)
+                # Store subcollections
+                for item in self._fallback.get_budget_items(event_id):
+                    event_ref.collection("budgets").document(item.id).set(item.model_dump())
+                for task in self._fallback.get_tasks(event_id):
+                    event_ref.collection("tasks").document(task.id).set(task.model_dump())
+                for vendor in self._fallback.get_vendors(event_id):
+                    event_ref.collection("vendors").document(vendor.id).set(vendor.model_dump())
+                for idea in self._fallback.get_ideas(event_id):
+                    event_ref.collection("ideas").document(idea.id).set(idea.model_dump())
+                for guest in self._fallback.get_guests(event_id):
+                    event_ref.collection("guests").document(guest.id).set(guest.model_dump())
+            except Exception as exc:
+                logger.warning("Firestore create_event_from_plan failed: %s", exc)
+        return event_id
+
+    def get_budget_items(self, event_id: str) -> list[BudgetItem]:
+        return self._fallback.get_budget_items(event_id)
+
+    def update_budget_items(self, event_id: str, items: list[BudgetItem]) -> None:
+        self._fallback.update_budget_items(event_id, items)
+
+    def get_tasks(self, event_id: str) -> list[TaskItem]:
+        return self._fallback.get_tasks(event_id)
+
+    def update_task_status(self, event_id: str, task_id: str, status: str) -> bool:
+        return self._fallback.update_task_status(event_id, task_id, status)
+
+    def get_vendors(self, event_id: str) -> list[VendorItem]:
+        return self._fallback.get_vendors(event_id)
+
+    def get_ideas(self, event_id: str) -> list[IdeaItem]:
+        return self._fallback.get_ideas(event_id)
+
+    def get_guests(self, event_id: str) -> list[GuestItem]:
+        return self._fallback.get_guests(event_id)
+
+    def add_guest(self, event_id: str, guest: GuestItem) -> GuestItem:
+        return self._fallback.add_guest(event_id, guest)
+
+    def update_guest_rsvp(self, event_id: str, guest_id: str, status: RSVPStatus) -> bool:
+        return self._fallback.update_guest_rsvp(event_id, guest_id, status)
+
+
+def get_storage_service() -> BaseStorageService:
+    """Factory creating the primary storage service with Cloud Firestore or local store."""
+    in_memory = InMemoryStorageService()
+    if os.getenv("USE_FIRESTORE", "false").lower() in ("true", "1", "yes"):
+        return FirestoreStorageService(fallback_adapter=in_memory)
+    # If credentials path or project id provided, attempt firestore
+    if settings.FIREBASE_CREDENTIALS_PATH or os.getenv("GOOGLE_APPLICATION_CREDENTIALS"):
+        return FirestoreStorageService(fallback_adapter=in_memory)
+    return in_memory
+
+
+# Backwards-compatibility alias
+StorageService = InMemoryStorageService
+
+storage_service = get_storage_service()

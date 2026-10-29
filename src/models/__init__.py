@@ -7,6 +7,7 @@ from .budget import (
     PaymentStatus,
 )
 from .event import CelebrationBrief, EventCreate, EventResponse, EventType
+from .guest import GuestAffiliation, GuestItem, RSVPStatus
 from .ideas import IdeaCategory, IdeaItem
 from .timeline import TaskItem, TaskPriority, TaskStatus
 from .vendor import VendorCategory, VendorItem, VendorStatus
@@ -21,9 +22,12 @@ __all__ = [
     "EventMasterPlan",
     "EventResponse",
     "EventType",
+    "GuestAffiliation",
+    "GuestItem",
     "IdeaCategory",
     "IdeaItem",
     "PaymentStatus",
+    "RSVPStatus",
     "TaskItem",
     "TaskPriority",
     "TaskStatus",

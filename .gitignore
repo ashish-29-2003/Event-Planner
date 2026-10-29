@@ -38,6 +38,11 @@ venv.bak/
 .env
 .env.local
 .env.*.local
+*.service-account.json
+firebase-credentials.json
+
+# Local runtime data
+data/*.json
 
 # Testing & Coverage
 .pytest_cache/

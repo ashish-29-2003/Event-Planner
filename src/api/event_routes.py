@@ -7,6 +7,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
 
 from src.models.budget import BudgetItem
+from src.models.guest import GuestItem, RSVPStatus
 from src.services.storage_service import storage_service
 from src.utils.auth import (
     AuthenticatedUser,
@@ -19,6 +20,10 @@ router = APIRouter(prefix="/api/events", tags=["Celebrations"])
 
 class TaskToggleRequest(BaseModel):
     status: str
+
+
+class GuestRSVPRequest(BaseModel):
+    status: RSVPStatus
 
 
 @router.get("")
@@ -153,3 +158,61 @@ async def get_event_ideas(
             detail="Access denied: celebration belongs to another user",
         )
     return storage_service.get_ideas(event_id)
+
+
+@router.get("/{event_id}/guests")
+async def get_event_guests(
+    event_id: str,
+    user: AuthenticatedUser = Depends(get_current_user_or_demo),
+):
+    """Retrieves guest list and RSVP status for an event."""
+    event = storage_service.get_event(event_id)
+    if not event:
+        raise HTTPException(status_code=404, detail="Celebration not found")
+    if not event_id.startswith("demo-") and event.get("user_id") != user.uid:
+        raise HTTPException(
+            status_code=403,
+            detail="Access denied: celebration belongs to another user",
+        )
+    return storage_service.get_guests(event_id)
+
+
+@router.post("/{event_id}/guests")
+async def add_event_guest(
+    event_id: str,
+    guest: GuestItem,
+    user: AuthenticatedUser = Depends(require_authenticated_user),
+):
+    """Adds a new guest to the celebration guest list. Requires authentication."""
+    event = storage_service.get_event(event_id)
+    if not event:
+        raise HTTPException(status_code=404, detail="Celebration not found")
+    if not event_id.startswith("demo-") and event.get("user_id") != user.uid:
+        raise HTTPException(
+            status_code=403,
+            detail="Access denied: cannot add guests to another user's event",
+        )
+    created = storage_service.add_guest(event_id, guest)
+    return {"success": True, "guest": created}
+
+
+@router.post("/{event_id}/guests/{guest_id}/rsvp")
+async def update_guest_rsvp(
+    event_id: str,
+    guest_id: str,
+    req: GuestRSVPRequest,
+    user: AuthenticatedUser = Depends(get_current_user_or_demo),
+):
+    """Updates a guest's RSVP status."""
+    event = storage_service.get_event(event_id)
+    if not event:
+        raise HTTPException(status_code=404, detail="Celebration not found")
+    if not event_id.startswith("demo-") and event.get("user_id") != user.uid:
+        raise HTTPException(
+            status_code=403,
+            detail="Access denied",
+        )
+    success = storage_service.update_guest_rsvp(event_id, guest_id, req.status)
+    if not success:
+        raise HTTPException(status_code=404, detail="Guest not found")
+    return {"success": True, "guest_id": guest_id, "status": req.status}
