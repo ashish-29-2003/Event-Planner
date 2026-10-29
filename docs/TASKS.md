@@ -27,9 +27,8 @@
   *Role:* Security / Backend | *Status:* Done | *Evidence:* Implemented `src/utils/auth.py`, protected endpoints returning 401 without token, verified with 11 tests in `tests/test_auth.py`.
 - [x] **R1-T02:** Implement Cloud Firestore repository behind existing `StorageService` interface for events, budgets, tasks, vendors, and guests.  
   *Role:* Backend Lead | *Status:* Done | *Evidence:* Implemented `FirestoreStorageService` and `InMemoryStorageService` with disk persistence (`data/local_store.json`), added Guest domain model and REST endpoints, verified with 4 tests in `tests/test_storage.py`.
-- [ ] **R1-T03:** Author and test Firestore Security Rules (owner-only access to `/users/{uid}/events/**`).  
-  *Role:* Security Lead | *Est:* 2h | *Deps:* R1-T02  
-  *Acceptance:* User A cannot read or write User B's events; verified with Firestore emulator tests.
+- [x] **R1-T03:** Author and test Firestore Security Rules (owner-only access to `/users/{uid}/events/**`).  
+  *Role:* Security Lead | *Status:* Done | *Evidence:* Authored `firestore.rules`, `firebase.json`, `firestore.indexes.json`, verified owner isolation and public read-only rules with 6 tests in `tests/test_firestore_rules.py`.
 - [ ] **R1-T04:** Implement Firebase App Check verification on AI generation and state-mutating endpoints.  
   *Role:* Security Lead | *Est:* 2h | *Deps:* R1-T01  
   *Acceptance:* Enforces valid App Check token in production config with test bypass in mock mode.
