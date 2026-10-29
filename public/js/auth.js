@@ -11,7 +11,7 @@ const Auth = {
 
   // Public Firebase client configuration (safe for frontend exposure)
   config: window.FIREBASE_CONFIG || {
-    apiKey: "AIzaSyFakeClientApiKeyForSamarohPlanner",
+    apiKey: window.FIREBASE_API_KEY || "demo-firebase-web-api-key",
     authDomain: "samaroh-celebrations.firebaseapp.com",
     projectId: "samaroh-celebrations",
     storageBucket: "samaroh-celebrations.appspot.com",
