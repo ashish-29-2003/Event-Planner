@@ -242,3 +242,39 @@ Build a first-class **Demo Mode** toggled via the UI banner and URL parameter (`
 1. **Wedding (Jaipur Destination):** *"Riya & Kabir's Royal Sangeet & Vivaha"* — 350 guests, ₹45,00,000 budget, 8-stage timeline, 12 vendor categories, Rajasthani/Marwari traditions.
 2. **Birthday (Bengaluru Urban):** *"Aarav's 5th Cosmic Explorer Adventure"* — 45 guests, ₹85,000 budget, space-theme menu, return gifts, timeline.
 3. **Community Event (Delhi NCR Society):** *"Gulmohar Enclave Diwali Mela & Dandiya Night"* — 800 residents, ₹6,50,000 budget, RWA permits, food stalls, sound stage, safety protocols.
+
+---
+
+## ADR 011: Cloud Architecture, Authentication & Persistence (Firebase Auth & Firestore)
+
+- **Status:** Accepted
+- **Date:** 2026-10-29
+- **Decider:** Senior Cloud Architect & Security Lead
+
+### Context
+Moving beyond early-stage evaluation requires robust Google Cloud services integration. An in-memory store fails across serverless instance restarts, and without identity verification, "multi-tenant" claims are subject to IDOR vulnerabilities.
+
+### Decision
+1. **Authentication:** Integrate Firebase Authentication with Google Sign-in on the frontend. The FastAPI backend verifies Firebase ID tokens via `firebase-admin` (with fallback to Google JWKS public key verification). Protected routes (`/api/events`, write actions) require a valid token, returning HTTP 401 if missing or invalid. Seeded celebrations remain accessible under a sandboxed read-only demo context.
+2. **Persistence:** Cloud Firestore document repository structured under `/users/{uid}/events/{eventId}` with subcollections (`budgets`, `tasks`, `vendors`, `guests`). The repository interface abstracts storage so in-memory adapters remain available for unit tests and zero-dependency offline judging.
+3. **Firestore Security Rules:** Deny all access by default; allow read and write only if `request.auth.uid == resource.data.owner_uid` (or matching path `/users/{uid}`).
+4. **App Check:** Enforce Firebase App Check header verification on state-mutating and GenAI planning endpoints.
+5. **Hosting:** Support Cloud Run containerization (`Dockerfile`) with non-root execution and health checks, alongside Netlify serverless deployment (`netlify.toml` + Mangum).
+
+---
+
+## ADR 012: Google Maps Platform Server-Side Places Discovery Proxy
+
+- **Status:** Accepted
+- **Date:** 2026-10-29
+- **Decider:** Lead Backend Engineer
+
+### Context
+Finding accurate Indian celebration venues, halwais, decorators, and pandits requires geospatial intelligence without exposing sensitive Google Cloud API credentials in the browser bundle.
+
+### Decision
+Implement a dedicated server-side proxy endpoint `GET /api/places/search` in FastAPI:
+1. Calls Google Maps Places API (Text Search / Places API New) securely using `GOOGLE_MAPS_API_KEY`.
+2. Proxies normalized vendor data (name, address, rating, user review count, price level) to the client.
+3. Degrades gracefully: if `GOOGLE_MAPS_API_KEY` is omitted, returns curated city candidates with a transparent indicator (`source: "curated_catalog"`).
+
