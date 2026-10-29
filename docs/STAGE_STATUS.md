@@ -2,7 +2,7 @@
 
 | Stage | Status (NOT STARTED / IN PROGRESS / PASSED / BLOCKED) | Date | Commit range | Evidence |
 |---|---|---|---|---|
-| **R0: Reality Check & Git Hygiene** | **PASSED** | 2026-10-29 | 02d4213..HEAD | Setup verified from README, 76% real coverage recorded, commit-msg hook active, ui-before screenshots captured |
+| **R0: Reality Check & Git Hygiene** | **PASSED** | 2026-10-29 | 92bb256..12400bf | Setup verified from README, 76% real coverage recorded, commit-msg hook active, ui-before screenshots captured |
 | **R1: Google Services, Auth & Persistence** | **IN PROGRESS** | 2026-10-29 | - | Firebase Auth, Cloud Firestore repository, Security Rules, Google Maps Places proxy, Live hosting deployment |
 | **R2: Security Hardening** | **NOT STARTED** | - | - | IDOR tests, shared counter rate-limiting, prompt injection attack suite, DOMPurify XSS defenses, strict CSP |
 | **R3: UI Refinement & Completeness** | **NOT STARTED** | - | - | Items U1 to U14, Guests & RSVP tab, bilingual EN/Hindi toggle, responsive breakpoints 360-1920px |
