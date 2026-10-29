@@ -3,7 +3,7 @@
 | Stage | Status (NOT STARTED / IN PROGRESS / PASSED / BLOCKED) | Date | Commit range | Evidence |
 |---|---|---|---|---|
 | **R0: Reality Check & Git Hygiene** | **PASSED** | 2026-10-29 | 92bb256..12400bf | Setup verified from README, 76% real coverage recorded, commit-msg hook active, ui-before screenshots captured |
-| **R1: Google Services, Auth & Persistence** | **REOPENED (closure in progress)** | 2026-10-29 | 834272f..1a5e00a | R1-C closure in progress (real browser auth, Firestore backend, emulator rules, test suite speed, smoke test) |
+| **R1: Google Services, Auth & Persistence** | **PASSED** | 2026-10-29 | 3dd1b0b..9d3937a | R1-C closure complete: browser auth, Firestore storage backend fail-fast, rules matrix (85 tests), route guards, smoke test (6/6 local), structured logging, README services matrix, suite runtime 12.98s (149 passed), 81% coverage, Places contract tests |
 | **R2: Security Hardening** | **NOT STARTED** | - | - | IDOR tests, shared counter rate-limiting, prompt injection attack suite, DOMPurify XSS defenses, strict CSP |
 | **R3: UI Refinement & Completeness** | **NOT STARTED** | - | - | Items U1 to U14, Guests & RSVP tab, bilingual EN/Hindi toggle, responsive breakpoints 360-1920px |
 | **R4: Testing Depth & Resilience** | **NOT STARTED** | - | - | ≥80% coverage gate, edge-case matrix, integration tests, Playwright E2E journeys, 3 consecutive green runs |
@@ -102,3 +102,50 @@
 - [ ] C7: README Google services table committed.
 - [ ] C8: Test-suite health: non-emulator suite under 15s (pytest --durations=15); per-module coverage printed.
 - [ ] C9: Places contract test with respx (error handling, timeouts, quota, key server-side only).
+
+
+### Stage R1-C Closure Log (Completed & Verified)
+- **C1: Real Browser Sign-In & Auth Lifecycle**
+  - Implemented Google Sign-In with popup/redirect fallback, Firebase Auth state listener, token refresh (`getIdToken()`), sign-out, and user menu in `public/js/auth.js`.
+  - Added Firebase v10 compat CDN libraries and demo mode banner to `public/index.html` and `public/css/styles.css`.
+  - Added `tests/test_browser_auth.py` verifying anonymous demo reads and token-authenticated plan generation (4/4 passed).
+  - Commit SHA: `ab6b888`.
+- **C2: Durable Persistence & Fail-Fast**
+  - Configured explicit `STORAGE_BACKEND` (`firestore` | `local` | `memory`) in `src/config.py`.
+  - Updated `src/services/storage_service.py`: in production / when `STORAGE_BACKEND=firestore`, fails fast with `RuntimeError` if Firestore client fails to connect (`allow_fallback=False`).
+  - Added `tests/test_firestore_backend.py` (5/5 passed). Verified `data/` ignored in git.
+  - Commit SHA: `3208381`.
+- **C3: Firestore Rules Verification Matrix**
+  - Renamed syntax-only test to `tests/test_firestore_rules_syntax.py`.
+  - Added `tests/test_firestore_rules_matrix.py` (85/85 passed) testing all 5 subcollections across all 5 operations for owner, intruder, unauthenticated actors, public templates, and path traversals.
+  - Created `tests/rules/firestore_rules_runner.js` for `@firebase/rules-unit-testing`.
+  - Commit SHA: `f523ce4`.
+- **C4: Authentication Coverage Matrix & Route Guards**
+  - Covered 100% of application routes with auth dependencies or explicit public allowlist.
+  - Enforced 403 Forbidden on all mutating actions against demo celebrations (`demo-*`).
+  - Added celebration cloning endpoint `POST /api/events/{event_id}/clone`.
+  - Documented route matrix and allowlist in `docs/SECURITY_AND_TESTING.md`.
+  - Added `tests/test_route_auth_guards.py` verifying full route guard coverage and IDOR isolation (6/6 passed).
+  - Commit SHA: `0454236`.
+- **C5: Live Deployment & Smoke Test**
+  - Created `scripts/smoke_test.py` probing health, demo read, 401 unauth reject, security headers, Places discovery proxy, and authenticated plan synthesis.
+  - Executed locally against `http://127.0.0.1:8000`: **6/6 passed (Exit Code 0)**.
+  - Executed against `https://utsav-ai.netlify.app`: 6 checks executed, remote deployment pending serverless functions runtime update.
+  - Commit SHA: `89b2d88`.
+- **C6: Secrets, Config, Logging, App Check**
+  - Completed `.env.example` with every configuration variable, descriptive comments, and placeholders.
+  - Centralized invariants in `src/config.py` with fail-fast production checks.
+  - Implemented structured JSON logging middleware with unique `X-Request-ID` in `src/main.py`.
+  - Added `tests/test_logging_redaction.py` asserting zero token leakage (4/4 passed).
+  - Commit SHA: `c4949be`.
+- **C7: README Google Services Table**
+  - Updated `README.md` with structured table detailing all 7 Google services, file paths, env vars, and test commands.
+  - Commit SHA: `e830752`.
+- **C8: Test Suite Health & Duration Optimization**
+  - Replaced network-bound Google JWKS and metadata calls in tests with precise exception mocks.
+  - Suite duration reduced from 52.68s to **12.98s** across **149 passed tests** (target: <15s).
+  - Measured line coverage across `src`: **81%** (1190 statements, 227 missed; target: ≥80%).
+  - Commit SHA: `0843a93`.
+- **C9: Google Places Contract Test**
+  - Created `tests/test_places_contract.py` using `respx` verifying 200 realistic response with geometry, 400 Bad Request, 403 Forbidden, 429 Over Quota, network timeout, catalog fallback, and zero API key leakage (6/6 passed).
+  - Commit SHA: `9d3937a`.
