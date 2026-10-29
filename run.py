@@ -4,7 +4,6 @@ Usage: python run.py
 Starts Uvicorn ASGI server and opens the local application in your browser.
 """
 
-import os
 import sys
 import webbrowser
 from pathlib import Path
@@ -24,8 +23,9 @@ ROOT_DIR = Path(__file__).resolve().parent
 if str(ROOT_DIR) not in sys.path:
     sys.path.insert(0, str(ROOT_DIR))
 
-import uvicorn  # noqa: E402
-from src.config import settings  # noqa: E402
+import uvicorn
+
+from src.config import settings
 
 
 def safe_print(message: str) -> None:

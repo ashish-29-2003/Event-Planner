@@ -21,15 +21,15 @@ ROOT_DIR = Path(__file__).resolve().parent.parent
 if str(ROOT_DIR) not in sys.path:
     sys.path.insert(0, str(ROOT_DIR))
 
-from fastapi import FastAPI, Request  # noqa: E402
-from fastapi.middleware.cors import CORSMiddleware  # noqa: E402
-from fastapi.responses import FileResponse, JSONResponse  # noqa: E402
-from fastapi.staticfiles import StaticFiles  # noqa: E402
+from fastapi import FastAPI, Request
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import FileResponse, JSONResponse
+from fastapi.staticfiles import StaticFiles
 
-from src.api.ai_routes import router as ai_router  # noqa: E402
-from src.api.event_routes import router as event_router  # noqa: E402
-from src.api.export_routes import router as export_router  # noqa: E402
-from src.config import settings  # noqa: E402
+from src.api.ai_routes import router as ai_router
+from src.api.event_routes import router as event_router
+from src.api.export_routes import router as export_router
+from src.config import settings
 
 PUBLIC_DIR = ROOT_DIR / "public"
 
