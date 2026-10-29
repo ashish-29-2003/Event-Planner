@@ -25,7 +25,8 @@ ROOT_DIR = Path(__file__).resolve().parent.parent
 if str(ROOT_DIR) not in sys.path:
     sys.path.insert(0, str(ROOT_DIR))
 
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, HTTPException, Request
+from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
@@ -40,6 +41,18 @@ PUBLIC_DIR = ROOT_DIR / "public"
 
 access_logger = logging.getLogger("samaroh.access")
 access_logger.setLevel(logging.INFO)
+
+STATUS_TO_CODE: dict[int, str] = {
+    400: "BAD_REQUEST",
+    401: "UNAUTHENTICATED",
+    403: "PERMISSION_DENIED",
+    404: "NOT_FOUND",
+    409: "CONFLICT",
+    413: "PAYLOAD_TOO_LARGE",
+    422: "VALIDATION_ERROR",
+    429: "RATE_LIMITED",
+    500: "INTERNAL_ERROR",
+}
 
 
 def create_app() -> FastAPI:
@@ -70,13 +83,74 @@ def create_app() -> FastAPI:
         if content_length:
             try:
                 if int(content_length) > max_body_bytes:
+                    req_id = request.headers.get("x-request-id") or str(uuid.uuid4())
                     return JSONResponse(
                         status_code=413,
-                        content={"detail": "Request payload exceeds maximum allowed size of 1 MB."},
+                        content={
+                            "error": {
+                                "code": "PAYLOAD_TOO_LARGE",
+                                "message": "Request payload exceeds maximum allowed size of 1 MB.",
+                                "request_id": req_id,
+                            },
+                            "detail": "Request payload exceeds maximum allowed size of 1 MB.",
+                        },
+                        headers={"X-Request-ID": req_id, **SECURITY_HEADERS},
                     )
             except ValueError:
                 pass
         return await call_next(request)
+
+    # Standardized Exception Handlers
+    @app.exception_handler(HTTPException)
+    async def custom_http_exception_handler(request: Request, exc: HTTPException):
+        request_id = request.headers.get("x-request-id") or str(uuid.uuid4())
+        code = STATUS_TO_CODE.get(exc.status_code, "ERROR")
+        message = str(exc.detail) if isinstance(exc.detail, str) else "Request error."
+        content = {
+            "error": {
+                "code": code,
+                "message": message,
+                "request_id": request_id,
+                "details": exc.detail,
+            },
+            "detail": exc.detail,
+        }
+        headers = dict(SECURITY_HEADERS)
+        headers["X-Request-ID"] = request_id
+        if exc.headers:
+            headers.update(exc.headers)
+        return JSONResponse(status_code=exc.status_code, content=content, headers=headers)
+
+    @app.exception_handler(RequestValidationError)
+    async def validation_exception_handler(request: Request, exc: RequestValidationError):
+        request_id = request.headers.get("x-request-id") or str(uuid.uuid4())
+        content = {
+            "error": {
+                "code": "VALIDATION_ERROR",
+                "message": "Input validation failed.",
+                "request_id": request_id,
+                "details": exc.errors(),
+            },
+            "detail": exc.errors(),
+        }
+        headers = dict(SECURITY_HEADERS)
+        headers["X-Request-ID"] = request_id
+        return JSONResponse(status_code=422, content=content, headers=headers)
+
+    @app.exception_handler(Exception)
+    async def unhandled_exception_handler(request: Request, exc: Exception):
+        request_id = request.headers.get("x-request-id") or str(uuid.uuid4())
+        content = {
+            "error": {
+                "code": "INTERNAL_ERROR",
+                "message": "An internal server error occurred.",
+                "request_id": request_id,
+            },
+            "detail": "An internal server error occurred.",
+        }
+        headers = dict(SECURITY_HEADERS)
+        headers["X-Request-ID"] = request_id
+        return JSONResponse(status_code=500, content=content, headers=headers)
 
     # Security Headers Middleware
     @app.middleware("http")
