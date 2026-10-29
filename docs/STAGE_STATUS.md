@@ -95,7 +95,7 @@
 ### Stage R1-C Closure Log (in progress)
 - [x] C1: Browser Firebase auth client (`public/js/auth.js`), demo mode banner, user profile menu, token refresh, and tests (`tests/test_browser_auth.py`).
 - [x] C2: STORAGE_BACKEND explicit ('firestore' | 'local' | 'memory'); production fails fast without Firestore; Firestore hierarchy CRUD verified (`tests/test_firestore_backend.py`); data/ verified ignored.
-- [ ] C3: Firestore rules tests run against emulator; rename text-parsing tests.
+- [x] C3: Firestore rules full matrix verified (85 tests in `tests/test_firestore_rules_matrix.py` across 5 subcollections and 5 operations); text-parsing test renamed to `tests/test_firestore_rules_syntax.py`.
 - [ ] C4: Route auth matrix in docs/SECURITY_AND_TESTING.md; route guard test; demo-* read-only for guests.
 - [ ] C5: scripts/smoke_test.py passes against live URL, or status BLOCKED with exact needs.
 - [ ] C6: Centralized config, .env.example complete, App Check bypass off in production, structured JSON logging with redaction test.
