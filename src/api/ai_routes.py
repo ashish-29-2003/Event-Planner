@@ -4,7 +4,7 @@ Exposes endpoints for master plan generation, streaming chat,
 budget re-balancing, and auspicious muhurat windows.
 """
 
-from fastapi import APIRouter, Depends, HTTPException, Request
+from fastapi import APIRouter, Depends, HTTPException, Request, status
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
 
@@ -43,6 +43,16 @@ async def create_event_plan(
         raise HTTPException(
             status_code=429,
             detail="Rate limit reached for AI plan generation. Please explore our instant demo celebrations.",
+        )
+
+    # Per-user quota check (prevents unbounded persistence abuse)
+    existing_events = [
+        e for e in storage_service.list_events(user.uid) if not e.get("id", "").startswith("demo-")
+    ]
+    if len(existing_events) >= 20:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Celebration quota reached: maximum 20 celebrations per user account.",
         )
 
     plan, is_fallback = await gemini_service.generate_master_plan(brief)

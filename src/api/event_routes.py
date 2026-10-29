@@ -93,6 +93,17 @@ async def clone_celebration(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Access denied: cannot clone private celebration of another user",
         )
+
+    # Per-user quota check
+    existing_events = [
+        e for e in storage_service.list_events(user.uid) if not e.get("id", "").startswith("demo-")
+    ]
+    if len(existing_events) >= 20:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Celebration quota reached: maximum 20 celebrations per user account.",
+        )
+
     new_id = storage_service.clone_event(
         source_event_id=event_id,
         new_user_id=user.uid,
