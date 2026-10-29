@@ -3,19 +3,35 @@ FastAPI Application Entrypoint for Samaroh (समारोह).
 GenAI Celebration & Event Planner.
 """
 
+import sys
 from pathlib import Path
 
-from fastapi import FastAPI, Request
-from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import FileResponse, JSONResponse
-from fastapi.staticfiles import StaticFiles
+# Ensure UTF-8 output on Windows consoles
+if sys.platform == "win32":
+    try:
+        if hasattr(sys.stdout, "reconfigure"):
+            sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+        if hasattr(sys.stderr, "reconfigure"):
+            sys.stderr.reconfigure(encoding="utf-8", errors="replace")
+    except Exception:
+        pass
 
-from src.api.ai_routes import router as ai_router
-from src.api.event_routes import router as event_router
-from src.api.export_routes import router as export_router
-from src.config import settings
+# Ensure project root is on sys.path if run directly
+ROOT_DIR = Path(__file__).resolve().parent.parent
+if str(ROOT_DIR) not in sys.path:
+    sys.path.insert(0, str(ROOT_DIR))
 
-PUBLIC_DIR = Path(__file__).resolve().parent.parent / "public"
+from fastapi import FastAPI, Request  # noqa: E402
+from fastapi.middleware.cors import CORSMiddleware  # noqa: E402
+from fastapi.responses import FileResponse, JSONResponse  # noqa: E402
+from fastapi.staticfiles import StaticFiles  # noqa: E402
+
+from src.api.ai_routes import router as ai_router  # noqa: E402
+from src.api.event_routes import router as event_router  # noqa: E402
+from src.api.export_routes import router as export_router  # noqa: E402
+from src.config import settings  # noqa: E402
+
+PUBLIC_DIR = ROOT_DIR / "public"
 
 
 def create_app() -> FastAPI:
@@ -77,3 +93,14 @@ def create_app() -> FastAPI:
 
 
 app = create_app()
+
+if __name__ == "__main__":
+    import uvicorn
+
+    uvicorn.run(
+        "src.main:app",
+        host=settings.HOST,
+        port=settings.PORT,
+        reload=settings.DEBUG,
+        log_level="info",
+    )
