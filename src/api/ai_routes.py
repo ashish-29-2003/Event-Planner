@@ -12,6 +12,7 @@ from src.models.budget import BudgetRebalanceRequest, BudgetRebalanceResponse
 from src.models.event import CelebrationBrief
 from src.services.gemini_service import gemini_service
 from src.services.storage_service import storage_service
+from src.utils.app_check import verify_app_check_token
 from src.utils.auth import AuthenticatedUser, require_authenticated_user
 from src.utils.rate_limiter import SlidingWindowRateLimiter
 
@@ -29,10 +30,11 @@ async def create_event_plan(
     brief: CelebrationBrief,
     request: Request,
     user: AuthenticatedUser = Depends(require_authenticated_user),
+    _app_check: bool = Depends(verify_app_check_token),
 ):
     """
     Synthesizes a complete celebration master plan from a user's brief.
-    Enforces rate limits, validates Firebase authentication,
+    Enforces rate limits, validates Firebase authentication and App Check,
     and returns both the plan and the saved event ID.
     """
     client_ip = request.client.host if request.client else "127.0.0.1"
@@ -52,7 +54,10 @@ async def create_event_plan(
 
 
 @router.post("/rebalance-budget", response_model=BudgetRebalanceResponse)
-async def rebalance_budget(req: BudgetRebalanceRequest):
+async def rebalance_budget(
+    req: BudgetRebalanceRequest,
+    _app_check: bool = Depends(verify_app_check_token),
+):
     """
     AI financial re-balancing agent. Recalculates category allocations
     when a line item cost changes to protect the master budget.

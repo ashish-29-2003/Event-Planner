@@ -29,9 +29,8 @@
   *Role:* Backend Lead | *Status:* Done | *Evidence:* Implemented `FirestoreStorageService` and `InMemoryStorageService` with disk persistence (`data/local_store.json`), added Guest domain model and REST endpoints, verified with 4 tests in `tests/test_storage.py`.
 - [x] **R1-T03:** Author and test Firestore Security Rules (owner-only access to `/users/{uid}/events/**`).  
   *Role:* Security Lead | *Status:* Done | *Evidence:* Authored `firestore.rules`, `firebase.json`, `firestore.indexes.json`, verified owner isolation and public read-only rules with 6 tests in `tests/test_firestore_rules.py`.
-- [ ] **R1-T04:** Implement Firebase App Check verification on AI generation and state-mutating endpoints.  
-  *Role:* Security Lead | *Est:* 2h | *Deps:* R1-T01  
-  *Acceptance:* Enforces valid App Check token in production config with test bypass in mock mode.
+- [x] **R1-T04:** Implement Firebase App Check verification on AI generation and state-mutating endpoints.  
+  *Role:* Security Lead | *Status:* Done | *Evidence:* Implemented `src/utils/app_check.py` and wired into `/api/ai/plan` and `/api/ai/rebalance-budget`, verified with 4 tests in `tests/test_app_check.py`.
 - [ ] **R1-T05:** Implement Google Maps Platform Places server-side proxy for venue and vendor discovery with graceful degradation.  
   *Role:* Backend Lead | *Est:* 2h | *Deps:* R1-T02  
   *Acceptance:* Returns verified place candidates when API key present; returns curated local defaults when key omitted.
