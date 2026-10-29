@@ -278,3 +278,32 @@ Implement a dedicated server-side proxy endpoint `GET /api/places/search` in Fas
 2. Proxies normalized vendor data (name, address, rating, user review count, price level) to the client.
 3. Degrades gracefully: if `GOOGLE_MAPS_API_KEY` is omitted, returns curated city candidates with a transparent indicator (`source: "curated_catalog"`).
 
+
+---
+
+## ADR 013: Hosting Architecture & Runtime Topology: Cloud Run vs Netlify Serverless
+
+- **Status:** Accepted
+- **Date:** 2026-10-29
+- **Decider:** Principal Software Architect & DevOps Lead
+
+### Context
+Samaroh requires low-latency Server-Sent Events (SSE) streaming for Gemini GenAI planning, persistent connections, and deep Google Cloud integration (Firebase Auth, Cloud Firestore, Google Maps Places API). Serverless hosts (like Netlify Functions on AWS Lambda) impose strict 10s–26s execution timeouts, buffer HTTP streams, and terminate state across cold starts. Conversely, Netlify provides effortless edge CDN distribution for static assets and Git-driven continuous previews.
+
+### Decision
+Adopt a **Dual-Topology Hosting Architecture**:
+1. **Primary Production Runtime (Google Cloud Run):**
+   - Containerized deployment using an optimized multi-stage `Dockerfile` based on `python:3.13-slim`.
+   - Runs non-root (`samaroh` user) on port 8080 with automated health check probes (`GET /api/health`).
+   - Native HTTP/2 streaming support: Gemini SSE tokens stream immediately to the client without buffering or 10-second gateway cutoffs.
+   - Zero-key IAM integration: Google Cloud Run service accounts automatically authenticate `firebase-admin` and `google-cloud-firestore` without committing or mounting credentials JSON files.
+2. **Serverless Preview Runtime (Netlify + Mangum):**
+   - Static frontend assets served from `/public` via Netlify Global Edge CDN with automated Brotli/Gzip compression.
+   - Dynamic API requests routed through `netlify/functions/api.py` using `mangum` ASGI adapter.
+   - In-memory / file-backed JSON store provides instant demo exploration even if Cloud Firestore permissions are unconfigured during external judging.
+3. **Environment Parity:**
+   Both environments share the identical configuration contract (`GEMINI_API_KEY`, `FIREBASE_PROJECT_ID`, `GOOGLE_MAPS_API_KEY`, `ENABLE_AUTH_ENFORCEMENT`, `ENABLE_APP_CHECK`).
+
+### Consequences
+- **Positive:** Uncompromised streaming GenAI performance on Google Cloud; seamless static CDN caching on Netlify; resilient fallback guarantees zero broken demo states for hackathon evaluators.
+- **Negative:** Requires maintaining both `Dockerfile` and `netlify.toml` / serverless function configuration.
