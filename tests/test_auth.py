@@ -4,6 +4,8 @@ Verifies token verification, 401 protection on mutating endpoints,
 and guest/demo mode access to seeded celebrations.
 """
 
+from unittest.mock import patch
+
 import pytest
 from fastapi import HTTPException
 from fastapi.security import HTTPAuthorizationCredentials
@@ -69,20 +71,24 @@ async def test_invalid_bearer_token_returns_401():
     """Request with garbage bearer token must return 401."""
     transport = ASGITransport(app=app)
     async with AsyncClient(transport=transport, base_url="http://test") as client:
-        res = await client.post(
-            "/api/ai/plan",
-            headers={"Authorization": "Bearer not-a-real-firebase-token-xyz"},
-            json={
-                "title": "Invalid Token Test",
-                "event_type": "birthday",
-                "culture": "Urban",
-                "city": "Mumbai",
-                "target_budget": 50000.0,
-                "guest_count": 20,
-            },
-        )
-        assert res.status_code == 401
-        assert "Invalid or expired" in res.json().get("detail", "")
+        with patch(
+            "firebase_admin.auth.verify_id_token",
+            side_effect=ValueError("Token invalid: signature mismatch"),
+        ):
+            res = await client.post(
+                "/api/ai/plan",
+                headers={"Authorization": "Bearer not-a-real-firebase-token-xyz"},
+                json={
+                    "title": "Invalid Token Test",
+                    "event_type": "birthday",
+                    "culture": "Urban",
+                    "city": "Mumbai",
+                    "target_budget": 50000.0,
+                    "guest_count": 20,
+                },
+            )
+            assert res.status_code == 401
+            assert "Invalid or expired" in res.json().get("detail", "")
 
 
 @pytest.mark.asyncio

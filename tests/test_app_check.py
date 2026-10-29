@@ -3,6 +3,8 @@ Unit & Integration Tests for Firebase App Check Verification.
 Verifies token enforcement on mutating endpoints, mock bypass, and 401 rejections.
 """
 
+from unittest.mock import patch
+
 import pytest
 from fastapi import HTTPException
 
@@ -40,6 +42,10 @@ async def test_app_check_test_token_accepted(monkeypatch):
 async def test_app_check_invalid_token_rejected(monkeypatch):
     """When ENABLE_APP_CHECK is True, invalid tokens are rejected with 401."""
     monkeypatch.setattr(settings, "ENABLE_APP_CHECK", True)
-    with pytest.raises(HTTPException) as exc_info:
-        await verify_app_check_token("invalid-unverified-payload-xyz")
-    assert exc_info.value.status_code == 401
+    with patch(
+        "firebase_admin.app_check.verify_token",
+        side_effect=ValueError("Invalid App Check token signature"),
+    ):
+        with pytest.raises(HTTPException) as exc_info:
+            await verify_app_check_token("invalid-unverified-payload-xyz")
+        assert exc_info.value.status_code == 401

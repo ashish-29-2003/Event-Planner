@@ -3,6 +3,8 @@ Unit & Integration Tests for Storage Service and Firestore Repository.
 Verifies data persistence, seed loading, restart survival, and Guest management.
 """
 
+from unittest.mock import patch
+
 import pytest
 from httpx import ASGITransport, AsyncClient
 
@@ -78,14 +80,15 @@ async def test_storage_data_persists_across_restart(tmp_path):
 def test_firestore_adapter_fallback():
     """Verifies FirestoreStorageService operates with fallback when Firestore is offline."""
     fallback = InMemoryStorageService(persistence_path=None)
-    fs_store = FirestoreStorageService(fallback_adapter=fallback)
+    with patch("firebase_admin.firestore.client", side_effect=Exception("No GCP connection")):
+        fs_store = FirestoreStorageService(fallback_adapter=fallback)
 
-    # Should safely return fallback events without crashing
-    events = fs_store.list_events("demo-user")
-    assert len(events) >= 3
-    event = fs_store.get_event("demo-wedding-jaipur")
-    assert event is not None
-    assert event["city"] == "Jaipur"
+        # Should safely return fallback events without crashing
+        events = fs_store.list_events("demo-user")
+        assert len(events) >= 3
+        event = fs_store.get_event("demo-wedding-jaipur")
+        assert event is not None
+        assert event["city"] == "Jaipur"
 
 
 @pytest.mark.asyncio
