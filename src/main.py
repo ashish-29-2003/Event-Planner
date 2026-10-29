@@ -29,6 +29,7 @@ from fastapi.staticfiles import StaticFiles
 from src.api.ai_routes import router as ai_router
 from src.api.event_routes import router as event_router
 from src.api.export_routes import router as export_router
+from src.api.places_routes import router as places_router
 from src.config import settings
 
 PUBLIC_DIR = ROOT_DIR / "public"
@@ -66,6 +67,7 @@ def create_app() -> FastAPI:
     app.include_router(ai_router)
     app.include_router(event_router)
     app.include_router(export_router)
+    app.include_router(places_router)
 
     # Health check endpoint
     @app.get("/api/health")
@@ -76,6 +78,7 @@ def create_app() -> FastAPI:
             "version": settings.VERSION,
             "environment": settings.ENVIRONMENT,
             "gemini_configured": bool(settings.GEMINI_API_KEY),
+            "google_maps_configured": bool(settings.GOOGLE_MAPS_API_KEY),
         }
 
     # Serve static assets if public directory exists
@@ -102,5 +105,4 @@ if __name__ == "__main__":
         host=settings.HOST,
         port=settings.PORT,
         reload=settings.DEBUG,
-        log_level="info",
     )

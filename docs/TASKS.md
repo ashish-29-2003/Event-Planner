@@ -31,9 +31,8 @@
   *Role:* Security Lead | *Status:* Done | *Evidence:* Authored `firestore.rules`, `firebase.json`, `firestore.indexes.json`, verified owner isolation and public read-only rules with 6 tests in `tests/test_firestore_rules.py`.
 - [x] **R1-T04:** Implement Firebase App Check verification on AI generation and state-mutating endpoints.  
   *Role:* Security Lead | *Status:* Done | *Evidence:* Implemented `src/utils/app_check.py` and wired into `/api/ai/plan` and `/api/ai/rebalance-budget`, verified with 4 tests in `tests/test_app_check.py`.
-- [ ] **R1-T05:** Implement Google Maps Platform Places server-side proxy for venue and vendor discovery with graceful degradation.  
-  *Role:* Backend Lead | *Est:* 2h | *Deps:* R1-T02  
-  *Acceptance:* Returns verified place candidates when API key present; returns curated local defaults when key omitted.
+- [x] **R1-T05:** Implement Google Maps Platform Places server-side proxy for venue and vendor discovery with graceful degradation.  
+  *Role:* Backend Lead | *Status:* Done | *Evidence:* Implemented `src/services/places_service.py` and `src/api/places_routes.py` with `/api/places/search`, verified Google Maps parsing and curated catalog fallback with 3 tests in `tests/test_places.py`.
 - [ ] **R1-T06:** Write Hosting Architecture ADR (Cloud Run vs Netlify serverless) in `docs/DECISIONS.md`.  
   *Role:* Architect | *Est:* 1h | *Deps:* R1-T02  
   *Acceptance:* Documents how Firebase Auth and Firestore integrate cleanly with hosting target.
