@@ -42,6 +42,7 @@ venv.bak/
 firebase-credentials.json
 
 # Local runtime data
+data/
 data/*.json
 
 # Testing & Coverage

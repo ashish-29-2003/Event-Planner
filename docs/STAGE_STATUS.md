@@ -94,7 +94,7 @@
 
 ### Stage R1-C Closure Log (in progress)
 - [x] C1: Browser Firebase auth client (`public/js/auth.js`), demo mode banner, user profile menu, token refresh, and tests (`tests/test_browser_auth.py`).
-- [ ] C2: STORAGE_BACKEND explicit; production refuses startup without Firestore; emulator CRUD and restart tests.
+- [x] C2: STORAGE_BACKEND explicit ('firestore' | 'local' | 'memory'); production fails fast without Firestore; Firestore hierarchy CRUD verified (`tests/test_firestore_backend.py`); data/ verified ignored.
 - [ ] C3: Firestore rules tests run against emulator; rename text-parsing tests.
 - [ ] C4: Route auth matrix in docs/SECURITY_AND_TESTING.md; route guard test; demo-* read-only for guests.
 - [ ] C5: scripts/smoke_test.py passes against live URL, or status BLOCKED with exact needs.

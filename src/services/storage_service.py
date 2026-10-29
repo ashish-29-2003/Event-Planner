@@ -6,7 +6,6 @@ and a resilient file-backed local adapter for zero-friction demo and offline jud
 
 import json
 import logging
-import os
 import uuid
 from abc import ABC, abstractmethod
 from pathlib import Path
@@ -324,14 +323,22 @@ class FirestoreStorageService(BaseStorageService):
     - vendors
     - ideas
     - guests
-    Falls back gracefully to InMemoryStorageService on network or credentials absence.
+    When allow_fallback=False (mandatory in production), fails fast on error.
     """
 
-    def __init__(self, fallback_adapter: InMemoryStorageService):
-        self._fallback = fallback_adapter
-        self._client: Any = None
-        self._initialized = False
-        self._init_firestore()
+    def __init__(
+        self,
+        fallback_adapter: InMemoryStorageService | None = None,
+        allow_fallback: bool = True,
+        firestore_client: Any = None,
+    ):
+        self._fallback = fallback_adapter or InMemoryStorageService(persistence_path=None)
+        self._allow_fallback = allow_fallback
+        self._client = firestore_client
+        self._initialized = bool(firestore_client)
+
+        if not self._initialized:
+            self._init_firestore()
 
     def _init_firestore(self):
         try:
@@ -344,41 +351,81 @@ class FirestoreStorageService(BaseStorageService):
             self._initialized = True
             logger.info("Firestore client initialized successfully.")
         except Exception as exc:
+            if not self._allow_fallback:
+                raise RuntimeError(
+                    f"FATAL: Cloud Firestore persistence required, but initialization failed: {exc}. "
+                    "In production or STORAGE_BACKEND=firestore, please configure FIREBASE_CREDENTIALS_PATH, "
+                    "GOOGLE_APPLICATION_CREDENTIALS, or FIRESTORE_EMULATOR_HOST."
+                ) from exc
             logger.warning(
-                "Cloud Firestore client unavailable: %s. Operating with resilient local fallback adapter.",
+                "Cloud Firestore client unavailable: %s. Operating with local fallback adapter.",
                 exc,
             )
             self._initialized = False
 
     def list_events(self, user_id: str = "demo-user") -> list[dict]:
+        # Demo user events always include the seed celebrations
+        demo_events = self._fallback.list_events("demo-user")
         if not self._initialized or not self._client:
+            if not self._allow_fallback:
+                raise RuntimeError("Cloud Firestore is not initialized")
             return self._fallback.list_events(user_id)
         try:
             docs = self._client.collection("users").document(user_id).collection("events").stream()
-            results = [d.to_dict() for d in docs]
-            # Always include demo events for exploration
-            for d in self._fallback.list_events("demo-user"):
-                if d["id"] not in [r.get("id") for r in results]:
-                    results.append(d)
-            return results
+            user_events = [d.to_dict() for d in docs]
+            # Combine user events with public demo events
+            user_ids = {e["id"] for e in user_events}
+            for d in demo_events:
+                if d["id"] not in user_ids:
+                    user_events.append(d)
+            return user_events
         except Exception as exc:
+            if not self._allow_fallback:
+                raise
             logger.warning("Firestore list_events failed: %s; using fallback", exc)
             return self._fallback.list_events(user_id)
 
     def get_event(self, event_id: str) -> dict | None:
-        if event_id.startswith("demo-") or not self._initialized or not self._client:
+        if event_id.startswith("demo-"):
+            return self._fallback.get_event(event_id)
+        if not self._initialized or not self._client:
+            if not self._allow_fallback:
+                raise RuntimeError("Cloud Firestore is not initialized")
             return self._fallback.get_event(event_id)
         try:
-            # Query collection group or fallback
-            return self._fallback.get_event(event_id)
-        except Exception:
+            # Query collection group 'events' to find matching event document
+            results = self._client.collection_group("events").where("id", "==", event_id).limit(1).stream()
+            for doc in results:
+                return doc.to_dict()
+            return None
+        except Exception as exc:
+            if not self._allow_fallback:
+                raise
+            logger.warning("Firestore get_event failed: %s; using fallback", exc)
             return self._fallback.get_event(event_id)
 
     def create_event_from_plan(
         self, brief: CelebrationBrief, plan: EventMasterPlan, user_id: str = "demo-user"
     ) -> str:
-        # Also store locally so it is immediately available
-        event_id = self._fallback.create_event_from_plan(brief, plan, user_id=user_id)
+        event_id = f"event-{uuid.uuid4().hex[:8]}"
+        ev_data = {
+            "id": event_id,
+            "user_id": user_id,
+            "title": plan.celebration_title,
+            "event_type": str(
+                brief.event_type.value if hasattr(brief.event_type, "value") else brief.event_type
+            ),
+            "culture": brief.culture,
+            "city": brief.city,
+            "target_date": brief.target_date,
+            "target_budget": plan.target_budget,
+            "guest_count": plan.guest_count,
+            "language": brief.language,
+            "blessing_note": None,
+            "auspicious_guidance": plan.auspicious_guidance,
+            "disclaimer": plan.disclaimer,
+        }
+
         if self._initialized and self._client:
             try:
                 event_ref = (
@@ -387,32 +434,68 @@ class FirestoreStorageService(BaseStorageService):
                     .collection("events")
                     .document(event_id)
                 )
-                ev_data = self._fallback.get_event(event_id)
-                if ev_data:
-                    event_ref.set(ev_data)
-                # Store subcollections
-                for item in self._fallback.get_budget_items(event_id):
+                event_ref.set(ev_data)
+                for item in plan.budget_breakdown:
                     event_ref.collection("budgets").document(item.id).set(item.model_dump())
-                for task in self._fallback.get_tasks(event_id):
+                for task in plan.timeline_tasks:
                     event_ref.collection("tasks").document(task.id).set(task.model_dump())
-                for vendor in self._fallback.get_vendors(event_id):
+                for vendor in plan.vendor_checklist:
                     event_ref.collection("vendors").document(vendor.id).set(vendor.model_dump())
-                for idea in self._fallback.get_ideas(event_id):
+                for idea in plan.personalized_ideas:
                     event_ref.collection("ideas").document(idea.id).set(idea.model_dump())
-                for guest in self._fallback.get_guests(event_id):
-                    event_ref.collection("guests").document(guest.id).set(guest.model_dump())
+                initial_guest = GuestItem(
+                    id=f"guest-{uuid.uuid4().hex[:6]}",
+                    name="Family VIP Host",
+                    affiliation=GuestAffiliation.FAMILY,
+                    rsvp_status=RSVPStatus.ATTENDING,
+                    plus_ones=2,
+                    invitation_sent=True,
+                )
+                event_ref.collection("guests").document(initial_guest.id).set(initial_guest.model_dump())
             except Exception as exc:
+                if not self._allow_fallback:
+                    raise
                 logger.warning("Firestore create_event_from_plan failed: %s", exc)
+
+        # In fallback/dev mode, also cache locally
+        if self._allow_fallback or not self._initialized:
+            self._fallback._events[event_id] = ev_data
+            self._fallback._budgets[event_id] = plan.budget_breakdown
+            self._fallback._tasks[event_id] = plan.timeline_tasks
+            self._fallback._vendors[event_id] = plan.vendor_checklist
+            self._fallback._ideas[event_id] = plan.personalized_ideas
+            self._fallback._save_to_disk()
+
         return event_id
 
     def get_budget_items(self, event_id: str) -> list[BudgetItem]:
-        return self._fallback.get_budget_items(event_id)
+        if event_id.startswith("demo-") or not self._initialized or not self._client:
+            return self._fallback.get_budget_items(event_id)
+        try:
+            results = (
+                self._client.collection_group("budgets")
+                .where("event_id", "==", event_id)
+                .stream()
+            )
+            items = [BudgetItem(**doc.to_dict()) for doc in results]
+            if not items:
+                return self._fallback.get_budget_items(event_id)
+            return items
+        except Exception:
+            return self._fallback.get_budget_items(event_id)
 
     def update_budget_items(self, event_id: str, items: list[BudgetItem]) -> None:
         self._fallback.update_budget_items(event_id, items)
 
     def get_tasks(self, event_id: str) -> list[TaskItem]:
-        return self._fallback.get_tasks(event_id)
+        if event_id.startswith("demo-") or not self._initialized or not self._client:
+            return self._fallback.get_tasks(event_id)
+        try:
+            results = self._client.collection_group("tasks").where("event_id", "==", event_id).stream()
+            items = [TaskItem(**doc.to_dict()) for doc in results]
+            return items or self._fallback.get_tasks(event_id)
+        except Exception:
+            return self._fallback.get_tasks(event_id)
 
     def update_task_status(self, event_id: str, task_id: str, status: str) -> bool:
         return self._fallback.update_task_status(event_id, task_id, status)
@@ -434,14 +517,31 @@ class FirestoreStorageService(BaseStorageService):
 
 
 def get_storage_service() -> BaseStorageService:
-    """Factory creating the primary storage service with Cloud Firestore or local store."""
-    in_memory = InMemoryStorageService()
-    if os.getenv("USE_FIRESTORE", "false").lower() in ("true", "1", "yes"):
-        return FirestoreStorageService(fallback_adapter=in_memory)
-    # If credentials path or project id provided, attempt firestore
-    if settings.FIREBASE_CREDENTIALS_PATH or os.getenv("GOOGLE_APPLICATION_CREDENTIALS"):
-        return FirestoreStorageService(fallback_adapter=in_memory)
-    return in_memory
+    """
+    Factory creating the active storage service based on configuration.
+    Enforces that production environments MUST use Cloud Firestore and fail fast if missing.
+    """
+    backend = settings.STORAGE_BACKEND
+    is_prod = settings.ENVIRONMENT.lower() == "production"
+
+    if is_prod or backend == "firestore":
+        logger.info("Initializing Cloud Firestore persistent storage...")
+        # Production fails fast with no silent fallback
+        allow_fallback = not is_prod
+        return FirestoreStorageService(
+            fallback_adapter=InMemoryStorageService(persistence_path=None) if allow_fallback else None,
+            allow_fallback=allow_fallback,
+        )
+
+    if backend == "local":
+        logger.info("Initializing file-backed local persistence store: %s", LOCAL_STORE_PATH)
+        return InMemoryStorageService(persistence_path=LOCAL_STORE_PATH)
+
+    if backend == "memory":
+        logger.info("Initializing ephemeral in-memory storage store.")
+        return InMemoryStorageService(persistence_path=None)
+
+    raise ValueError(f"Invalid STORAGE_BACKEND: '{backend}'. Expected 'firestore', 'local', or 'memory'.")
 
 
 # Backwards-compatibility alias

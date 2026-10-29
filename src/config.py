@@ -44,6 +44,12 @@ class Settings:
         "yes",
     )
 
+    # Persistence Backend: 'firestore', 'local', or 'memory'
+    STORAGE_BACKEND: str = os.getenv(
+        "STORAGE_BACKEND",
+        "firestore" if os.getenv("ENVIRONMENT", "development") == "production" else "local",
+    ).lower()
+
     # Security & Rate Limiting
     RATE_LIMIT_AI_REQUESTS: int = 20  # per 10 minutes
     RATE_LIMIT_WINDOW_SECONDS: int = 600
