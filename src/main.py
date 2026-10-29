@@ -3,7 +3,11 @@ FastAPI Application Entrypoint for Samaroh (समारोह).
 GenAI Celebration & Event Planner.
 """
 
+import json
+import logging
 import sys
+import time
+import uuid
 from pathlib import Path
 
 # Ensure UTF-8 output on Windows consoles
@@ -34,6 +38,9 @@ from src.config import settings
 
 PUBLIC_DIR = ROOT_DIR / "public"
 
+access_logger = logging.getLogger("samaroh.access")
+access_logger.setLevel(logging.INFO)
+
 
 def create_app() -> FastAPI:
     app = FastAPI(
@@ -45,10 +52,10 @@ def create_app() -> FastAPI:
         openapi_url="/api/openapi.json",
     )
 
-    # CORS configuration
+    # CORS configuration using centralized settings
     app.add_middleware(
         CORSMiddleware,
-        allow_origins=["*"],
+        allow_origins=settings.CORS_ORIGINS,
         allow_credentials=True,
         allow_methods=["*"],
         allow_headers=["*"],
@@ -61,6 +68,36 @@ def create_app() -> FastAPI:
         response.headers["X-Content-Type-Options"] = "nosniff"
         response.headers["X-Frame-Options"] = "DENY"
         response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
+        return response
+
+    # Structured JSON Logging & Request ID Middleware
+    @app.middleware("http")
+    async def structured_json_logging_middleware(request: Request, call_next):
+        request_id = request.headers.get("x-request-id") or str(uuid.uuid4())
+        start_time = time.perf_counter()
+
+        response = await call_next(request)
+
+        duration_ms = round((time.perf_counter() - start_time) * 1000, 2)
+        response.headers["X-Request-ID"] = request_id
+
+        # Extract UID safely without recording raw token or credentials
+        auth_header = request.headers.get("authorization")
+        user_id = None
+        if auth_header and "Bearer test-token-" in auth_header:
+            user_id = auth_header.split("Bearer test-token-")[-1]
+
+        log_entry = {
+            "timestamp": time.time(),
+            "request_id": request_id,
+            "method": request.method,
+            "path": request.url.path,
+            "status_code": response.status_code,
+            "duration_ms": duration_ms,
+            "user_id": user_id,
+            "client_ip": request.client.host if request.client else "unknown",
+        }
+        access_logger.info(json.dumps(log_entry))
         return response
 
     # Mount API routers
@@ -97,13 +134,3 @@ def create_app() -> FastAPI:
 
 
 app = create_app()
-
-if __name__ == "__main__":
-    import uvicorn
-
-    uvicorn.run(
-        "src.main:app",
-        host=settings.HOST,
-        port=settings.PORT,
-        reload=settings.DEBUG,
-    )

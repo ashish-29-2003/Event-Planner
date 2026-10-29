@@ -87,10 +87,10 @@ def main():
     args = parser.parse_args()
     base_url = args.url.rstrip("/")
 
-    print(f"\n==================================================")
-    print(f"SAMAROH (समारोह) LIVE SMOKE TEST")
+    print("\n==================================================")
+    print("SAMAROH (समारोह) LIVE SMOKE TEST")
     print(f"Target: {base_url}")
-    print(f"==================================================\n")
+    print("==================================================\n")
 
     results = []
 
@@ -120,14 +120,14 @@ def main():
             data={"event_type": "wedding", "title": "Test Plan"},
         )
         if status == 401:
-            return True, f"Protected route returned 401 Unauthorized"
+            return True, "Protected route returned 401 Unauthorized"
         return False, f"Expected 401 Unauthorized, got {status}: {body}"
 
     results.append(("3. Auth Guard (POST /api/ai/plan)", *run_check("auth_guard", check_unauthenticated_reject)))
 
     # Check 4: Security headers on root/index
     def check_security_headers():
-        status, headers, _ = http_request(f"{base_url}/")
+        _status, headers, _ = http_request(f"{base_url}/")
         missing = []
         lower_headers = {k.lower(): v for k, v in headers.items()}
         if lower_headers.get("x-content-type-options") != "nosniff":

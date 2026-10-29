@@ -20,6 +20,7 @@ async def verify_app_check_token(
     Validates the Firebase App Check token.
     Bypassed in development/testing when ENABLE_APP_CHECK is False.
     Enforces cryptographically signed token when ENABLE_APP_CHECK is True.
+    Dev bypass tokens fail closed in production.
     """
     if not settings.ENABLE_APP_CHECK:
         return True
@@ -32,8 +33,16 @@ async def verify_app_check_token(
             headers={"WWW-Authenticate": "AppCheck"},
         )
 
-    # Test / Mock token support for automated CI and integration tests
-    if x_firebase_appcheck.startswith(("test-appcheck-", "mock-appcheck-")):
+    # In production, dev bypass tokens are strictly forbidden and fail closed
+    is_mock = x_firebase_appcheck.startswith(("test-appcheck-", "mock-appcheck-", "test-dev-bypass"))
+    if is_mock:
+        if settings.ENVIRONMENT == "production":
+            logger.error("Security alert: Attempted dev bypass token in production environment")
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Dev bypass tokens rejected in production environment.",
+                headers={"WWW-Authenticate": "AppCheck"},
+            )
         return True
 
     try:
