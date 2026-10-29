@@ -50,6 +50,26 @@ function triggerCelebrationConfetti() {
   }
 }
 
+// Safe HTML escaping & DOMPurify sanitization to eliminate XSS sinks
+function escapeHTML(str) {
+  if (str === null || str === undefined) return '';
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+window.escapeHTML = escapeHTML;
+
+function sanitizeHTML(html) {
+  if (typeof DOMPurify !== 'undefined' && DOMPurify.sanitize) {
+    return DOMPurify.sanitize(html);
+  }
+  return escapeHTML(html);
+}
+window.sanitizeHTML = sanitizeHTML;
+
 document.addEventListener('DOMContentLoaded', async () => {
   // 1. Initialize Theme
   const theme = store.state.theme;
@@ -215,10 +235,10 @@ function renderExecutiveOverview() {
     nextTasksEl.innerHTML = pending.map(t => `
       <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.5rem 0; border-bottom: 1px solid var(--border-light);">
         <div>
-          <span style="font-size: 0.875rem; font-weight: 500;">${t.title}</span>
-          <span style="font-size: 0.775rem; color: var(--text-secondary); margin-left: 0.5rem;">Due: ${t.due_date || 'TBD'}</span>
+          <span style="font-size: 0.875rem; font-weight: 500;">${escapeHTML(t.title)}</span>
+          <span style="font-size: 0.775rem; color: var(--text-secondary); margin-left: 0.5rem;">Due: ${escapeHTML(t.due_date || 'TBD')}</span>
         </div>
-        <span class="badge">${t.owner_role}</span>
+        <span class="badge">${escapeHTML(t.owner_role)}</span>
       </div>
     `).join('') || '<p style="color: var(--text-secondary); font-size: 0.85rem; padding: 0.4rem 0;">All immediate milestones completed.</p>';
   }
@@ -240,15 +260,15 @@ function renderBudgetMatrix() {
   container.innerHTML = budgets.map((b) => `
     <tr>
       <td>
-        <strong>${b.name}</strong>
-        ${b.notes ? `<div style="font-size: 0.775rem; color: var(--text-secondary); margin-top: 0.15rem;">${b.notes}</div>` : ''}
+        <strong>${escapeHTML(b.name)}</strong>
+        ${b.notes ? `<div style="font-size: 0.775rem; color: var(--text-secondary); margin-top: 0.15rem;">${escapeHTML(b.notes)}</div>` : ''}
       </td>
-      <td><span class="badge">${b.category}</span></td>
+      <td><span class="badge">${escapeHTML(b.category)}</span></td>
       <td style="font-weight: 600;">${formatINR(b.estimated_cost)}</td>
       <td style="color: var(--accent-success); font-weight: 500;">${formatINR(b.advance_paid)}</td>
       <td>
         <span class="badge ${b.status === 'paid' ? 'badge-success' : 'badge-warm'}">
-          ${b.status.toUpperCase()}
+          ${escapeHTML(b.status.toUpperCase())}
         </span>
       </td>
     </tr>
@@ -286,16 +306,16 @@ function renderTimeline() {
 
   container.innerHTML = tasks.map(t => `
     <div class="card" style="margin-bottom: 0.65rem; padding: 0.85rem 1rem; display: flex; align-items: flex-start; gap: 0.85rem;">
-      <input type="checkbox" ${t.status === 'done' ? 'checked' : ''} style="margin-top: 0.25rem;" onchange="toggleTaskStatus('${activeEventId}', '${t.id}', this.checked)">
+      <input type="checkbox" ${t.status === 'done' ? 'checked' : ''} style="margin-top: 0.25rem;" onchange="toggleTaskStatus('${escapeHTML(activeEventId)}', '${escapeHTML(t.id)}', this.checked)">
       <div style="flex: 1;">
         <div style="display: flex; justify-content: space-between; align-items: baseline;">
-          <h3 style="font-size: 0.925rem; font-weight: 600; text-decoration: ${t.status === 'done' ? 'line-through' : 'none'}; color: ${t.status === 'done' ? 'var(--text-muted)' : 'var(--text-primary)'};">${t.title}</h3>
-          <span style="font-size: 0.775rem; color: var(--text-secondary);">${t.due_date || 'Date TBD'}</span>
+          <h3 style="font-size: 0.925rem; font-weight: 600; text-decoration: ${t.status === 'done' ? 'line-through' : 'none'}; color: ${t.status === 'done' ? 'var(--text-muted)' : 'var(--text-primary)'};">${escapeHTML(t.title)}</h3>
+          <span style="font-size: 0.775rem; color: var(--text-secondary);">${escapeHTML(t.due_date || 'Date TBD')}</span>
         </div>
-        <p style="font-size: 0.825rem; color: var(--text-secondary); margin: 0.2rem 0 0.4rem 0;">${t.description}</p>
+        <p style="font-size: 0.825rem; color: var(--text-secondary); margin: 0.2rem 0 0.4rem 0;">${escapeHTML(t.description)}</p>
         <div style="display: flex; gap: 0.4rem;">
-          <span class="badge badge-warm">${t.phase}</span>
-          <span class="badge">${t.owner_role}</span>
+          <span class="badge badge-warm">${escapeHTML(t.phase)}</span>
+          <span class="badge">${escapeHTML(t.owner_role)}</span>
         </div>
       </div>
     </div>
@@ -346,20 +366,20 @@ function renderVendors(filterCategory = 'all') {
     <div class="card" style="display: flex; flex-direction: column; justify-content: space-between;">
       <div>
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
-          <span class="badge badge-warm">${v.category}</span>
+          <span class="badge badge-warm">${escapeHTML(v.category)}</span>
           <span style="font-size: 0.775rem; font-weight: 600; color: var(--text-secondary);">★ ${v.rating || 4.8}</span>
         </div>
-        <h3 style="font-size: 0.975rem; font-weight: 600; margin-bottom: 0.25rem;">${v.business_name}</h3>
-        <p style="font-size: 0.825rem; color: var(--text-secondary); margin-bottom: 0.65rem;">${v.notes || 'Deliverables confirmed per brief.'}</p>
-        <div style="font-size: 0.775rem; color: var(--text-muted); margin-bottom: 0.2rem;">📍 ${v.address || 'Local vendor'}</div>
-        <div style="font-size: 0.775rem; color: var(--text-muted);">📞 ${v.phone || 'Available upon request'}</div>
+        <h3 style="font-size: 0.975rem; font-weight: 600; margin-bottom: 0.25rem;">${escapeHTML(v.business_name)}</h3>
+        <p style="font-size: 0.825rem; color: var(--text-secondary); margin-bottom: 0.65rem;">${escapeHTML(v.notes || 'Deliverables confirmed per brief.')}</p>
+        <div style="font-size: 0.775rem; color: var(--text-muted); margin-bottom: 0.2rem;">📍 ${escapeHTML(v.address || 'Local vendor')}</div>
+        <div style="font-size: 0.775rem; color: var(--text-muted);">📞 ${escapeHTML(v.phone || 'Available upon request')}</div>
       </div>
       <div style="margin-top: 1rem; padding-top: 0.75rem; border-top: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: baseline;">
         <div>
           <div style="font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.04em; color: var(--text-secondary);">Indicative Quote</div>
           <div style="font-size: 1.05rem; font-weight: 700;">${formatINR(v.quote_amount)}</div>
         </div>
-        <span class="badge ${v.status === 'contracted' ? 'badge-success' : 'badge-warm'}">${v.status.toUpperCase()}</span>
+        <span class="badge ${v.status === 'contracted' ? 'badge-success' : 'badge-warm'}">${escapeHTML(v.status.toUpperCase())}</span>
       </div>
     </div>
   `).join('');
@@ -373,11 +393,14 @@ function renderIdeas() {
   container.innerHTML = ideas.map(i => `
     <div class="card" style="margin-bottom: 0.85rem;">
       <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.35rem;">
-        <span class="badge badge-warm">${i.tab_category.replace('_', ' ')}</span>
-        <span style="font-size: 0.8rem; font-weight: 600; color: var(--text-secondary);">${i.cost_bracket}</span>
+        <span class="badge badge-warm">${escapeHTML(i.tab_category.replace('_', ' '))}</span>
+        <span style="font-size: 0.8rem; font-weight: 600; color: var(--text-secondary);">${escapeHTML(i.cost_bracket)}</span>
       </div>
-      <h3 style="font-size: 1rem; font-weight: 600; margin-bottom: 0.25rem;">${i.title}</h3>
-      <p style="font-size: 0.85rem; color: var(--text-secondary); line-height: 1.5; margin-bottom: 0.6rem;">${i.description}</p>
+      <h3 style="font-size: 1rem; font-weight: 600; margin-bottom: 0.25rem;">${escapeHTML(i.title)}</h3>
+      <p style="font-size: 0.85rem; color: var(--text-secondary); line-height: 1.5; margin-bottom: 0.6rem;">${escapeHTML(i.description)}</p>
+    </div>
+  `).join('');
+}
       <div style="background: var(--bg-subtle); padding: 0.5rem 0.75rem; border-radius: var(--radius-sm); font-size: 0.8rem; color: var(--text-secondary); border-left: 2px solid var(--text-primary);">
         <strong style="color: var(--text-primary);">Cultural Context:</strong> ${i.cultural_context}
       </div>
@@ -515,26 +538,28 @@ function setupChatDrawer() {
     const text = chatInput.value.trim();
     if (!text) return;
 
-    // Append user message
-    messagesContainer.innerHTML += `
-      <div style="display: flex; justify-content: flex-end; margin-bottom: 0.75rem;">
-        <div style="background: var(--text-primary); color: var(--bg-primary); padding: 0.55rem 0.9rem; border-radius: var(--radius-md); max-width: 80%; font-size: 0.875rem;">
-          ${text}
-        </div>
-      </div>
-    `;
+    // Append user message safely via textContent
+    const userRow = document.createElement('div');
+    userRow.style.cssText = 'display: flex; justify-content: flex-end; margin-bottom: 0.75rem;';
+    const userBubble = document.createElement('div');
+    userBubble.style.cssText = 'background: var(--text-primary); color: var(--bg-primary); padding: 0.55rem 0.9rem; border-radius: var(--radius-md); max-width: 80%; font-size: 0.875rem;';
+    userBubble.textContent = text;
+    userRow.appendChild(userBubble);
+    messagesContainer.appendChild(userRow);
+
     chatInput.value = '';
     messagesContainer.scrollTop = messagesContainer.scrollHeight;
 
-    // Stream AI response
+    // Stream AI response safely
     const botMsgId = `bot-msg-${Date.now()}`;
-    messagesContainer.innerHTML += `
-      <div style="display: flex; justify-content: flex-start; margin-bottom: 0.75rem;">
-        <div id="${botMsgId}" style="background: var(--bg-surface); border: 1px solid var(--border-color); padding: 0.65rem 0.95rem; border-radius: var(--radius-md); max-width: 85%; font-size: 0.875rem;">
-          <em>Thinking...</em>
-        </div>
-      </div>
-    `;
+    const botRow = document.createElement('div');
+    botRow.style.cssText = 'display: flex; justify-content: flex-start; margin-bottom: 0.75rem;';
+    const botDiv = document.createElement('div');
+    botDiv.id = botMsgId;
+    botDiv.style.cssText = 'background: var(--bg-surface); border: 1px solid var(--border-color); padding: 0.65rem 0.95rem; border-radius: var(--radius-md); max-width: 85%; font-size: 0.875rem;';
+    botDiv.innerHTML = '<em>Thinking...</em>';
+    botRow.appendChild(botDiv);
+    messagesContainer.appendChild(botRow);
     messagesContainer.scrollTop = messagesContainer.scrollHeight;
 
     try {
@@ -547,7 +572,6 @@ function setupChatDrawer() {
       const reader = response.body.getReader();
       const decoder = new TextDecoder();
       let fullText = '';
-      const botDiv = document.getElementById(botMsgId);
       botDiv.innerHTML = '';
 
       while (true) {
@@ -561,7 +585,7 @@ function setupChatDrawer() {
               const parsed = JSON.parse(line.replace('data: ', ''));
               if (parsed.text) {
                 fullText += parsed.text;
-                botDiv.innerHTML = fullText.replace(/\n/g, '<br>');
+                botDiv.innerHTML = sanitizeHTML(fullText.replace(/\n/g, '<br>'));
                 messagesContainer.scrollTop = messagesContainer.scrollHeight;
               }
             } catch (e) {}
@@ -569,7 +593,7 @@ function setupChatDrawer() {
         }
       }
     } catch (err) {
-      document.getElementById(botMsgId).innerHTML = 'Offline mode active. Your celebration plan is available above.';
+      botDiv.textContent = 'Offline mode active. Your celebration plan is available above.';
     }
   };
 

@@ -193,7 +193,8 @@ const Auth = {
       }
 
       if (greetingEl) {
-        greetingEl.innerHTML = `<strong style="color: var(--text-primary);">नमस्ते</strong>, ${user.name.split(' ')[0]}`;
+        const safeName = window.escapeHTML ? window.escapeHTML(user.name.split(' ')[0]) : user.name.split(' ')[0];
+        greetingEl.innerHTML = `<strong style="color: var(--text-primary);">नमस्ते</strong>, ${safeName}`;
       }
     } else {
       // Guest / Demo mode
