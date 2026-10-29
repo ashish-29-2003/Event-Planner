@@ -23,9 +23,8 @@
 
 ## Stage R1: Google Services Depth, Authentication & Real Persistence
 
-- [ ] **R1-T01:** Implement Firebase Authentication with Google Sign-in on frontend and ID token verification (`firebase-admin`) in FastAPI backend.  
-  *Role:* Security / Backend | *Est:* 3h | *Deps:* R0-T05  
-  *Acceptance:* Protected routes return 401 without Bearer token; guest/demo mode remains accessible with seeded read-only data.
+- [x] **R1-T01:** Implement Firebase Authentication with Google Sign-in on frontend and ID token verification (`firebase-admin`) in FastAPI backend.  
+  *Role:* Security / Backend | *Status:* Done | *Evidence:* Implemented `src/utils/auth.py`, protected endpoints returning 401 without token, verified with 11 tests in `tests/test_auth.py`.
 - [ ] **R1-T02:** Implement Cloud Firestore repository behind existing `StorageService` interface for events, budgets, tasks, vendors, and guests.  
   *Role:* Backend Lead | *Est:* 3h | *Deps:* R1-T01  
   *Acceptance:* Data persists across server restarts; in-memory store retained as test/demo adapter.

@@ -30,6 +30,20 @@ class Settings:
     # Optional Google Maps Key
     GOOGLE_MAPS_API_KEY: str = os.getenv("GOOGLE_MAPS_API_KEY", "")
 
+    # Firebase & Google Cloud Settings
+    FIREBASE_PROJECT_ID: str = os.getenv("FIREBASE_PROJECT_ID", "samaroh-celebrations")
+    FIREBASE_CREDENTIALS_PATH: str = os.getenv("FIREBASE_CREDENTIALS_PATH", "")
+    ENABLE_AUTH_ENFORCEMENT: bool = os.getenv("ENABLE_AUTH_ENFORCEMENT", "True").lower() in (
+        "true",
+        "1",
+        "yes",
+    )
+    ENABLE_APP_CHECK: bool = os.getenv("ENABLE_APP_CHECK", "False").lower() in (
+        "true",
+        "1",
+        "yes",
+    )
+
     # Security & Rate Limiting
     RATE_LIMIT_AI_REQUESTS: int = 20  # per 10 minutes
     RATE_LIMIT_WINDOW_SECONDS: int = 600

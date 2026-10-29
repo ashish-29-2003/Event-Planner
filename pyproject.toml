@@ -3,10 +3,10 @@ requires = ["setuptools>=61.0"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "utsav-celebration-planner"
+name = "samaroh-celebration-planner"
 version = "1.0.0"
 description = "GenAI Celebration & Event Planner for weddings, birthdays, and community festivals"
-authors = [{ name = "Utsav AI Team" }]
+authors = [{ name = "Samaroh AI Team" }]
 license = { text = "MIT" }
 requires-python = ">=3.10"
 dependencies = [
@@ -31,7 +31,7 @@ line-length = 100
 target-version = "py310"
 
 [tool.ruff.lint]
-ignore = ["BLE001", "S110"]
+ignore = ["BLE001", "S110", "B008"]
 
 [tool.mypy]
 python_version = "3.10"

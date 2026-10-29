@@ -4,7 +4,7 @@ Exposes endpoints for master plan generation, streaming chat,
 budget re-balancing, and auspicious muhurat windows.
 """
 
-from fastapi import APIRouter, HTTPException, Request
+from fastapi import APIRouter, Depends, HTTPException, Request
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
 
@@ -12,6 +12,7 @@ from src.models.budget import BudgetRebalanceRequest, BudgetRebalanceResponse
 from src.models.event import CelebrationBrief
 from src.services.gemini_service import gemini_service
 from src.services.storage_service import storage_service
+from src.utils.auth import AuthenticatedUser, require_authenticated_user
 from src.utils.rate_limiter import SlidingWindowRateLimiter
 
 router = APIRouter(prefix="/api/ai", tags=["AI Orchestration"])
@@ -24,10 +25,15 @@ class ChatRequest(BaseModel):
 
 
 @router.post("/plan")
-async def create_event_plan(brief: CelebrationBrief, request: Request):
+async def create_event_plan(
+    brief: CelebrationBrief,
+    request: Request,
+    user: AuthenticatedUser = Depends(require_authenticated_user),
+):
     """
     Synthesizes a complete celebration master plan from a user's brief.
-    Enforces rate limits and returns both the plan and the saved event ID.
+    Enforces rate limits, validates Firebase authentication,
+    and returns both the plan and the saved event ID.
     """
     client_ip = request.client.host if request.client else "127.0.0.1"
     allowed, _remaining = rate_limiter.is_allowed(client_ip)
@@ -39,8 +45,8 @@ async def create_event_plan(brief: CelebrationBrief, request: Request):
 
     plan, is_fallback = await gemini_service.generate_master_plan(brief)
 
-    # Persist the generated plan
-    event_id = storage_service.create_event_from_plan(brief, plan)
+    # Persist the generated plan under authenticated user's scope
+    event_id = storage_service.create_event_from_plan(brief, plan, user_id=user.uid)
 
     return {"success": True, "event_id": event_id, "is_fallback": is_fallback, "plan": plan}
 
