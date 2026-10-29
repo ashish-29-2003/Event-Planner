@@ -1,0 +1,5 @@
+<type>(<scope>): <imperative summary, max 72 chars, no trailing period>
+
+<body: what changed and WHY, wrapped at 72 chars. Skip only for trivial changes.>
+
+Refs: <task ID from docs/TASKS.md, e.g. R0-T01>
