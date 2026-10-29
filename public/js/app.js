@@ -1,13 +1,14 @@
 /**
  * Samaroh (समारोह) - Master Application Controller
- * Handles UI interactions, live calculations, tabs, and celebratory animations.
+ * Handles UI interactions, live calculations, tabs, and celebratory micro-interactions.
+ * Modern minimal edition.
  */
 
 // Daily Subhashitas with attribution and English translations
 const SUBHASHITAS = [
   {
-    sanskrit: "॥ सर्वे भवन्तु सुखिनः सर्वे सन्तु निरामयाः। सर्वे भद्राणि पश्यन्तु मा कश्चिद्दुःखभाग्भवेत् ॥",
-    meaning: "May all beings be prosperous and happy, free from illness; may all perceive goodness, and may none suffer.",
+    sanskrit: "॥ सर्वे भवन्तु सुखिनः सर्वे सन्तु निरामयाः ॥",
+    meaning: "May all beings be prosperous, peaceful and healthy.",
     source: "Brihadaranyaka Upanishad"
   },
   {
@@ -17,7 +18,7 @@ const SUBHASHITAS = [
   },
   {
     sanskrit: "॥ विद्या ददाति विनयं विनयाद्याति पात्रताम् ॥",
-    meaning: "True learning bestows humility, and humility brings dignity and grace.",
+    meaning: "Learning bestows humility, and humility brings dignity and grace.",
     source: "Hitopadesha"
   }
 ];
@@ -37,14 +38,14 @@ function formatINR(val) {
   return "₹" + Number(val).toLocaleString('en-IN');
 }
 
-// Trigger celebratory gold confetti particles
+// Subtle celebratory confetti
 function triggerCelebrationConfetti() {
   if (window.confetti) {
     window.confetti({
-      particleCount: 50,
-      spread: 70,
-      origin: { y: 0.6 },
-      colors: ['#EA580C', '#F59E0B', '#D97706', '#E11D48']
+      particleCount: 35,
+      spread: 60,
+      origin: { y: 0.65 },
+      colors: ['#18181B', '#B45309', '#059669', '#E4E4E7']
     });
   }
 }
@@ -66,13 +67,13 @@ document.addEventListener('DOMContentLoaded', async () => {
   const greeting = getCulturalGreeting();
   const greetingEl = document.getElementById('cultural-greeting');
   if (greetingEl) {
-    greetingEl.innerHTML = `<span style="color: var(--saffron); font-weight: 700;">${greeting.text}</span>, Ashish (${greeting.meaning})`;
+    greetingEl.innerHTML = `<strong>${greeting.text}</strong>, Ashish (${greeting.meaning})`;
   }
 
   const subhashitaEl = document.getElementById('daily-subhashita');
   if (subhashitaEl) {
     const s = SUBHASHITAS[0];
-    subhashitaEl.innerHTML = `<strong>${s.sanskrit}</strong><br><span style="font-size: 0.85rem; color: var(--text-secondary);">${s.meaning} — <em>${s.source}</em></span>`;
+    subhashitaEl.innerHTML = `<strong>${s.sanskrit}</strong> — ${s.meaning}`;
   }
 
   // 3. Tab Switching
@@ -82,8 +83,8 @@ document.addEventListener('DOMContentLoaded', async () => {
   navTabs.forEach(tab => {
     tab.addEventListener('click', () => {
       const targetView = tab.getAttribute('data-view');
-      navTabs.forEach(t => t.classList.remove('active', 'border-b-2', 'border-amber-500', 'text-amber-600'));
-      tab.classList.add('active', 'border-b-2', 'border-amber-500', 'text-amber-600');
+      navTabs.forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
 
       viewPanels.forEach(panel => {
         panel.style.display = panel.id === `view-${targetView}` ? 'block' : 'none';
@@ -102,14 +103,14 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
   }
 
-  // Share Celebration CTA
+  // Share Celebration Link
   const shareBtn = document.getElementById('btn-share-celebration');
   if (shareBtn) {
     shareBtn.onclick = () => {
       const shareUrl = window.location.href;
       if (navigator.clipboard) {
         navigator.clipboard.writeText(shareUrl).then(() => {
-          alert("॥ मङ्गलम् ॥ Celebration link copied to clipboard!\n\n" + shareUrl);
+          alert("Celebration plan link copied to clipboard!\n\n" + shareUrl);
           triggerCelebrationConfetti();
         }).catch(() => {
           prompt("Copy this celebration link:", shareUrl);
@@ -124,8 +125,10 @@ document.addEventListener('DOMContentLoaded', async () => {
   const filterPills = document.querySelectorAll('.vendor-filter-pill');
   filterPills.forEach(pill => {
     pill.addEventListener('click', () => {
-      filterPills.forEach(p => p.classList.remove('active', 'btn-primary'));
-      filterPills.forEach(p => p.classList.add('btn-secondary'));
+      filterPills.forEach(p => {
+        p.classList.remove('active', 'btn-primary');
+        p.classList.add('btn-secondary');
+      });
       pill.classList.remove('btn-secondary');
       pill.classList.add('active', 'btn-primary');
       renderVendors(pill.getAttribute('data-category'));
@@ -135,7 +138,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   // 6. Onboarding Wizard Dialog Controls
   setupOnboardingWizard();
 
-  // 7. AI Chat SSE Controller
+  // 7. AI Chat Controller
   setupChatDrawer();
 });
 
@@ -177,7 +180,7 @@ function renderExecutiveOverview() {
   document.getElementById('overview-title').innerText = activeEvent.title;
   document.getElementById('overview-culture-city').innerText = `${activeEvent.culture} • ${activeEvent.city}`;
 
-  // Calculate Days Remaining for Countdown Ring
+  // Countdown Calculation
   const targetDateStr = activeEvent.target_date || "2026-12-15";
   const targetDate = new Date(targetDateStr);
   const today = new Date();
@@ -202,7 +205,7 @@ function renderExecutiveOverview() {
   const bar = document.getElementById('overview-budget-bar');
   if (bar) {
     bar.style.width = `${pct}%`;
-    bar.style.backgroundColor = allocated > targetBudget ? 'var(--vermilion)' : 'var(--temple-gold)';
+    bar.style.backgroundColor = allocated > targetBudget ? 'var(--accent-warning)' : 'var(--text-primary)';
   }
 
   // Next Milestones list
@@ -210,14 +213,14 @@ function renderExecutiveOverview() {
   if (nextTasksEl) {
     const pending = tasks.filter(t => t.status !== 'done').slice(0, 3);
     nextTasksEl.innerHTML = pending.map(t => `
-      <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.6rem 0; border-bottom: 1px solid var(--border-color);">
+      <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.5rem 0; border-bottom: 1px solid var(--border-light);">
         <div>
-          <strong style="font-size: 0.95rem;">${t.title}</strong>
-          <div style="font-size: 0.8rem; color: var(--text-secondary);">${t.phase} • Due: ${t.due_date || 'TBD'}</div>
+          <span style="font-size: 0.875rem; font-weight: 500;">${t.title}</span>
+          <span style="font-size: 0.775rem; color: var(--text-secondary); margin-left: 0.5rem;">Due: ${t.due_date || 'TBD'}</span>
         </div>
-        <span style="font-size: 0.75rem; padding: 0.2rem 0.5rem; background: var(--bg-subtle); border-radius: 4px;">${t.owner_role}</span>
+        <span class="badge">${t.owner_role}</span>
       </div>
-    `).join('') || '<p style="color: var(--text-secondary); font-size: 0.9rem;">All active milestones completed! मङ्गलम् ॥</p>';
+    `).join('') || '<p style="color: var(--text-secondary); font-size: 0.85rem; padding: 0.4rem 0;">All immediate milestones completed.</p>';
   }
 }
 
@@ -229,23 +232,22 @@ function renderBudgetMatrix() {
   const targetBudget = activeEvent?.target_budget || 0;
   const allocated = budgets.reduce((sum, b) => sum + (b.estimated_cost || 0), 0);
 
-  // Over budget alert banner
   const alertEl = document.getElementById('budget-over-alert');
   if (alertEl) {
-    alertEl.style.display = allocated > targetBudget ? 'flex' : 'none';
+    alertEl.style.display = allocated > targetBudget ? 'block' : 'none';
   }
 
-  container.innerHTML = budgets.map((b, idx) => `
-    <tr style="border-bottom: 1px solid var(--border-color); font-size: 0.9rem;">
-      <td style="padding: 0.75rem 0.5rem;">
+  container.innerHTML = budgets.map((b) => `
+    <tr>
+      <td>
         <strong>${b.name}</strong>
-        <div style="font-size: 0.75rem; color: var(--text-secondary);">${b.notes || ''}</div>
+        ${b.notes ? `<div style="font-size: 0.775rem; color: var(--text-secondary); margin-top: 0.15rem;">${b.notes}</div>` : ''}
       </td>
-      <td style="padding: 0.75rem 0.5rem;"><span style="background: var(--bg-subtle); padding: 0.2rem 0.5rem; border-radius: 4px;">${b.category}</span></td>
-      <td style="padding: 0.75rem 0.5rem; font-weight: 600;">${formatINR(b.estimated_cost)}</td>
-      <td style="padding: 0.75rem 0.5rem; color: var(--tulsi-green); font-weight: 600;">${formatINR(b.advance_paid)}</td>
-      <td style="padding: 0.75rem 0.5rem;">
-        <span style="font-size: 0.75rem; padding: 0.2rem 0.5rem; border-radius: 4px; background: ${b.status === 'paid' ? 'rgba(5, 150, 105, 0.15)' : 'rgba(245, 158, 11, 0.15)'}; color: ${b.status === 'paid' ? 'var(--tulsi-green)' : 'var(--marigold)'};">
+      <td><span class="badge">${b.category}</span></td>
+      <td style="font-weight: 600;">${formatINR(b.estimated_cost)}</td>
+      <td style="color: var(--accent-success); font-weight: 500;">${formatINR(b.advance_paid)}</td>
+      <td>
+        <span class="badge ${b.status === 'paid' ? 'badge-success' : 'badge-warm'}">
           ${b.status.toUpperCase()}
         </span>
       </td>
@@ -257,7 +259,7 @@ function renderBudgetMatrix() {
   if (rebalanceBtn) {
     rebalanceBtn.onclick = async () => {
       rebalanceBtn.disabled = true;
-      rebalanceBtn.innerText = '⚡ AI Re-balancing...';
+      rebalanceBtn.innerText = 'AI Rebalancing...';
       try {
         const firstCategory = budgets[0]?.category || 'Venue & Accommodation';
         const currentFirstAmount = budgets[0]?.estimated_cost || 100000;
@@ -265,13 +267,13 @@ function renderBudgetMatrix() {
         store.setState({ budgets: res.updated_items });
         renderBudgetMatrix();
         renderExecutiveOverview();
-        alert(`॥ मङ्गलम् ॥ Budget successfully re-balanced!\n\n${res.rebalance_rationale}`);
+        alert(`Budget re-balanced:\n\n${res.rebalance_rationale}`);
         triggerCelebrationConfetti();
       } catch (e) {
-        alert('Re-balancing completed using smart proportional distribution.');
+        alert('Re-balancing completed using proportional distribution.');
       } finally {
         rebalanceBtn.disabled = false;
-        rebalanceBtn.innerText = '⚡ AI Re-Balance Budget';
+        rebalanceBtn.innerText = 'AI Rebalance Budget';
       }
     };
   }
@@ -283,17 +285,17 @@ function renderTimeline() {
   if (!container) return;
 
   container.innerHTML = tasks.map(t => `
-    <div style="background: var(--bg-surface); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 1rem; margin-bottom: 0.75rem; display: flex; align-items: flex-start; gap: 0.75rem;">
-      <input type="checkbox" ${t.status === 'done' ? 'checked' : ''} style="width: 20px; height: 20px; margin-top: 0.2rem; cursor: pointer;" onchange="toggleTaskStatus('${activeEventId}', '${t.id}', this.checked)">
+    <div class="card" style="margin-bottom: 0.65rem; padding: 0.85rem 1rem; display: flex; align-items: flex-start; gap: 0.85rem;">
+      <input type="checkbox" ${t.status === 'done' ? 'checked' : ''} style="margin-top: 0.25rem;" onchange="toggleTaskStatus('${activeEventId}', '${t.id}', this.checked)">
       <div style="flex: 1;">
-        <div style="display: flex; justify-content: space-between;">
-          <h4 style="font-size: 0.95rem; font-weight: 600; text-decoration: ${t.status === 'done' ? 'line-through' : 'none'}; color: ${t.status === 'done' ? 'var(--text-muted)' : 'var(--text-primary)'};">${t.title}</h4>
-          <span style="font-size: 0.75rem; color: var(--text-secondary);">${t.due_date || 'Date TBD'}</span>
+        <div style="display: flex; justify-content: space-between; align-items: baseline;">
+          <h3 style="font-size: 0.925rem; font-weight: 600; text-decoration: ${t.status === 'done' ? 'line-through' : 'none'}; color: ${t.status === 'done' ? 'var(--text-muted)' : 'var(--text-primary)'};">${t.title}</h3>
+          <span style="font-size: 0.775rem; color: var(--text-secondary);">${t.due_date || 'Date TBD'}</span>
         </div>
-        <p style="font-size: 0.85rem; color: var(--text-secondary); margin: 0.25rem 0;">${t.description}</p>
-        <div style="display: flex; gap: 0.5rem; font-size: 0.75rem; margin-top: 0.4rem;">
-          <span style="background: var(--bg-subtle); padding: 0.15rem 0.4rem; border-radius: 4px;">Role: ${t.owner_role}</span>
-          <span style="background: rgba(234, 88, 12, 0.1); color: var(--saffron); padding: 0.15rem 0.4rem; border-radius: 4px;">${t.phase}</span>
+        <p style="font-size: 0.825rem; color: var(--text-secondary); margin: 0.2rem 0 0.4rem 0;">${t.description}</p>
+        <div style="display: flex; gap: 0.4rem;">
+          <span class="badge badge-warm">${t.phase}</span>
+          <span class="badge">${t.owner_role}</span>
         </div>
       </div>
     </div>
@@ -343,21 +345,21 @@ function renderVendors(filterCategory = 'all') {
   container.innerHTML = filtered.map(v => `
     <div class="card" style="display: flex; flex-direction: column; justify-content: space-between;">
       <div>
-        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.5rem;">
-          <span style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--temple-gold); font-weight: 700;">${v.category}</span>
-          <span style="font-size: 0.75rem; padding: 0.15rem 0.5rem; border-radius: 4px; background: rgba(5, 150, 105, 0.1); color: var(--tulsi-green);">★ ${v.rating || 4.8}</span>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+          <span class="badge badge-warm">${v.category}</span>
+          <span style="font-size: 0.775rem; font-weight: 600; color: var(--text-secondary);">★ ${v.rating || 4.8}</span>
         </div>
-        <h4 style="font-size: 1.05rem; font-weight: 600; margin-bottom: 0.3rem;">${v.business_name}</h4>
-        <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 0.5rem;">${v.notes || 'Deliverables confirmed per brief.'}</p>
-        <div style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 0.3rem;">📍 ${v.address || 'Local vendor'}</div>
-        <div style="font-size: 0.8rem; color: var(--text-muted);">📞 ${v.phone || 'Available upon request'}</div>
+        <h3 style="font-size: 0.975rem; font-weight: 600; margin-bottom: 0.25rem;">${v.business_name}</h3>
+        <p style="font-size: 0.825rem; color: var(--text-secondary); margin-bottom: 0.65rem;">${v.notes || 'Deliverables confirmed per brief.'}</p>
+        <div style="font-size: 0.775rem; color: var(--text-muted); margin-bottom: 0.2rem;">📍 ${v.address || 'Local vendor'}</div>
+        <div style="font-size: 0.775rem; color: var(--text-muted);">📞 ${v.phone || 'Available upon request'}</div>
       </div>
-      <div style="margin-top: 1rem; padding-top: 0.75rem; border-top: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
+      <div style="margin-top: 1rem; padding-top: 0.75rem; border-top: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: baseline;">
         <div>
-          <span style="font-size: 0.75rem; color: var(--text-secondary);">Indicative Quote</span>
-          <div style="font-size: 1.1rem; font-weight: 700; color: var(--saffron);">${formatINR(v.quote_amount)}</div>
+          <div style="font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.04em; color: var(--text-secondary);">Indicative Quote</div>
+          <div style="font-size: 1.05rem; font-weight: 700;">${formatINR(v.quote_amount)}</div>
         </div>
-        <span style="font-size: 0.75rem; padding: 0.2rem 0.5rem; background: var(--bg-subtle); border-radius: 4px; font-weight: 600;">${v.status.toUpperCase()}</span>
+        <span class="badge ${v.status === 'contracted' ? 'badge-success' : 'badge-warm'}">${v.status.toUpperCase()}</span>
       </div>
     </div>
   `).join('');
@@ -369,15 +371,15 @@ function renderIdeas() {
   if (!container) return;
 
   container.innerHTML = ideas.map(i => `
-    <div class="card" style="margin-bottom: 1rem;">
-      <div style="display: flex; justify-content: space-between; margin-bottom: 0.4rem;">
-        <span style="font-size: 0.75rem; text-transform: uppercase; color: var(--saffron); font-weight: 700;">${i.tab_category.replace('_', ' ')}</span>
-        <span style="font-size: 0.85rem; font-weight: 700; color: var(--temple-gold);">${i.cost_bracket}</span>
+    <div class="card" style="margin-bottom: 0.85rem;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.35rem;">
+        <span class="badge badge-warm">${i.tab_category.replace('_', ' ')}</span>
+        <span style="font-size: 0.8rem; font-weight: 600; color: var(--text-secondary);">${i.cost_bracket}</span>
       </div>
-      <h4 style="font-size: 1.1rem; font-weight: 600; margin-bottom: 0.4rem;">${i.title}</h4>
-      <p style="font-size: 0.9rem; color: var(--text-secondary); line-height: 1.5; margin-bottom: 0.6rem;">${i.description}</p>
-      <div style="background: var(--bg-subtle); padding: 0.5rem 0.75rem; border-radius: var(--radius-sm); font-size: 0.8rem; color: var(--text-primary); border-left: 3px solid var(--temple-gold);">
-        <strong>Cultural Context:</strong> ${i.cultural_context}
+      <h3 style="font-size: 1rem; font-weight: 600; margin-bottom: 0.25rem;">${i.title}</h3>
+      <p style="font-size: 0.85rem; color: var(--text-secondary); line-height: 1.5; margin-bottom: 0.6rem;">${i.description}</p>
+      <div style="background: var(--bg-subtle); padding: 0.5rem 0.75rem; border-radius: var(--radius-sm); font-size: 0.8rem; color: var(--text-secondary); border-left: 2px solid var(--text-primary);">
+        <strong style="color: var(--text-primary);">Cultural Context:</strong> ${i.cultural_context}
       </div>
     </div>
   `).join('');
@@ -389,16 +391,16 @@ async function renderMuhurat() {
 
   const data = await API.getMuhurat(store.state.activeEvent?.culture || 'Marwari', 'wedding');
   container.innerHTML = `
-    <div class="card" style="margin-bottom: 1rem; border-left: 4px solid var(--saffron);">
-      <h3 style="font-size: 1.2rem; font-weight: 700; margin-bottom: 0.5rem;">॥ वैदिक मुहूर्त मार्गदर्शन ॥</h3>
-      <p style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 1rem;">${data.disclaimer}</p>
-      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem;">
+    <div class="card">
+      <h2 style="font-size: 1.15rem; font-weight: 600; margin-bottom: 0.25rem;">Auspicious Muhurat Windows</h2>
+      <p style="font-size: 0.825rem; color: var(--text-secondary); margin-bottom: 1.25rem;">${data.disclaimer}</p>
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 0.75rem;">
         ${data.windows.map(w => `
-          <div style="background: var(--bg-subtle); padding: 1rem; border-radius: var(--radius-md);">
-            <strong style="color: var(--saffron);">${w.season}</strong>
-            <div style="margin: 0.5rem 0; font-size: 0.85rem;"><strong>Auspicious Dates:</strong> ${w.auspicious_dates.join(', ')}</div>
-            <div style="font-size: 0.8rem; color: var(--text-secondary);"><strong>Nakshatras:</strong> ${w.nakshatras}</div>
-            <div style="font-size: 0.8rem; color: var(--text-secondary);"><strong>Lagnas:</strong> ${w.lagnas}</div>
+          <div style="background: var(--bg-subtle); padding: 0.85rem 1rem; border-radius: var(--radius-sm); border: 1px solid var(--border-color);">
+            <strong style="font-size: 0.9rem; color: var(--text-primary);">${w.season}</strong>
+            <div style="margin: 0.4rem 0; font-size: 0.825rem;"><strong>Dates:</strong> ${w.auspicious_dates.join(', ')}</div>
+            <div style="font-size: 0.775rem; color: var(--text-secondary);"><strong>Nakshatras:</strong> ${w.nakshatras}</div>
+            <div style="font-size: 0.775rem; color: var(--text-secondary);"><strong>Lagnas:</strong> ${w.lagnas}</div>
           </div>
         `).join('')}
       </div>
@@ -407,7 +409,7 @@ async function renderMuhurat() {
 }
 
 function renderExportSheet() {
-  const { activeEvent, budgets, tasks, vendors } = store.state;
+  const { activeEvent, budgets, tasks } = store.state;
   const container = document.getElementById('printable-preview-content');
   if (!container || !activeEvent) return;
 
@@ -415,34 +417,34 @@ function renderExportSheet() {
   const blessing = activeEvent.blessing_note || "May this auspicious celebration bring enduring joy, health, and prosperity.";
 
   container.innerHTML = `
-    <div style="border: 3px double var(--temple-gold); padding: 2rem; border-radius: 8px; background: #FFFFFF; color: #1C1917;">
-      <div style="text-align: center; border-bottom: 2px solid #E8DDD0; padding-bottom: 1.5rem; margin-bottom: 1.5rem;">
-        <h2 style="font-family: 'Noto Serif Devanagari', serif; font-size: 1.8rem; color: #EA580C; margin-bottom: 0.3rem;">॥ शुभ आरम्भ ॥</h2>
-        <h1 style="font-size: 2rem; font-weight: 700;">${activeEvent.title}</h1>
-        <p style="color: #78716C; font-size: 1rem;">${activeEvent.culture} Celebration • ${activeEvent.city} • ${activeEvent.guest_count} Guests</p>
-        <div style="font-style: italic; color: #D97706; margin-top: 0.8rem; font-size: 1.05rem;">"${blessing}"</div>
+    <div style="border: 1px solid var(--border-color); padding: 2.25rem; border-radius: var(--radius-md); background: var(--bg-surface); color: var(--text-primary);">
+      <div style="text-align: center; border-bottom: 1px solid var(--border-color); padding-bottom: 1.5rem; margin-bottom: 1.5rem;">
+        <span style="font-family: 'Noto Serif Devanagari', serif; font-size: 1.1rem; color: var(--text-secondary);">॥ शुभ आरम्भ ॥</span>
+        <h1 style="font-size: 1.75rem; font-weight: 700; margin: 0.25rem 0;">${activeEvent.title}</h1>
+        <p style="color: var(--text-secondary); font-size: 0.9rem;">${activeEvent.culture} Celebration • ${activeEvent.city} • ${activeEvent.guest_count} Guests</p>
+        <div style="font-style: italic; color: var(--text-secondary); margin-top: 0.65rem; font-size: 0.95rem;">"${blessing}"</div>
       </div>
 
       <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-bottom: 2rem;">
         <div>
-          <h3 style="font-size: 1.2rem; border-bottom: 1px solid #E8DDD0; padding-bottom: 0.4rem; color: #EA580C; margin-bottom: 0.75rem;">Financial Blueprint</h3>
-          <p><strong>Master Budget:</strong> ${formatINR(activeEvent.target_budget)}</p>
-          <p><strong>Allocated Total:</strong> ${formatINR(totalAllocated)}</p>
-          <ul style="margin-top: 0.5rem; padding-left: 1.2rem; font-size: 0.9rem;">
+          <h2 style="font-size: 1rem; font-weight: 600; border-bottom: 1px solid var(--border-color); padding-bottom: 0.35rem; margin-bottom: 0.75rem;">Financial Blueprint</h2>
+          <p style="font-size: 0.875rem;"><strong>Target Budget:</strong> ${formatINR(activeEvent.target_budget)}</p>
+          <p style="font-size: 0.875rem;"><strong>Allocated Total:</strong> ${formatINR(totalAllocated)}</p>
+          <ul style="margin-top: 0.5rem; padding-left: 1.2rem; font-size: 0.825rem; color: var(--text-secondary);">
             ${budgets.slice(0, 5).map(b => `<li>${b.name} (${b.category}): ${formatINR(b.estimated_cost)}</li>`).join('')}
           </ul>
         </div>
 
         <div>
-          <h3 style="font-size: 1.2rem; border-bottom: 1px solid #E8DDD0; padding-bottom: 0.4rem; color: #EA580C; margin-bottom: 0.75rem;">Key Milestones</h3>
-          <ul style="padding-left: 1.2rem; font-size: 0.9rem;">
-            ${tasks.slice(0, 5).map(t => `<li><strong>${t.due_date || 'Date TBD'}:</strong> ${t.title} (Owner: ${t.owner_role})</li>`).join('')}
+          <h2 style="font-size: 1rem; font-weight: 600; border-bottom: 1px solid var(--border-color); padding-bottom: 0.35rem; margin-bottom: 0.75rem;">Key Milestones</h2>
+          <ul style="padding-left: 1.2rem; font-size: 0.825rem; color: var(--text-secondary);">
+            ${tasks.slice(0, 5).map(t => `<li><strong>${t.due_date || 'Date TBD'}:</strong> ${t.title} (${t.owner_role})</li>`).join('')}
           </ul>
         </div>
       </div>
 
-      <div style="text-align: center; font-size: 0.85rem; color: #78716C; border-top: 1px solid #E8DDD0; padding-top: 1rem;">
-        Generated via Samaroh (समारोह) • Google Gemini AI Celebration Planner • धन्यवादः ॥
+      <div style="text-align: center; font-size: 0.8rem; color: var(--text-muted); border-top: 1px solid var(--border-color); padding-top: 1rem;">
+        Generated via Samaroh (समारोह) • AI Celebration Planner
       </div>
     </div>
   `;
@@ -471,7 +473,7 @@ function setupOnboardingWizard() {
       e.preventDefault();
       const submitBtn = form.querySelector('button[type="submit"]');
       submitBtn.disabled = true;
-      submitBtn.innerText = '⚡ Consulting Gemini AI...';
+      submitBtn.innerText = 'Synthesizing Plan...';
 
       const brief = {
         title: document.getElementById('wiz-title').value,
@@ -490,14 +492,13 @@ function setupOnboardingWizard() {
         modal.style.display = 'none';
         await loadCelebration(result.event_id);
         triggerCelebrationConfetti();
-        alert('॥ मङ्गलम् ॥ Your celebration plan has been synthesized successfully!');
       } catch (err) {
-        alert(`Plan generation notice: ${err.message}. Serving curated regional blueprint.`);
+        alert(`Notice: ${err.message}. Serving curated regional blueprint.`);
         modal.style.display = 'none';
         await loadCelebration('demo-wedding-jaipur');
       } finally {
         submitBtn.disabled = false;
-        submitBtn.innerText = '✨ Generate My Celebration Plan';
+        submitBtn.innerText = 'Generate Plan';
       }
     };
   }
@@ -517,7 +518,7 @@ function setupChatDrawer() {
     // Append user message
     messagesContainer.innerHTML += `
       <div style="display: flex; justify-content: flex-end; margin-bottom: 0.75rem;">
-        <div style="background: var(--saffron); color: #FFF; padding: 0.6rem 1rem; border-radius: var(--radius-md); max-width: 80%;">
+        <div style="background: var(--text-primary); color: var(--bg-primary); padding: 0.55rem 0.9rem; border-radius: var(--radius-md); max-width: 80%; font-size: 0.875rem;">
           ${text}
         </div>
       </div>
@@ -529,8 +530,8 @@ function setupChatDrawer() {
     const botMsgId = `bot-msg-${Date.now()}`;
     messagesContainer.innerHTML += `
       <div style="display: flex; justify-content: flex-start; margin-bottom: 0.75rem;">
-        <div id="${botMsgId}" style="background: var(--bg-surface); border: 1px solid var(--border-color); padding: 0.6rem 1rem; border-radius: var(--radius-md); max-width: 85%;">
-          <span class="diya-flame-pulse">🪔</span> <em>Samaroh AI is thinking...</em>
+        <div id="${botMsgId}" style="background: var(--bg-surface); border: 1px solid var(--border-color); padding: 0.65rem 0.95rem; border-radius: var(--radius-md); max-width: 85%; font-size: 0.875rem;">
+          <em>Thinking...</em>
         </div>
       </div>
     `;
@@ -568,7 +569,7 @@ function setupChatDrawer() {
         }
       }
     } catch (err) {
-      document.getElementById(botMsgId).innerHTML = 'I am currently operating in offline mode. Your plan is accessible above.';
+      document.getElementById(botMsgId).innerHTML = 'Offline mode active. Your celebration plan is available above.';
     }
   };
 
