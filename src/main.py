@@ -34,7 +34,7 @@ from src.api.ai_routes import router as ai_router
 from src.api.event_routes import router as event_router
 from src.api.export_routes import router as export_router
 from src.api.places_routes import router as places_router
-from src.config import settings
+from src.config import SECURITY_HEADERS, settings
 
 PUBLIC_DIR = ROOT_DIR / "public"
 
@@ -82,9 +82,8 @@ def create_app() -> FastAPI:
     @app.middleware("http")
     async def add_security_headers(request: Request, call_next):
         response = await call_next(request)
-        response.headers["X-Content-Type-Options"] = "nosniff"
-        response.headers["X-Frame-Options"] = "DENY"
-        response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
+        for header_name, header_value in SECURITY_HEADERS.items():
+            response.headers[header_name] = header_value
         return response
 
     # Structured JSON Logging & Request ID Middleware
