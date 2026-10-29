@@ -1,182 +1,146 @@
 # Master Task Board - Samaroh (समारोह)
 
 **Project:** Samaroh - GenAI Celebration & Event Planner  
-**Stack:** Python 3.10+ (FastAPI + Pydantic v2 + Google GenAI SDK) + Modern Cultural UI + Netlify  
+**Stack:** Python 3.13 (FastAPI + Pydantic v2 + Google GenAI SDK) + Vanilla JS Minimal UI + Netlify / Cloud Run  
 **Author:** Staff Product Manager & Technical Lead  
 
 ---
 
-## Stage 0: Architecture & Planning Deliverables
+## Stage R0: Reality Check, Re-baseline & Git Hygiene
 
-- [x] **TSK-001:** Author Architecture Decision Records (ADRs) in `docs/DECISIONS.md`.  
-  *Role:* Senior Architect | *Est:* 2h | *Deps:* None  
-  *Acceptance:* Documents naming, Python stack, Netlify hosting, Gemini model, and fallback strategy.
-- [x] **TSK-002:** Author 13-section Product Requirements Document in `docs/PRD.md`.  
-  *Role:* Staff PM | *Est:* 3h | *Deps:* TSK-001  
-  *Acceptance:* Maps 4 core pillars across weddings, birthdays, and community celebrations.
-- [x] **TSK-003:** Author System Architecture Specification in `docs/ARCHITECTURE.md`.  
-  *Role:* Senior Architect | *Est:* 3h | *Deps:* TSK-001  
-  *Acceptance:* Mermaid topology diagrams, Netlify serverless deployment, folder structure.
-- [x] **TSK-004:** Author Multi-Agent AI Governance & Prompts in `docs/AGENTS.md`.  
-  *Role:* AI Architect | *Est:* 2h | *Deps:* TSK-001  
-  *Acceptance:* Defines 6 domain agents, system instructions, and hallucination controls.
-- [x] **TSK-005:** Author Technical Requirements Document in `docs/TRD.md`.  
-  *Role:* DevOps Lead | *Est:* 2h | *Deps:* TSK-003  
-  *Acceptance:* Defines performance budgets, browser matrix, Python dependencies, and CI/CD.
-- [x] **TSK-006:** Author End-to-End Application Flows in `docs/APP_FLOW.md`.  
-  *Role:* UX Architect | *Est:* 2h | *Deps:* TSK-002  
-  *Acceptance:* 7 detailed Mermaid flowcharts for all core user journeys.
-- [x] **TSK-007:** Author UI/UX Design System in `docs/UI_UX_FLOW.md`.  
-  *Role:* UI/UX Lead | *Est:* 2h | *Deps:* TSK-006  
-  *Acceptance:* Design tokens, Sanskrit typography, diya animations, and wireframes.
-- [x] **TSK-008:** Author Backend Data Models & ERD in `docs/BACKEND_SCHEMA.md`.  
-  *Role:* Backend Lead | *Est:* 2h | *Deps:* TSK-003  
-  *Acceptance:* ERD diagram, Pydantic schemas, and curated seed datasets.
-- [x] **TSK-009:** Author Security Threat Model & Testing Strategy in `docs/SECURITY_AND_TESTING.md`.  
-  *Role:* Security & QA | *Est:* 2h | *Deps:* TSK-003  
-  *Acceptance:* STRIDE analysis, loop defense specs, and test pyramid plan.
-- [x] **TSK-010:** Author Granular Master Task Board in `docs/TASKS.md`.  
-  *Role:* Staff PM | *Est:* 2h | *Deps:* TSK-002  
-  *Acceptance:* Every task assigned to a stage with estimates and acceptance criteria.
-- [x] **TSK-011:** Author Step-by-Step Implementation & Demo Plan in `docs/IMPLEMENTATION_PLAN.md`.  
-  *Role:* Technical Lead | *Est:* 2h | *Deps:* TSK-010  
-  *Acceptance:* Scaffolding commands, risk register, and 3-minute hackathon judge demo script.
-- [x] **TSK-012:** Author Root `README.md` and verify `docs/STAGE_STATUS.md`.  
-  *Role:* Lead Maintainer | *Est:* 1h | *Deps:* TSK-011  
-  *Acceptance:* Complete overview, setup instructions, scripts, and Stage 0 exit gate passed.
+- [x] **R0-T01:** Verify fresh setup from README and update instructions with explicit virtualenv and install steps.  
+  *Role:* DevOps Lead | *Status:* Done | *Evidence:* README.md updated and verified.
+- [x] **R0-T02:** Measure and record real test coverage with pytest-cov.  
+  *Role:* QA Lead | *Status:* Done | *Evidence:* 76% coverage (17/17 passing in 1.24s).
+- [x] **R0-T03:** Perform honest gap audit and author Verified vs Claimed table in `docs/STAGE_STATUS.md`.  
+  *Role:* Staff PM | *Status:* Done | *Evidence:* docs/STAGE_STATUS.md rewritten with reopened stages.
+- [x] **R0-T04:** Install conventional commit-msg hook and `.gitmessage` template.  
+  *Role:* DevOps Lead | *Status:* Done | *Evidence:* `.gitmessage`, `scripts/validate_commit_msg.py`, `.git/hooks/commit-msg`.
+- [x] **R0-T05:** Capture 16 automated baseline screenshots (light/dark across all 8 modules) into `docs/reports/ui-before/`.  
+  *Role:* QA / Frontend | *Status:* Done | *Evidence:* Playwright script `scripts/capture_screens.py` executed.
 
 ---
 
-## Stage 1: Scaffold & Code-Quality Baseline
+## Stage R1: Google Services Depth, Authentication & Real Persistence
 
-- [x] **TSK-101:** Initialize Git repository and configure `.gitignore` for Python & Netlify.  
-  *Role:* DevOps Lead | *Est:* 1h | *Deps:* TSK-012  
-  *Acceptance:* Git initialized, virtual environments and secrets ignored.
-- [x] **TSK-102:** Set up Python virtual environment and `requirements.txt`.  
-  *Role:* Backend Lead | *Est:* 1h | *Deps:* TSK-101  
-  *Acceptance:* FastAPI, Uvicorn, Pydantic v2, Google GenAI SDK installed.
-- [x] **TSK-103:** Create FastAPI application factory (`src/main.py`) and single-command runner (`run.py`).  
-  *Role:* Backend Lead | *Est:* 2h | *Deps:* TSK-102  
-  *Acceptance:* `python run.py` launches Uvicorn server and serves health endpoint.
-- [x] **TSK-104:** Create Netlify serverless entrypoint (`netlify/functions/api.py`) and `netlify.toml`.  
-  *Role:* DevOps Lead | *Est:* 2h | *Deps:* TSK-103  
-  *Acceptance:* Mangum wrapper configured with build and redirect rules.
-- [x] **TSK-105:** Configure pytest suite (`tests/conftest.py`) and write initial passing test.  
-  *Role:* QA Engineer | *Est:* 1h | *Deps:* TSK-103  
-  *Acceptance:* `pytest` runs and passes with zero errors.
-
----
-
-## Stage 2: Google Services & Security Foundation
-
-- [x] **TSK-201:** Implement Google GenAI Python service with structured outputs & repair logic (`src/services/gemini_service.py`).  
-  *Role:* AI Engineer | *Est:* 3h | *Deps:* TSK-103  
-  *Acceptance:* Uses official SDK, validates against Pydantic model, handles retries.
-- [x] **TSK-202:** Implement sliding-window rate limiter & security headers middleware.  
-  *Role:* Security Engineer | *Est:* 2h | *Deps:* TSK-103  
-  *Acceptance:* Throttles excessive calls, sets CSP and nosniff headers.
-- [x] **TSK-203:** Implement prompt injection sanitization utility (`src/utils/sanitizer.py`).  
-  *Role:* Security Engineer | *Est:* 1h | *Deps:* TSK-201  
-  *Acceptance:* Strips system override tokens, tested with adversarial inputs.
-- [x] **TSK-204:** Implement persistent storage service with local JSON/SQLite and Firestore adapter.  
-  *Role:* Backend Lead | *Est:* 2h | *Deps:* TSK-103  
-  *Acceptance:* CRUD operations for celebrations and sub-entities with user isolation.
+- [ ] **R1-T01:** Implement Firebase Authentication with Google Sign-in on frontend and ID token verification (`firebase-admin`) in FastAPI backend.  
+  *Role:* Security / Backend | *Est:* 3h | *Deps:* R0-T05  
+  *Acceptance:* Protected routes return 401 without Bearer token; guest/demo mode remains accessible with seeded read-only data.
+- [ ] **R1-T02:** Implement Cloud Firestore repository behind existing `StorageService` interface for events, budgets, tasks, vendors, and guests.  
+  *Role:* Backend Lead | *Est:* 3h | *Deps:* R1-T01  
+  *Acceptance:* Data persists across server restarts; in-memory store retained as test/demo adapter.
+- [ ] **R1-T03:** Author and test Firestore Security Rules (owner-only access to `/users/{uid}/events/**`).  
+  *Role:* Security Lead | *Est:* 2h | *Deps:* R1-T02  
+  *Acceptance:* User A cannot read or write User B's events; verified with Firestore emulator tests.
+- [ ] **R1-T04:** Implement Firebase App Check verification on AI generation and state-mutating endpoints.  
+  *Role:* Security Lead | *Est:* 2h | *Deps:* R1-T01  
+  *Acceptance:* Enforces valid App Check token in production config with test bypass in mock mode.
+- [ ] **R1-T05:** Implement Google Maps Platform Places server-side proxy for venue and vendor discovery with graceful degradation.  
+  *Role:* Backend Lead | *Est:* 2h | *Deps:* R1-T02  
+  *Acceptance:* Returns verified place candidates when API key present; returns curated local defaults when key omitted.
+- [ ] **R1-T06:** Write Hosting Architecture ADR (Cloud Run vs Netlify serverless) in `docs/DECISIONS.md`.  
+  *Role:* Architect | *Est:* 1h | *Deps:* R1-T02  
+  *Acceptance:* Documents how Firebase Auth and Firestore integrate cleanly with hosting target.
+- [ ] **R1-T07:** Deploy live working application URL and verify with smoke test.  
+  *Role:* DevOps Lead | *Est:* 2h | *Deps:* R1-T06  
+  *Acceptance:* Live URL responsive, documented in README and STAGE_STATUS.md.
 
 ---
 
-## Stage 3: Core Features (The Four Pillars)
+## Stage R2: Security Hardening
 
-- [x] **TSK-301:** Implement Onboarding Wizard & Master Plan Generator endpoint (`POST /api/ai/plan`).  
-  *Role:* Full-Stack | *Est:* 3h | *Deps:* TSK-201  
-  *Acceptance:* Generates complete celebration master plan with fallback on 429 quota exhaustion.
-- [x] **TSK-302:** Implement Dynamic Budget Planner & Live AI Re-balancing (`POST /api/ai/rebalance-budget`).  
-  *Role:* Full-Stack | *Est:* 3h | *Deps:* TSK-301  
-  *Acceptance:* Category split, paid vs. pending tracking, over-budget warnings, AI re-balance.
-- [x] **TSK-303:** Implement Phased Countdown Timeline & Google Calendar Export (`GET /api/export/calendar`).  
-  *Role:* Full-Stack | *Est:* 3h | *Deps:* TSK-301  
-  *Acceptance:* 5 chronological phases, task status toggle, download `.ics` and deep-link to Google Calendar.
-- [x] **TSK-304:** Implement Categorized Vendor Checklist & Quote Management.  
-  *Role:* Full-Stack | *Est:* 2h | *Deps:* TSK-301  
-  *Acceptance:* Tracks status, quote amount, notes, and local estimates.
-- [x] **TSK-305:** Implement Personalized Ideas Hub across 6 cultural dimensions.  
-  *Role:* Full-Stack | *Est:* 2h | *Deps:* TSK-301  
-  *Acceptance:* Curated themes, decor, regional menu, sacred rituals, games, return gifts.
-- [x] **TSK-306:** Implement Auspicious Muhurat Helper & Date Guidance.  
-  *Role:* Full-Stack | *Est:* 1h | *Deps:* TSK-301  
-  *Acceptance:* Displays seasonal windows with mandatory astrology disclaimer.
-- [x] **TSK-307:** Build Curated Seed Datasets for Weddings, Birthdays, and Community Melas.  
-  *Role:* Full-Stack | *Est:* 2h | *Deps:* TSK-301  
-  *Acceptance:* Demo mode instantly loads all 3 celebrations with rich details.
-
----
-
-## Stage 4: Premium UI, Cultural Design & Personalization
-
-- [x] **TSK-401:** Assemble modern responsive web UI shell (`public/index.html`, `public/css/styles.css`).  
-  *Role:* UI Designer | *Est:* 3h | *Deps:* TSK-307  
-  *Acceptance:* Warm ivory and twilight indigo palettes, Noto Serif Devanagari typography.
-- [x] **TSK-402:** Integrate cultural SVG motifs (Mandala, Diya, Kalash, Torana).  
-  *Role:* UI Designer | *Est:* 2h | *Deps:* TSK-401  
-  *Acceptance:* Subtle mandala backdrops, pulsating diya loader during AI thought.
-- [x] **TSK-403:** Implement Personalization Engine (Time-of-day Sanskrit greeting, personal blessing note).  
-  *Role:* Frontend Lead | *Est:* 2h | *Deps:* TSK-401  
-  *Acceptance:* Greets user by name & time of day, includes family blessing note in exports.
-- [x] **TSK-404:** Implement fluid micro-interactions, budget number tickers, and confetti bursts.  
-  *Role:* Frontend Lead | *Est:* 2h | *Deps:* TSK-401  
-  *Acceptance:* Spring transitions, budget ticker animation, celebratory confetti on task check.
+- [ ] **R2-T01:** Implement strict authorization checks (tenant isolation) on every event, budget, task, vendor, and guest endpoint.  
+  *Role:* Security Lead | *Est:* 2h | *Deps:* R1-T01  
+  *Acceptance:* IDOR test suite proves cross-user access attempts fail with 403 Forbidden.
+- [ ] **R2-T02:** Transition sliding-window rate limiting to shared persistent counter (per-IP and per-user).  
+  *Role:* Security Lead | *Est:* 2h | *Deps:* R1-T02  
+  *Acceptance:* Rate limiter operates consistently across multiple server instances with 429 and Retry-After headers.
+- [ ] **R2-T03:** Comprehensive input validation audit: strict string lengths, body size limits, and Pydantic extra-field rejection.  
+  *Role:* Backend Lead | *Est:* 2h | *Deps:* R2-T01  
+  *Acceptance:* Malformed requests or unexpected JSON fields rejected with 422 Unprocessable Entity.
+- [ ] **R2-T04:** Build adversarial prompt injection test corpus and verify sanitizer.  
+  *Role:* AI Security | *Est:* 2h | *Deps:* R2-T03  
+  *Acceptance:* Instruction override, role hijack, Devanagari evasion, and system prompt leakage attacks neutralised.
+- [ ] **R2-T05:** Frontend XSS audit: replace unsafe DOM insertions with textContent or sanitized DOMPurify pipelines.  
+  *Role:* Frontend Lead | *Est:* 2h | *Deps:* R2-T04  
+  *Acceptance:* Script injection and onerror payloads neutralised in chat and dynamic lists.
+- [ ] **R2-T06:** Enforce strict HTTP security headers (CSP without unsafe-inline where feasible, HSTS, X-Content-Type-Options, restricted CORS).  
+  *Role:* Security Lead | *Est:* 1h | *Deps:* R2-T05  
+  *Acceptance:* Verified via live curl -I output.
+- [ ] **R2-T07:** Run automated dependency vulnerability audit (`pip-audit`) and secret scan.  
+  *Role:* DevOps Lead | *Est:* 1h | *Deps:* R2-T06  
+  *Acceptance:* Zero high/critical vulnerabilities; no API keys in repository.
 
 ---
 
-## Stage 5: Accessibility (WCAG 2.2 AA)
+## Stage R3: UI Refinement & Feature Completeness
 
-- [x] **TSK-501:** Implement semantic landmarks, keyboard focus management, and skip navigation.  
-  *Role:* A11y Specialist | *Est:* 2h | *Deps:* TSK-401  
-  *Acceptance:* Full keyboard accessibility, visible focus indicators, skip-to-content link.
-- [x] **TSK-502:** Configure ARIA live regions for streaming AI updates and toast notifications.  
-  *Role:* A11y Specialist | *Est:* 1h | *Deps:* TSK-501  
-  *Acceptance:* Screen-readers announce AI status and task updates smoothly.
-- [x] **TSK-503:** Enforce color contrast (≥ 4.5:1 text, ≥ 3:1 UI) and reduced-motion overrides.  
-  *Role:* A11y Specialist | *Est:* 1h | *Deps:* TSK-501  
-  *Acceptance:* Verified in light and dark themes; `@media (prefers-reduced-motion)` respected.
-
----
-
-## Stage 6: Testing Depth & Resilience
-
-- [x] **TSK-601:** Implement Unit & Pydantic Schema Validation Tests (`tests/test_schemas.py`).  
-  *Role:* QA Engineer | *Est:* 2h | *Deps:* TSK-307  
-  *Acceptance:* Validates required fields, budget bounds, date constraints.
-- [x] **TSK-602:** Implement Budget Math & Re-balancing Tests (`tests/test_budget_math.py`).  
-  *Role:* QA Engineer | *Est:* 2h | *Deps:* TSK-302  
-  *Acceptance:* Confirms total variance, percentage split, and payment statuses.
-- [x] **TSK-603:** Implement Edge-Case Test Suite (`tests/test_edge_cases.py`).  
-  *Role:* QA Engineer | *Est:* 2h | *Deps:* TSK-601  
-  *Acceptance:* Tests empty input, negative budget, Devanagari text, huge guest counts.
-- [x] **TSK-604:** Implement Loop Safety & Max-Iteration Cap Tests (`tests/test_loop_safety.py`).  
-  *Role:* Security Engineer | *Est:* 2h | *Deps:* TSK-201  
-  *Acceptance:* Proves AI repair loop terminates at 1 retry and enforces 12s timeout.
+- [ ] **R3-T01 (U1):** Reintroduce subtle cultural warmth: low-opacity mandala/rangoli line-art (3-6%) and restrained gold accents.  
+- [ ] **R3-T02 (U2):** Build two-segment progress bar (Paid vs Allocated vs Target) with accessible `aria-valuenow` and legend.  
+- [ ] **R3-T03 (U3):** Enhance Allocated budget hierarchy with percentage caption and Remaining Balance metric.  
+- [ ] **R3-T04 (U4):** Refactor milestone rows: separate time field, relative dates ("in 10 days"), and interactive checkboxes.  
+- [ ] **R3-T05 (U5):** Upgrade overview cards to display live dynamic metrics (top category budget donut, vendor count, pending tasks).  
+- [ ] **R3-T06 (U6):** Upgrade header: high-contrast Subhashita bar, SVG theme toggle, bilingual EN/Hindi toggle, and user account menu.  
+- [ ] **R3-T07 (U7):** Implement mobile horizontally scrollable tabs with edge fades, ARIA tabs pattern, and new Guests & RSVP module.  
+- [ ] **R3-T08 (U8):** Standardize badges: rename "Active Blueprint" to "Active plan" using semantic palette tokens.  
+- [ ] **R3-T09 (U9):** Build comprehensive Share Drawer: copy link, WhatsApp share (India-first), PDF export, and personalized blessing note.  
+- [ ] **R3-T10 (U10):** Upgrade celebration switcher to accessible custom listbox with event icons, date, and budget details.  
+- [ ] **R3-T11 (U11):** Refactor cultural greeting to single-language display based on language toggle.  
+- [ ] **R3-T12 (U12):** Apply per-event accent personalization (wedding vermilion/gold, birthday marigold, community indigo).  
+- [ ] **R3-T13 (U13):** Add structured footer with Panchang astrological disclaimer, privacy policy link, and credits.  
+- [ ] **R3-T14 (U14):** Complete metadata: title, description, OpenGraph tags, and custom SVG favicon.  
+- [ ] **R3-T15:** Capture 16 after-screenshots across all screens into `docs/reports/ui-after/`.
 
 ---
 
-## Stage 7: Efficiency & Performance
+## Stage R4: Testing Depth & Resilience
 
-- [x] **TSK-701:** Optimize static assets, font preloading, and caching headers in `netlify.toml`.  
-  *Role:* DevOps Lead | *Est:* 1h | *Deps:* TSK-401  
-  *Acceptance:* Fast font loading, gzip compression, sub-second TTFT on cached responses.
-- [x] **TSK-702:** Implement in-memory AI plan response cache keyed by normalized brief.  
-  *Role:* Backend Lead | *Est:* 1h | *Deps:* TSK-301  
-  *Acceptance:* Instantaneous responses for repeated celebration briefs.
+- [ ] **R4-T01:** Enforce overall test coverage gate ≥ 80% (and ≥ 90% on budget math, validation, and AI parsing).  
+- [ ] **R4-T02:** Implement comprehensive edge-case test suite (empty inputs, negative budget, Devanagari text, huge guest counts, Gemini timeouts).  
+- [ ] **R4-T03:** Build mock integration tests for Gemini API, Firestore emulator, and calendar export.  
+- [ ] **R4-T04:** Write frontend unit tests for `store.js` and `api.js` (SSE stream handling).  
+- [ ] **R4-T05:** Implement Playwright E2E journey tests for Wedding, Birthday, and Community event planning flows.  
+- [ ] **R4-T06:** Implement loop safety and max-iteration cap tests asserting repair loops terminate cleanly.  
+- [ ] **R4-T07:** Run load testing scenario (k6 or Locust) and document p95 latencies and error rates.  
+- [ ] **R4-T08:** Run full test suite 3 consecutive times with 100% green pass rate.
 
 ---
 
-## Stage 8: Final Audit, GitHub Sync & Netlify Deployment
+## Stage R5: Accessibility with Proof
 
-- [x] **TSK-801:** Conduct full self-assessment audit against PromptWars criteria in `docs/STAGE_STATUS.md`.  
-  *Role:* Staff PM | *Est:* 2h | *Deps:* All previous tasks  
-  *Acceptance:* All 6 evaluation criteria scored with concrete file and test evidence.
-- [x] **TSK-802:** Commit all files to Git and push to remote GitHub repository.  
-  *Role:* DevOps Lead | *Est:* 1h | *Deps:* TSK-801  
-  *Acceptance:* Repository created, all stages committed, pushed to GitHub.
-- [x] **TSK-803:** Deploy and verify live application on Netlify.  
-  *Role:* DevOps Lead | *Est:* 1h | *Deps:* TSK-802  
-  *Acceptance:* Production URL live on Netlify, recorded in `README.md`.
+- [ ] **R5-T01:** Run automated `@axe-core/playwright` accessibility audit on all views in light and dark themes; resolve all critical/serious issues.  
+- [ ] **R5-T02:** Run Google Lighthouse Accessibility audit on mobile build and achieve score ≥ 95.  
+- [ ] **R5-T03:** Conduct full manual keyboard navigation walkthrough (focus traps, visible indicators, skip link).  
+- [ ] **R5-T04:** Conduct screen-reader pass (NVDA/VoiceOver) with ARIA live region verification; document in report.
+
+---
+
+## Stage R6: Efficiency with Measured Numbers
+
+- [ ] **R6-T01:** Run Lighthouse Mobile performance audit; achieve ≥ 90 across Performance, Accessibility, Best Practices, and SEO.  
+- [ ] **R6-T02:** Measure and record Web Vitals (LCP < 2.5s, INP < 200ms, CLS < 0.1) and Time-To-First-Token (TTFT).  
+- [ ] **R6-T03:** Implement asset optimization: content-hashed static assets, long cache headers, font-display swap, and gzip/brotli.  
+- [ ] **R6-T04:** Implement in-memory / Firestore AI response cache keyed by normalized celebration brief.  
+- [ ] **R6-T05:** Measure and record transferred bundle sizes (JS/CSS) in `docs/TRD.md`.
+
+---
+
+## Stage R7: Code Quality & CI
+
+- [ ] **R7-T01:** Python strict typing audit with `mypy --strict` passing across `src/`.  
+- [ ] **R7-T02:** Expand Ruff rules (E, F, I, B, UP, S, SIM, C4) with zero errors.  
+- [ ] **R7-T03:** Frontend JavaScript linting and formatting with ESLint and Prettier.  
+- [ ] **R7-T04:** Author OpenAPI schema sync test verifying frontend expectations against backend contracts.  
+- [ ] **R7-T05:** Configure multi-job GitHub Actions CI pipeline running lint, mypy, pytest, Playwright, and commit-msg verification.  
+- [ ] **R7-T06:** Update `docs/ARCHITECTURE.md` to ensure diagrams and directory trees match real code.
+
+---
+
+## Stage R8: Live Deployment & Final Submission
+
+- [ ] **R8-T01:** Deploy production build to cloud hosting; confirm environment variables and secrets.  
+- [ ] **R8-T02:** Execute end-to-end smoke test against live production URL.  
+- [ ] **R8-T03:** Update `README.md` with production URL, demo guide, and 3-minute hackathon judge script.  
+- [ ] **R8-T04:** Author final honest evaluation scorecard in `docs/STAGE_STATUS.md` across all 6 PromptWars criteria.  
+- [ ] **R8-T05:** Generate `CHANGELOG.md` from commit history and tag release `v1.0.0`.  
+- [ ] **R8-T06:** Final git verification: clean working tree, all commits pushed to `origin/main`.
