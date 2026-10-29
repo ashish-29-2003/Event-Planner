@@ -3,8 +3,8 @@
 | Stage | Status (NOT STARTED / IN PROGRESS / PASSED / BLOCKED) | Date | Commit range | Evidence |
 |---|---|---|---|---|
 | **R0: Reality Check & Git Hygiene** | **PASSED** | 2026-10-29 | 92bb256..12400bf | Setup verified from README, 76% real coverage recorded, commit-msg hook active, ui-before screenshots captured |
-| **R1: Google Services, Auth & Persistence** | **PASSED** | 2026-10-29 | 834272f..ec57bb3 | Firebase Auth, Cloud Firestore repository, Security Rules, App Check, Places discovery proxy, 45/45 tests passing |
-| **R2: Security Hardening** | **IN PROGRESS** | 2026-10-29 | - | IDOR tests, shared counter rate-limiting, prompt injection attack suite, DOMPurify XSS defenses, strict CSP |
+| **R1: Google Services, Auth & Persistence** | **REOPENED (closure in progress)** | 2026-10-29 | 834272f..1a5e00a | R1-C closure in progress (real browser auth, Firestore backend, emulator rules, test suite speed, smoke test) |
+| **R2: Security Hardening** | **NOT STARTED** | - | - | IDOR tests, shared counter rate-limiting, prompt injection attack suite, DOMPurify XSS defenses, strict CSP |
 | **R3: UI Refinement & Completeness** | **NOT STARTED** | - | - | Items U1 to U14, Guests & RSVP tab, bilingual EN/Hindi toggle, responsive breakpoints 360-1920px |
 | **R4: Testing Depth & Resilience** | **NOT STARTED** | - | - | ≥80% coverage gate, edge-case matrix, integration tests, Playwright E2E journeys, 3 consecutive green runs |
 | **R5: Accessibility with Proof** | **NOT STARTED** | - | - | @axe-core/playwright 0 violations, Lighthouse accessibility ≥95, screen-reader walkthrough notes |
@@ -88,3 +88,17 @@
 - Gate item: [x] All tests green and coverage maintained.
   - Evidence: 45 passed in 52.68s, 78% statement coverage (1028 statements, 222 missed).
 - Commit range: `834272f..ec57bb3`
+
+
+---
+
+### Stage R1-C Closure Log (in progress)
+- [ ] C1: Playwright + Auth Emulator test proves real browser sign-in, session persistence, and sign-out.
+- [ ] C2: STORAGE_BACKEND explicit; production refuses startup without Firestore; emulator CRUD and restart tests.
+- [ ] C3: Firestore rules tests run against emulator; rename text-parsing tests.
+- [ ] C4: Route auth matrix in docs/SECURITY_AND_TESTING.md; route guard test; demo-* read-only for guests.
+- [ ] C5: scripts/smoke_test.py passes against live URL, or status BLOCKED with exact needs.
+- [ ] C6: Centralized config, .env.example complete, App Check bypass off in production, structured JSON logging with redaction test.
+- [ ] C7: README Google services table committed.
+- [ ] C8: Test-suite health: non-emulator suite under 15s (pytest --durations=15); per-module coverage printed.
+- [ ] C9: Places contract test with respx (error handling, timeouts, quota, key server-side only).
