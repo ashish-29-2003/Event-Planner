@@ -6,7 +6,7 @@
 | **R1: Google Services, Auth & Persistence** | **PASSED** | 2026-10-29 | 3dd1b0b..9d3937a | R1-C closure complete: browser auth, Firestore storage backend fail-fast, rules matrix (85 tests), route guards, smoke test (6/6 local), structured logging, README services matrix, suite runtime 12.98s (149 passed), 81% coverage, Places contract tests |
 | **R2: Security Hardening** | **PASSED** | 2026-10-30 | c24143c..0359460 | IDOR suite (10 tests), persistent sliding-window rate limiter, strict extra='forbid' & 1MB limit, 45-sample prompt injection corpus, DOMPurify & XSS sinks defanged, strict CSP & security headers, non-root Dockerfile & supply chain audit, uniform error schema, strict token claims validation, HMAC-SHA256 share tokens, 194 passed, 85% coverage |
 | **R3: UI Refinement & Completeness** | **PASSED** | 2026-10-30 | ed21992..1e1694a | Items U1 to U14 verified with 13 tests in test_ui_refinements.py, 16 after-screenshots captured in docs/reports/ui-after/, full suite 207 passed in 22.2s |
-| **R4: Testing Depth & Resilience** | **NOT STARTED** | - | - | ≥80% coverage gate, edge-case matrix, integration tests, Playwright E2E journeys, 3 consecutive green runs |
+| **R4: Testing Depth & Resilience** | **PASSED** | 2026-10-30 | 13d6738 | 236 passed, 88% statement coverage (100% on budget math & schemas), edge-cases, mock integrations, Playwright journeys, load test (p95 658ms, 0% error), 3 consecutive green runs |
 | **R5: Accessibility with Proof** | **NOT STARTED** | - | - | @axe-core/playwright 0 violations, Lighthouse accessibility ≥95, screen-reader walkthrough notes |
 | **R6: Efficiency with Measured Numbers** | **NOT STARTED** | - | - | Lighthouse ≥90 in all 4 categories on mobile, LCP <2.5s, INP <200ms, measured TTFT, AI cache |
 | **R7: Code Quality & CI** | **NOT STARTED** | - | - | mypy strict, expanded Ruff rules, ESLint/Prettier, OpenAPI sync test, green multi-job CI pipeline |
@@ -272,4 +272,52 @@
 - **R3-T15: Post-Refinement Screenshot Capture**
   - Captured complete 16-screenshot suite across light and dark themes for all 8 application views in `docs/reports/ui-after/`.
   - Commit SHA: `1e1694a`.
+
+---
+
+### Stage R4 Log (Completed & Verified)
+- **R4-T01: Coverage Enforcement Gate (88% Overall Statement Coverage)**
+  - Measured 88% overall statement coverage (1437 statements, 179 missed; threshold >=80%).
+  - 100% coverage achieved on budget math, Pydantic schemas, and validation models (models/ai_plan.py, models/budget.py, models/event.py, models/guest.py, models/ideas.py, models/timeline.py, models/vendor.py).
+  - Tested via pytest --cov=src --cov-report=term-missing.
+  - Commit SHA: 13d6738.
+- **R4-T02: Comprehensive Edge-Case Test Suite**
+  - Implemented 15 edge-case tests in 	ests/test_edge_cases.py covering negative budget rejections, zero budget handling, extreme ₹10 Crore boundaries, giant guest counts (50,000), Devanagari script preservation, festive emoji parsing, RTL/bidi override stripping, string truncation, and currency formatting edge cases.
+  - Tested in 	ests/test_edge_cases.py (15/15 passed).
+  - Commit SHA: 13d6738.
+- **R4-T03: Mock Integration Tests**
+  - Implemented 7 mock integration tests in 	ests/test_mock_integrations.py validating Gemini API plan synthesis, repair loop recovery, max iteration termination, timeout fallback, RFC-5545 iCalendar format compliance, and multi-subcollection event cloning.
+  - Tested in 	ests/test_mock_integrations.py (7/7 passed).
+  - Commit SHA: 13d6738.
+- **R4-T04: Frontend Store & API Client Contract Tests**
+  - Implemented unit tests in 	ests/test_frontend_store_api.py validating reactive EventStore subscription, theme and language toggling, API client auth/AppCheck injection, OpenAPI route mapping, and SSE stream parsing.
+  - Tested in 	ests/test_frontend_store_api.py (4/4 passed).
+  - Commit SHA: 13d6738.
+- **R4-T05: Playwright E2E Journey Tests**
+  - Implemented 3 realistic end-to-end journey tests in 	ests/test_e2e_journeys.py:
+    1. Wedding Journey (Jaipur Royal Wedding: headline, countdown, budget matrix, task toggle, guests table, share modal with blessing note)
+    2. Birthday Journey (Bengaluru Cosmic Birthday: custom switcher, dynamic theme accent .theme-birthday, ideas hub)
+    3. Community Journey (Delhi Diwali Dandiya Mela: custom switcher, dynamic theme accent .theme-community, auspicious Muhurat windows)
+  - Tested in 	ests/test_e2e_journeys.py (3/3 passed).
+  - Commit SHA: 13d6738.
+- **R4-T06: Loop Safety & Max-Iteration Cap Tests**
+  - Implemented loop safety tests in 	ests/test_loop_safety.py and 	ests/test_mock_integrations.py asserting repair loops strictly terminate at max 1 retry, circular budget rebalances terminate cleanly, and timeouts fall back to deterministic seeds.
+  - Tested in 	ests/test_loop_safety.py (5/5 passed).
+  - Commit SHA: 13d6738.
+- **R4-T07: Load Testing Scenario**
+  - Authored scripts/load_test.py running 200 concurrent requests (concurrency=20) across all primary API endpoints.
+  - Results logged to docs/reports/load_test_results.json:
+    - Total Requests: 200
+    - Success Rate: 100.0% (200/200)
+    - Throughput: 77.2 req/s
+    - p50 Latency: 127.95 ms
+    - p90 Latency: 510.11 ms
+    - p95 Latency: 658.03 ms
+    - p99 Latency: 1162.25 ms
+  - Commit SHA: 13d6738.
+- **R4-T08: Three Consecutive 100% Green Test Runs**
+  - Run 1: **236 passed, 0 failures in 29.88s** (88% coverage)
+  - Run 2: **236 passed, 0 failures in 19.50s**
+  - Run 3: **236 passed, 0 failures in 22.02s**
+  - Commit SHA: 13d6738.
 

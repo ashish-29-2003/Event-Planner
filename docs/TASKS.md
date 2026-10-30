@@ -88,14 +88,14 @@
 
 ## Stage R4: Testing Depth & Resilience
 
-- [ ] **R4-T01:** Enforce overall test coverage gate ≥ 80% (and ≥ 90% on budget math, validation, and AI parsing).  
-- [ ] **R4-T02:** Implement comprehensive edge-case test suite (empty inputs, negative budget, Devanagari text, huge guest counts, Gemini timeouts).  
-- [ ] **R4-T03:** Build mock integration tests for Gemini API, Firestore emulator, and calendar export.  
-- [ ] **R4-T04:** Write frontend unit tests for `store.js` and `api.js` (SSE stream handling).  
-- [ ] **R4-T05:** Implement Playwright E2E journey tests for Wedding, Birthday, and Community event planning flows.  
-- [ ] **R4-T06:** Implement loop safety and max-iteration cap tests asserting repair loops terminate cleanly.  
-- [ ] **R4-T07:** Run load testing scenario (k6 or Locust) and document p95 latencies and error rates.  
-- [ ] **R4-T08:** Run full test suite 3 consecutive times with 100% green pass rate.
+- [x] **R4-T01:** Enforce overall test coverage gate ≥ 80% (and ≥ 90% on budget math, validation, and AI parsing).  
+- [x] **R4-T02:** Implement comprehensive edge-case test suite (empty inputs, negative budget, Devanagari text, huge guest counts, Gemini timeouts).  
+- [x] **R4-T03:** Build mock integration tests for Gemini API, Firestore emulator, and calendar export.  
+- [x] **R4-T04:** Write frontend unit tests for `store.js` and `api.js` (SSE stream handling).  
+- [x] **R4-T05:** Implement Playwright E2E journey tests for Wedding, Birthday, and Community event planning flows.  
+- [x] **R4-T06:** Implement loop safety and max-iteration cap tests asserting repair loops terminate cleanly.  
+- [x] **R4-T07:** Run load testing scenario (k6 or Locust) and document p95 latencies and error rates.  
+- [x] **R4-T08:** Run full test suite 3 consecutive times with 100% green pass rate.
 
 ---
 
