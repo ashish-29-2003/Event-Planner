@@ -3,13 +3,14 @@
 > **॥ शुभ आरम्भ: every celebration begins well ॥**  
 > An intelligent, culturally grounded celebration planning assistant for weddings, birthdays, and community festivals, powered by Google Gemini and built in Python.
 
-[![Python Version](https://img.shields.io/badge/Python-3.10%2B-blue.svg)](https://www.python.org/)
+[![Python Version](https://img.shields.io/badge/Python-3.13%2B-blue.svg)](https://www.python.org/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.110%2B-009688.svg)](https://fastapi.tiangolo.com/)
-[![Google Gemini](https://img.shields.io/badge/Google%20GenAI-Gemini%201.5%20Flash-orange.svg)](https://ai.google.dev/)
+[![Google Gemini](https://img.shields.io/badge/Google%20GenAI-Gemini%202.0%20Flash-orange.svg)](https://ai.google.dev/)
 [![Netlify Status](https://img.shields.io/badge/Netlify-Deploy%20Ready-00C7B7.svg)](https://www.netlify.com/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-Built for **PromptWars Virtual** (Google for Developers x H2S, "Build with AI", India).
+Built for **PromptWars Virtual** (Google for Developers x H2S, "Build with AI", India).  
+📖 **Quick Links:** [🏆 Hackathon Submission Pack](docs/SUBMISSION.md) | [📋 Master Testing Checklist](docs/TEST_CHECKLIST.md) | [🔍 Defect Log](docs/DEFECTS.md) | [📊 Stage Status](docs/STAGE_STATUS.md) | [🔒 Security Reports](docs/reports/)
 
 ---
 
