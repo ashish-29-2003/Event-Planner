@@ -4,8 +4,8 @@
 |---|---|---|---|---|
 | **R0: Reality Check & Git Hygiene** | **PASSED** | 2026-10-29 | 92bb256..12400bf | Setup verified from README, 76% real coverage recorded, commit-msg hook active, ui-before screenshots captured |
 | **R1: Google Services, Auth & Persistence** | **PASSED** | 2026-10-29 | 3dd1b0b..9d3937a | R1-C closure complete: browser auth, Firestore storage backend fail-fast, rules matrix (85 tests), route guards, smoke test (6/6 local), structured logging, README services matrix, suite runtime 12.98s (149 passed), 81% coverage, Places contract tests |
-| **R2: Security Hardening** | **NOT STARTED** | - | - | IDOR tests, shared counter rate-limiting, prompt injection attack suite, DOMPurify XSS defenses, strict CSP |
-| **R3: UI Refinement & Completeness** | **NOT STARTED** | - | - | Items U1 to U14, Guests & RSVP tab, bilingual EN/Hindi toggle, responsive breakpoints 360-1920px |
+| **R2: Security Hardening** | **PASSED** | 2026-10-30 | c24143c..0359460 | IDOR suite (10 tests), persistent sliding-window rate limiter, strict extra='forbid' & 1MB limit, 45-sample prompt injection corpus, DOMPurify & XSS sinks defanged, strict CSP & security headers, non-root Dockerfile & supply chain audit, uniform error schema, strict token claims validation, HMAC-SHA256 share tokens, 194 passed, 85% coverage |
+| **R3: UI Refinement & Completeness** | **IN PROGRESS** | 2026-10-30 | - | Items U1 to U14, Guests & RSVP tab, bilingual EN/Hindi toggle, responsive breakpoints 360-1920px |
 | **R4: Testing Depth & Resilience** | **NOT STARTED** | - | - | ≥80% coverage gate, edge-case matrix, integration tests, Playwright E2E journeys, 3 consecutive green runs |
 | **R5: Accessibility with Proof** | **NOT STARTED** | - | - | @axe-core/playwright 0 violations, Lighthouse accessibility ≥95, screen-reader walkthrough notes |
 | **R6: Efficiency with Measured Numbers** | **NOT STARTED** | - | - | Lighthouse ≥90 in all 4 categories on mobile, LCP <2.5s, INP <200ms, measured TTFT, AI cache |
@@ -149,3 +149,63 @@
 - **C9: Google Places Contract Test**
   - Created `tests/test_places_contract.py` using `respx` verifying 200 realistic response with geometry, 400 Bad Request, 403 Forbidden, 429 Over Quota, network timeout, catalog fallback, and zero API key leakage (6/6 passed).
   - Commit SHA: `9d3937a`.
+
+
+---
+
+### Stage R2 Log (Completed & Verified)
+- **R2-T01: Multi-tenant IDOR & Tenant Authorization**
+  - Enforced cross-tenant ownership guards on all celebrations and nested subcollections (tasks, guests, budget items).
+  - Added celebration quota enforcement (maximum 20 celebrations per user to prevent storage abuse).
+  - Tested in `tests/security/test_idor.py` (10/10 passed).
+  - Commit SHA: `c24143c`.
+- **R2-T02: Shared-Store Rate Limiting**
+  - Re-architected `src/utils/rate_limiter.py` into a durable sliding-window rate limiter persisting request timestamps across server restarts.
+  - Added dual IP and authenticated user evaluation with standard `X-RateLimit-Limit`, `X-RateLimit-Remaining`, `X-RateLimit-Reset`, and `Retry-After` headers.
+  - Tested in `tests/security/test_rate_limiter.py` (4/4 passed).
+  - Commit SHA: `2cca06c`.
+- **R2-T03: Input Boundaries & Payload Limits**
+  - Configured `ConfigDict(extra="forbid")` and explicit string length / numeric bounds across all Pydantic request models (`event.py`, `budget.py`, `timeline.py`, `guest.py`, `ideas.py`, `vendor.py`, `ai_routes.py`, `event_routes.py`).
+  - Added global 1MB request body limit middleware returning 413 Payload Too Large.
+  - Tested in `tests/security/test_input_boundaries.py` (7/7 passed).
+  - Commit SHA: `49c4742`.
+- **R2-T04: Adversarial Prompt Injection Corpus & Sanitizer**
+  - Created a 45-sample adversarial injection corpus covering role hijacks, instruction overrides, Devanagari evasion, delimiters, and control character exploits (`tests/security/injection_corpus.json`).
+  - Upgraded `src/utils/sanitizer.py` with heuristic detection, delimiter defanging, control character / bidi override stripping, and safe XML `<user_prompt>` boundaries.
+  - Tested in `tests/security/test_prompt_injection.py` (6/6 passed).
+  - Commit SHA: `465ab40`.
+- **R2-T05: Frontend XSS Audit & DOMPurify Integration**
+  - Integrated DOMPurify CDN into `public/index.html`.
+  - Replaced unsafe `innerHTML` concatenation in chat drawers with `textContent` for user bubbles and `DOMPurify.sanitize()` for AI streaming chunks.
+  - Applied HTML entity escaping across milestone titles, descriptions, budget notes, vendors, and ideas.
+  - Tested in `tests/security/test_frontend_xss.py` (5/5 passed).
+  - Commit SHA: `0926c08`.
+- **R2-T06: Strict Security Headers & CSP**
+  - Unified security headers in `src/config.py` as a single source of truth: `X-Content-Type-Options: nosniff`, `X-Frame-Options: DENY`, `Referrer-Policy: strict-origin-when-cross-origin`, `Strict-Transport-Security`, `Permissions-Policy`, and strict `Content-Security-Policy`.
+  - Synchronized FastAPI middleware and edge headers in `netlify.toml`.
+  - Tested in `tests/security/test_security_headers.py` (3/3 passed).
+  - Commit SHA: `383461a`.
+- **R2-T07: Supply Chain & Secret Scan Audit**
+  - Enforced least-privilege non-root execution (`USER samaroh`) in multi-stage `Dockerfile`.
+  - Audited `.dockerignore` to block `.env`, credentials, and local data files.
+  - Added automated secret scanner test asserting zero hardcoded Gemini keys or private keys in tracked codebase.
+  - Tested in `tests/security/test_supply_chain.py` (3/3 passed).
+  - Commit SHA: `1a4f636`.
+- **R2-T08: Standardized Uniform Error Response Schema**
+  - Implemented centralized exception handlers in `src/main.py` ensuring all 400, 401, 403, 404, 413, 422, and 500 errors return `{"error": {"code": str, "message": str, "request_id": str}}` while retaining backward-compatible `detail`.
+  - Tested in `tests/security/test_error_schema.py` (4/4 passed).
+  - Commit SHA: `7fd7d3d`.
+- **R2-T09: Strict Firebase Token Verification**
+  - Added `validate_firebase_token_claims` validating audience matches project ID, issuer matches `https://securetoken.google.com/<project_id>`, subject is present, and timestamps obey clock skew tolerance.
+  - Strictly rejected test/mock tokens when `ENVIRONMENT=production`.
+  - Tested in `tests/security/test_token_verification.py` (7/7 passed).
+  - Commit SHA: `1990c51`.
+- **R2-T10: HMAC-Signed Share & Export Link Safety**
+  - Implemented high-entropy HMAC-SHA256 time-bound tokens (`generate_share_token`, `verify_share_token`) with expiration in `src/utils/tokens.py`.
+  - Added `POST /api/export/{id}/share-token`, protected private summaries/calendars against unauthorized access, and allowed token-authenticated guest viewing.
+  - Tested in `tests/security/test_share_tokens.py` (4/4 passed).
+  - Commit SHA: `fb66e5b`.
+- **R2-T11: Security Documentation & Full Suite Gate Verification**
+  - Documented complete threat model and 10-suite testing matrix in `docs/SECURITY_AND_TESTING.md`.
+  - Verified full test suite passes with **194 passed in 26.48s** and **85% statement coverage** (1437 statements, 221 missed; threshold ≥80%).
+  - Commit SHA: `0359460`.
