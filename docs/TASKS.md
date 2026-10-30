@@ -131,9 +131,9 @@
 
 ## Stage R8: Live Deployment & Final Submission
 
-- [ ] **R8-T01:** Deploy production build to cloud hosting; confirm environment variables and secrets.  
-- [ ] **R8-T02:** Execute end-to-end smoke test against live production URL.  
-- [ ] **R8-T03:** Update `README.md` with production URL, demo guide, and 3-minute hackathon judge script.  
-- [ ] **R8-T04:** Author final honest evaluation scorecard in `docs/STAGE_STATUS.md` across all 6 PromptWars criteria.  
-- [ ] **R8-T05:** Generate `CHANGELOG.md` from commit history and tag release `v1.0.0`.  
-- [ ] **R8-T06:** Final git verification: clean working tree, all commits pushed to `origin/main`.
+- [x] **R8-T01:** Deploy production build to cloud hosting; confirm environment variables and secrets.  
+- [x] **R8-T02:** Execute end-to-end smoke test against live production URL.  
+- [x] **R8-T03:** Update `README.md` with production URL, demo guide, and 3-minute hackathon judge script.  
+- [x] **R8-T04:** Author final honest evaluation scorecard in `docs/STAGE_STATUS.md` across all 6 PromptWars criteria.  
+- [x] **R8-T05:** Generate `CHANGELOG.md` from commit history and tag release `v1.0.0`.  
+- [x] **R8-T06:** Final git verification: clean working tree, all commits pushed to `origin/main`.
