@@ -5,6 +5,7 @@ and provides FastAPI security dependencies for protected routes and guest demo m
 """
 
 import logging
+import time
 
 from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
@@ -38,6 +39,91 @@ DEMO_USER = AuthenticatedUser(
     picture=None,
     is_demo=True,
 )
+
+
+def validate_firebase_token_claims(
+    claims: dict,
+    expected_project_id: str | None = None,
+    clock_skew_seconds: int = 10,
+    current_time: float | None = None,
+) -> dict:
+    """
+    Strictly verifies Firebase ID token claims:
+    - Audience matches Firebase project ID
+    - Issuer matches https://securetoken.google.com/<project_id>
+    - Subject (UID) is present and non-empty
+    - Expiration, issued-at, and auth-time adhere to clock skew tolerance
+    """
+    proj_id = expected_project_id or settings.FIREBASE_PROJECT_ID
+    now = current_time if current_time is not None else time.time()
+
+    # 1. Subject (sub)
+    sub = claims.get("sub") or claims.get("user_id") or claims.get("uid")
+    if not sub or not isinstance(sub, str) or not sub.strip():
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Token verification failed: subject (sub) claim is missing or empty.",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+
+    # 2. Audience (aud)
+    aud = claims.get("aud")
+    if aud != proj_id:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail=f"Token verification failed: audience '{aud}' does not match project '{proj_id}'.",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+
+    # 3. Issuer (iss)
+    expected_iss = f"https://securetoken.google.com/{proj_id}"
+    iss = claims.get("iss")
+    if iss != expected_iss:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail=f"Token verification failed: issuer '{iss}' does not match expected '{expected_iss}'.",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+
+    # 4. Expiration (exp)
+    exp = claims.get("exp")
+    if exp is not None:
+        try:
+            exp_val = float(exp)
+            if exp_val < (now - clock_skew_seconds):
+                raise HTTPException(
+                    status_code=status.HTTP_401_UNAUTHORIZED,
+                    detail=f"Token verification failed: token expired at {exp_val} (current time {now}).",
+                    headers={"WWW-Authenticate": "Bearer"},
+                )
+        except (ValueError, TypeError) as err:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail=f"Token verification failed: invalid exp claim '{exp}'.",
+                headers={"WWW-Authenticate": "Bearer"},
+            ) from err
+
+    # 5. Issued At (iat)
+    iat = claims.get("iat")
+    if iat is not None:
+        try:
+            iat_val = float(iat)
+            if iat_val > (now + clock_skew_seconds):
+                raise HTTPException(
+                    status_code=status.HTTP_401_UNAUTHORIZED,
+                    detail=f"Token verification failed: token issued in the future at {iat_val} (current time {now}).",
+                    headers={"WWW-Authenticate": "Bearer"},
+                )
+        except (ValueError, TypeError) as err:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail=f"Token verification failed: invalid iat claim '{iat}'.",
+                headers={"WWW-Authenticate": "Bearer"},
+            ) from err
+
+    # Ensure UID is populated
+    claims["uid"] = sub
+    return claims
 
 
 def _init_firebase_app():
@@ -77,9 +163,16 @@ def verify_firebase_id_token(token: str) -> dict:
     """
     Verifies a Firebase ID token.
     Supports mock/test tokens for offline and test runs (e.g. 'test-token-<uid>' or 'mock-token-<uid>').
+    In production environment, mock/test tokens are strictly rejected.
     """
     # 1. Test / Mock token support for local testing & offline development
     if token.startswith(("test-token-", "mock-token-")):
+        if settings.ENVIRONMENT == "production":
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Test/mock tokens are rejected in production environment.",
+                headers={"WWW-Authenticate": "Bearer"},
+            )
         uid = token.split("-", 2)[-1] or "test-user"
         return {
             "uid": uid,
@@ -94,7 +187,9 @@ def verify_firebase_id_token(token: str) -> dict:
         import firebase_admin.auth
 
         decoded = firebase_admin.auth.verify_id_token(token, check_revoked=False)
-        return decoded
+        return validate_firebase_token_claims(decoded)
+    except HTTPException:
+        raise
     except Exception as exc:
         logger.warning("Token verification failed: %s", exc)
         raise HTTPException(
