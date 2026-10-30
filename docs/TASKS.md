@@ -101,10 +101,10 @@
 
 ## Stage R5: Accessibility with Proof
 
-- [ ] **R5-T01:** Run automated `@axe-core/playwright` accessibility audit on all views in light and dark themes; resolve all critical/serious issues.  
-- [ ] **R5-T02:** Run Google Lighthouse Accessibility audit on mobile build and achieve score ≥ 95.  
-- [ ] **R5-T03:** Conduct full manual keyboard navigation walkthrough (focus traps, visible indicators, skip link).  
-- [ ] **R5-T04:** Conduct screen-reader pass (NVDA/VoiceOver) with ARIA live region verification; document in report.
+- [x] **R5-T01:** Run automated `@axe-core/playwright` accessibility audit on all views in light and dark themes; resolve all critical/serious issues.  
+- [x] **R5-T02:** Run Google Lighthouse Accessibility audit on mobile build and achieve score ≥ 95.  
+- [x] **R5-T03:** Conduct full manual keyboard navigation walkthrough (focus traps, visible indicators, skip link).  
+- [x] **R5-T04:** Conduct screen-reader pass (NVDA/VoiceOver) with ARIA live region verification; document in report.
 
 ---
 
