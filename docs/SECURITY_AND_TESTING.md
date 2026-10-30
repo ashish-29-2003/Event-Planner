@@ -85,9 +85,10 @@ The following routes are explicitly exempt from token requirements:
 | `GET` | `/api/events/{id}/guests` | `get_current_user_or_demo` | Read: demo-* public; private events require matching `user_id`. | `test_private_celebration_idor_enforcement` |
 | `POST` | `/api/events/{id}/guests` | `require_authenticated_user` | Mutating: add guest. demo-* returns 403; private requires owner. | `test_demo_celebrations_are_strictly_read_only` |
 | `POST` | `/api/events/{id}/guests/{id}/rsvp` | `require_authenticated_user` | Mutating: update RSVP. demo-* returns 403; private requires owner. | `test_demo_celebrations_are_strictly_read_only` |
-| `GET` | `/api/export/{id}/calendar` | `get_current_user_or_demo` | Read: RFC-5545 .ics generation. demo-* public; private requires owner. | `test_private_celebration_idor_enforcement` |
-| `GET` | `/api/export/{id}/next-milestone-link` | `get_current_user_or_demo` | Read: GCal link for next milestone. demo-* public; private requires owner. | `test_every_route_has_auth_guard_or_is_allowlisted` |
-| `GET` | `/api/export/{id}/summary` | `get_current_user_or_demo` | Read: printable celebration export. demo-* public; private requires owner. | `test_private_celebration_idor_enforcement` |
+| `POST` | `/api/export/{id}/share-token` | `require_authenticated_user` | Mutating: generates HMAC-SHA256 time-bound share token. Private requires owner. | `test_share_token_api_workflow_end_to_end` |
+| `GET` | `/api/export/{id}/calendar` | `get_current_user_or_demo` | Read: RFC-5545 .ics generation. demo-* public; private requires owner or valid share token. | `test_share_token_api_workflow_end_to_end`, `test_private_celebration_idor_enforcement` |
+| `GET` | `/api/export/{id}/next-milestone-link` | `get_current_user_or_demo` | Read: GCal link for next milestone. demo-* public; private requires owner or valid share token. | `test_every_route_has_auth_guard_or_is_allowlisted` |
+| `GET` | `/api/export/{id}/summary` | `get_current_user_or_demo` | Read: printable celebration export. demo-* public; private requires owner or valid share token. | `test_share_token_api_workflow_end_to_end`, `test_private_celebration_idor_enforcement` |
 
 
 ## Part 2: Comprehensive Testing Strategy
@@ -142,3 +143,20 @@ To prevent agent and retry loops from running unbounded:
 - [ ] All 4 core pillars functional for Weddings, Birthdays, and Community events.
 - [ ] Demo mode operational with 3 seeded celebrations.
 - [ ] WCAG 2.2 AA accessibility verified with `@axe-core`.
+
+---
+
+### 2.4 Stage R2 Security Hardening Test Suite Matrix
+
+| Security Suite File | Purpose & Hardening Coverage | Pass Status |
+|---|---|---|
+| `tests/security/test_idor.py` | Multi-tenant IDOR, nested subcollection verification, celebration quota limits (max 20) | 100% Passed (10 tests) |
+| `tests/security/test_rate_limiter.py` | Persistent sliding-window rate limiter across server restarts, dual IP & user evaluations, retry headers | 100% Passed (4 tests) |
+| `tests/security/test_input_boundaries.py` | Strict Pydantic extra='forbid', string/numeric bounds, and 1MB payload ceiling (413) | 100% Passed (7 tests) |
+| `tests/security/test_prompt_injection.py` | 45-sample adversarial injection corpus, delimiter defanging, control char stripping, boundary tags | 100% Passed (6 tests) |
+| `tests/security/test_frontend_xss.py` | DOMPurify script integration, HTML entity encoding helpers, elimination of innerHTML sinks | 100% Passed (5 tests) |
+| `tests/security/test_security_headers.py` | Strict CSP, X-Frame-Options, HSTS, Permissions-Policy, Netlify sync | 100% Passed (3 tests) |
+| `tests/security/test_supply_chain.py` | Non-root container (USER samaroh), .dockerignore secret blocking, zero hardcoded secrets | 100% Passed (3 tests) |
+| `tests/security/test_error_schema.py` | Standardized error response contract ({error: {code, message, request_id}}) with backward compat | 100% Passed (4 tests) |
+| `tests/security/test_token_verification.py` | Strict aud, iss, sub, exp, and clock-skew tolerance, prod rejection of mock tokens | 100% Passed (7 tests) |
+| `tests/security/test_share_tokens.py` | HMAC-SHA256 high-entropy time-bound export and calendar share tokens with expiry | 100% Passed (4 tests) |
