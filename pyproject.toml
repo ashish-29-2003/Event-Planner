@@ -27,13 +27,31 @@ python_files = ["test_*.py"]
 asyncio_mode = "auto"
 
 [tool.ruff]
-line-length = 100
+line-length = 120
 target-version = "py310"
 
 [tool.ruff.lint]
-ignore = ["BLE001", "S110", "B008"]
+select = ["E", "F", "I", "B", "UP", "S", "SIM", "C4"]
+ignore = [
+    "E501",
+    "E402",
+    "BLE001",
+    "S110",
+    "B008",
+    "S101",
+    "S105",
+    "S106",
+    "S314",
+    "SIM105",
+    "SIM102",
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["S101", "S105", "S106", "S314", "SLF001"]
+"scripts/*" = ["S101", "S603", "S607", "S105", "S106", "S310"]
 
 [tool.mypy]
 python_version = "3.10"
+plugins = ["pydantic.mypy"]
 strict = true
 ignore_missing_imports = true

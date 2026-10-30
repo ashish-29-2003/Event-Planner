@@ -9,7 +9,7 @@ import logging
 import uuid
 from abc import ABC, abstractmethod
 from pathlib import Path
-from typing import Any
+from typing import Any, cast
 
 from src.config import settings
 from src.data.birthday_blr import BLR_BIRTHDAY_SEED
@@ -20,7 +20,7 @@ from src.models.budget import BudgetItem
 from src.models.event import CelebrationBrief
 from src.models.guest import GuestAffiliation, GuestItem, RSVPStatus
 from src.models.ideas import IdeaItem
-from src.models.timeline import TaskItem
+from src.models.timeline import TaskItem, TaskStatus
 from src.models.vendor import VendorItem
 
 logger = logging.getLogger("samaroh.storage")
@@ -32,11 +32,11 @@ class BaseStorageService(ABC):
     """Abstract interface defining operations on celebration documents and subcollections."""
 
     @abstractmethod
-    def list_events(self, user_id: str = "demo-user") -> list[dict]:
+    def list_events(self, user_id: str = "demo-user") -> list[dict[str, Any]]:
         """Lists user-owned events and public demo events."""
 
     @abstractmethod
-    def get_event(self, event_id: str) -> dict | None:
+    def get_event(self, event_id: str) -> dict[str, Any] | None:
         """Retrieves single event metadata."""
 
     @abstractmethod
@@ -101,7 +101,7 @@ class InMemoryStorageService(BaseStorageService):
 
     def __init__(self, persistence_path: Path | None = LOCAL_STORE_PATH):
         self._persistence_path = persistence_path
-        self._events: dict[str, dict] = {}
+        self._events: dict[str, dict[str, Any]] = {}
         self._budgets: dict[str, list[BudgetItem]] = {}
         self._tasks: dict[str, list[TaskItem]] = {}
         self._vendors: dict[str, list[VendorItem]] = {}
@@ -111,7 +111,7 @@ class InMemoryStorageService(BaseStorageService):
         self._initialize_seed_celebrations()
         self._load_from_disk()
 
-    def _initialize_seed_celebrations(self):
+    def _initialize_seed_celebrations(self) -> None:
         """Loads default seed celebrations for instant demo exploration."""
         seeds = [
             ("demo-wedding-jaipur", JAIPUR_WEDDING_SEED, "Marwari Hindu", "Jaipur", "wedding"),
@@ -140,10 +140,10 @@ class InMemoryStorageService(BaseStorageService):
                 "auspicious_guidance": plan.auspicious_guidance,
                 "disclaimer": plan.disclaimer,
             }
-            self._budgets[event_id] = [item for item in plan.budget_breakdown]
-            self._tasks[event_id] = [task for task in plan.timeline_tasks]
-            self._vendors[event_id] = [v for v in plan.vendor_checklist]
-            self._ideas[event_id] = [i for i in plan.personalized_ideas]
+            self._budgets[event_id] = list(plan.budget_breakdown)
+            self._tasks[event_id] = list(plan.timeline_tasks)
+            self._vendors[event_id] = list(plan.vendor_checklist)
+            self._ideas[event_id] = list(plan.personalized_ideas)
             self._guests[event_id] = [
                 GuestItem(
                     id=f"guest-{event_id}-1",
@@ -167,7 +167,7 @@ class InMemoryStorageService(BaseStorageService):
                 ),
             ]
 
-    def _save_to_disk(self):
+    def _save_to_disk(self) -> None:
         """Persists non-demo events to disk so data survives server restarts."""
         if not self._persistence_path:
             return
@@ -209,12 +209,12 @@ class InMemoryStorageService(BaseStorageService):
         except Exception as exc:
             logger.warning("Could not persist local store to disk: %s", exc)
 
-    def _load_from_disk(self):
+    def _load_from_disk(self) -> None:
         """Restores persisted non-demo events from disk."""
         if not self._persistence_path or not self._persistence_path.exists():
             return
         try:
-            with open(self._persistence_path, "r", encoding="utf-8") as f:
+            with open(self._persistence_path, encoding="utf-8") as f:
                 saved = json.load(f)
             for eid, ev in saved.get("events", {}).items():
                 self._events[eid] = ev
@@ -231,14 +231,14 @@ class InMemoryStorageService(BaseStorageService):
         except Exception as exc:
             logger.warning("Could not load local store from disk: %s", exc)
 
-    def list_events(self, user_id: str = "demo-user") -> list[dict]:
+    def list_events(self, user_id: str = "demo-user") -> list[dict[str, Any]]:
         results = []
         for ev in self._events.values():
             if ev.get("user_id") in (user_id, "demo-user"):
                 results.append(ev)
         return results
 
-    def get_event(self, event_id: str) -> dict | None:
+    def get_event(self, event_id: str) -> dict[str, Any] | None:
         return self._events.get(event_id)
 
     def create_event_from_plan(
@@ -293,7 +293,7 @@ class InMemoryStorageService(BaseStorageService):
         tasks = self._tasks.get(event_id, [])
         for t in tasks:
             if t.id == task_id:
-                t.status = status
+                t.status = TaskStatus(status)
                 self._save_to_disk()
                 return True
         return False
@@ -391,7 +391,7 @@ class FirestoreStorageService(BaseStorageService):
         if not self._initialized:
             self._init_firestore()
 
-    def _init_firestore(self):
+    def _init_firestore(self) -> None:
         try:
             from firebase_admin import firestore
 
@@ -414,7 +414,7 @@ class FirestoreStorageService(BaseStorageService):
             )
             self._initialized = False
 
-    def list_events(self, user_id: str = "demo-user") -> list[dict]:
+    def list_events(self, user_id: str = "demo-user") -> list[dict[str, Any]]:
         # Demo user events always include the seed celebrations
         demo_events = self._fallback.list_events("demo-user")
         if not self._initialized or not self._client:
@@ -436,7 +436,7 @@ class FirestoreStorageService(BaseStorageService):
             logger.warning("Firestore list_events failed: %s; using fallback", exc)
             return self._fallback.list_events(user_id)
 
-    def get_event(self, event_id: str) -> dict | None:
+    def get_event(self, event_id: str) -> dict[str, Any] | None:
         if event_id.startswith("demo-"):
             return self._fallback.get_event(event_id)
         if not self._initialized or not self._client:
@@ -447,7 +447,7 @@ class FirestoreStorageService(BaseStorageService):
             # Query collection group 'events' to find matching event document
             results = self._client.collection_group("events").where("id", "==", event_id).limit(1).stream()
             for doc in results:
-                return doc.to_dict()
+                return cast(dict[str, Any], doc.to_dict())
             return None
         except Exception as exc:
             if not self._allow_fallback:

@@ -9,6 +9,7 @@ import asyncio
 import json
 import logging
 from collections.abc import AsyncGenerator
+from typing import Any
 
 from google import genai
 from pydantic import ValidationError
@@ -30,7 +31,7 @@ logger = logging.getLogger("samaroh.gemini")
 
 
 class GeminiService:
-    def __init__(self):
+    def __init__(self) -> None:
         self.api_key = settings.GEMINI_API_KEY
         self.model_name = settings.GEMINI_MODEL
         self._client: genai.Client | None = None
@@ -99,7 +100,8 @@ class GeminiService:
         self._cache_stats["misses"] += 1
 
         # If API key is missing or client not initialized, return curated seed immediately
-        if not self._client or not self.api_key:
+        client = self._client
+        if not client or not self.api_key:
             logger.info("Gemini API key not configured. Serving curated seed celebration.")
             seed = self.get_seed_for_event_type(
                 brief.event_type.value if hasattr(brief.event_type, "value") else brief.event_type
@@ -157,8 +159,8 @@ Generate a complete EventMasterPlan in JSON format.
 
         try:
             # Call Gemini via Google GenAI SDK with a strict 12.0s timeout
-            def _call():
-                return self._client.models.generate_content(
+            def _call() -> Any:
+                return client.models.generate_content(
                     model=self.model_name,
                     contents=user_prompt,
                     config={
@@ -188,8 +190,8 @@ ORIGINAL RAW JSON:
 {raw_text}
 """
 
-                def _repair_call():
-                    return self._client.models.generate_content(
+                def _repair_call() -> Any:
+                    return client.models.generate_content(
                         model=self.model_name,
                         contents=repair_prompt,
                         config={
@@ -300,14 +302,15 @@ ORIGINAL RAW JSON:
         )
 
     async def stream_chat(
-        self, user_message: str, history: list | None = None
+        self, user_message: str, history: list[Any] | None = None
     ) -> AsyncGenerator[str, None]:
         """
         Streams conversational AI planning guidance via Server-Sent Events (SSE).
         """
         clean_msg = sanitize_prompt_input(user_message)
 
-        if not self._client or not self.api_key:
+        client = self._client
+        if not client or not self.api_key:
             yield 'data: {"text": "॥ शुभ आरम्भ ॥ Welcome! I am Samaroh\'s Cultural Planning Companion.\\n\\n"}\n\n'
             await asyncio.sleep(0.2)
             yield 'data: {"text": "To organize your celebration, review your **Budget Matrix** and **Timeline** tabs. We have pre-configured auspicious Vedic guidelines, regional delicacy suggestions, and verified vendor bands for your event.\\n\\n"}\n\n'
@@ -318,8 +321,8 @@ ORIGINAL RAW JSON:
 
         try:
 
-            def _stream_call():
-                return self._client.models.generate_content_stream(
+            def _stream_call() -> Any:
+                return client.models.generate_content_stream(
                     model=self.model_name,
                     contents=f"You are Samaroh's conversational event planning assistant. Give concise, warm, culturally authentic advice for Indian weddings, birthdays, and community festivals. Use markdown.\n\nUser: {clean_msg}",
                 )

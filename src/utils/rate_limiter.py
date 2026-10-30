@@ -51,7 +51,7 @@ class SlidingWindowRateLimiter:
         if not self.persistence_path or not self.persistence_path.exists():
             return
         try:
-            with open(self.persistence_path, "r", encoding="utf-8") as f:
+            with open(self.persistence_path, encoding="utf-8") as f:
                 data = json.load(f)
             now = time.time()
             cutoff = now - self.window_seconds

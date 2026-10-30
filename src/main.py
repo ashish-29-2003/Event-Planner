@@ -8,7 +8,9 @@ import logging
 import sys
 import time
 import uuid
+from collections.abc import Callable
 from pathlib import Path
+from typing import Any
 
 # Ensure UTF-8 output on Windows consoles
 if sys.platform == "win32":
@@ -25,7 +27,7 @@ ROOT_DIR = Path(__file__).resolve().parent.parent
 if str(ROOT_DIR) not in sys.path:
     sys.path.insert(0, str(ROOT_DIR))
 
-from fastapi import FastAPI, HTTPException, Request
+from fastapi import FastAPI, HTTPException, Request, Response
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.gzip import GZipMiddleware
@@ -82,7 +84,9 @@ def create_app() -> FastAPI:
     max_body_bytes = 1024 * 1024
 
     @app.middleware("http")
-    async def request_body_size_limit_middleware(request: Request, call_next):
+    async def request_body_size_limit_middleware(
+        request: Request, call_next: Callable[[Request], Any]
+    ) -> Response:
         content_length = request.headers.get("content-length")
         if content_length:
             try:
@@ -102,11 +106,11 @@ def create_app() -> FastAPI:
                     )
             except ValueError:
                 pass
-        return await call_next(request)
+        return await call_next(request)  # type: ignore[no-any-return]
 
     # Standardized Exception Handlers
     @app.exception_handler(HTTPException)
-    async def custom_http_exception_handler(request: Request, exc: HTTPException):
+    async def custom_http_exception_handler(request: Request, exc: HTTPException) -> JSONResponse:
         request_id = request.headers.get("x-request-id") or str(uuid.uuid4())
         code = STATUS_TO_CODE.get(exc.status_code, "ERROR")
         message = str(exc.detail) if isinstance(exc.detail, str) else "Request error."
@@ -126,7 +130,9 @@ def create_app() -> FastAPI:
         return JSONResponse(status_code=exc.status_code, content=content, headers=headers)
 
     @app.exception_handler(RequestValidationError)
-    async def validation_exception_handler(request: Request, exc: RequestValidationError):
+    async def validation_exception_handler(
+        request: Request, exc: RequestValidationError
+    ) -> JSONResponse:
         request_id = request.headers.get("x-request-id") or str(uuid.uuid4())
         content = {
             "error": {
@@ -142,7 +148,7 @@ def create_app() -> FastAPI:
         return JSONResponse(status_code=422, content=content, headers=headers)
 
     @app.exception_handler(Exception)
-    async def unhandled_exception_handler(request: Request, exc: Exception):
+    async def unhandled_exception_handler(request: Request, exc: Exception) -> JSONResponse:
         request_id = request.headers.get("x-request-id") or str(uuid.uuid4())
         content = {
             "error": {
@@ -158,8 +164,10 @@ def create_app() -> FastAPI:
 
     # Security & Cache Control Headers Middleware
     @app.middleware("http")
-    async def add_security_headers(request: Request, call_next):
-        response = await call_next(request)
+    async def add_security_headers(
+        request: Request, call_next: Callable[[Request], Any]
+    ) -> Response:
+        response: Response = await call_next(request)
         for header_name, header_value in SECURITY_HEADERS.items():
             response.headers[header_name] = header_value
 
@@ -174,11 +182,13 @@ def create_app() -> FastAPI:
 
     # Structured JSON Logging & Request ID Middleware
     @app.middleware("http")
-    async def structured_json_logging_middleware(request: Request, call_next):
+    async def structured_json_logging_middleware(
+        request: Request, call_next: Callable[[Request], Any]
+    ) -> Response:
         request_id = request.headers.get("x-request-id") or str(uuid.uuid4())
         start_time = time.perf_counter()
 
-        response = await call_next(request)
+        response: Response = await call_next(request)
 
         duration_ms = round((time.perf_counter() - start_time) * 1000, 2)
         response.headers["X-Request-ID"] = request_id
@@ -211,7 +221,7 @@ def create_app() -> FastAPI:
     # Health check endpoint
     @app.get("/api/health")
     @app.get("/health")
-    async def health_check():
+    async def health_check() -> dict[str, Any]:
         return {
             "status": "healthy",
             "project": "Samaroh (समारोह)",
@@ -226,7 +236,7 @@ def create_app() -> FastAPI:
         app.mount("/static", StaticFiles(directory=str(PUBLIC_DIR)), name="static")
 
         @app.get("/")
-        async def serve_index():
+        async def serve_index() -> Response:
             index_path = PUBLIC_DIR / "index.html"
             if index_path.exists():
                 return FileResponse(index_path)

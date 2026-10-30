@@ -4,6 +4,8 @@ Exposes endpoints for master plan generation, streaming chat,
 budget re-balancing, and auspicious muhurat windows.
 """
 
+from typing import Any
+
 from fastapi import APIRouter, Depends, HTTPException, Request, Response, status
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel, ConfigDict, Field
@@ -33,7 +35,7 @@ async def create_event_plan(
     response: Response,
     user: AuthenticatedUser = Depends(require_authenticated_user),
     _app_check: bool = Depends(verify_app_check_token),
-):
+) -> dict[str, Any]:
     """
     Synthesizes a complete celebration master plan from a user's brief.
     Enforces shared-store rate limits with X-RateLimit-* and Retry-After headers,
@@ -65,7 +67,7 @@ async def rebalance_budget(
     req: BudgetRebalanceRequest,
     user: AuthenticatedUser = Depends(require_authenticated_user),
     _app_check: bool = Depends(verify_app_check_token),
-):
+) -> BudgetRebalanceResponse:
     """
     AI financial re-balancing agent. Recalculates category allocations
     when a line item cost changes to protect the master budget.
@@ -77,7 +79,7 @@ async def rebalance_budget(
 async def chat_streaming(
     req: ChatRequest,
     user: AuthenticatedUser = Depends(get_current_user_or_demo),
-):
+) -> StreamingResponse:
     """
     Streaming conversational event planner via Server-Sent Events (SSE).
     """
@@ -91,7 +93,7 @@ async def get_muhurat_guidance(
     culture: str = "Marwari",
     event_type: str = "wedding",
     user: AuthenticatedUser = Depends(get_current_user_or_demo),
-):
+) -> dict[str, Any]:
     """
     Auspicious seasonal windows and nakshatra guidance with mandatory Vedic disclaimer.
     """

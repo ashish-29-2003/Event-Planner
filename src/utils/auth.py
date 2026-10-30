@@ -6,6 +6,7 @@ and provides FastAPI security dependencies for protected routes and guest demo m
 
 import logging
 import time
+from typing import Any
 
 from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
@@ -42,11 +43,11 @@ DEMO_USER = AuthenticatedUser(
 
 
 def validate_firebase_token_claims(
-    claims: dict,
+    claims: dict[str, Any],
     expected_project_id: str | None = None,
     clock_skew_seconds: int = 10,
     current_time: float | None = None,
-) -> dict:
+) -> dict[str, Any]:
     """
     Strictly verifies Firebase ID token claims:
     - Audience matches Firebase project ID
@@ -126,7 +127,7 @@ def validate_firebase_token_claims(
     return claims
 
 
-def _init_firebase_app():
+def _init_firebase_app() -> None:
     """Initializes the Firebase Admin SDK if not already done."""
     global _firebase_initialized
     if _firebase_initialized:
@@ -159,7 +160,7 @@ def _init_firebase_app():
         logger.warning("Could not initialize Firebase Admin SDK: %s", exc)
 
 
-def verify_firebase_id_token(token: str) -> dict:
+def verify_firebase_id_token(token: str) -> dict[str, Any]:
     """
     Verifies a Firebase ID token.
     Supports mock/test tokens for offline and test runs (e.g. 'test-token-<uid>' or 'mock-token-<uid>').

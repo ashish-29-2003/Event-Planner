@@ -16,6 +16,7 @@ REPO_ROOT = Path(__file__).resolve().parent.parent
 STORE_JS = REPO_ROOT / "public" / "js" / "store.js"
 API_JS = REPO_ROOT / "public" / "js" / "api.js"
 APP_JS = REPO_ROOT / "public" / "js" / "app.js"
+AUTH_JS = REPO_ROOT / "public" / "js" / "auth.js"
 
 
 @pytest.fixture(scope="module")
@@ -129,3 +130,57 @@ def test_sse_streaming_protocol_handler():
     assert "new TextDecoder()" in app_text
     assert "JSON.parse" in app_text
     assert "sanitizeHTML" in app_text or "DOMPurify" in app_text
+
+
+@pytest.mark.asyncio
+async def test_javascript_syntax_and_strict_evaluation():
+    """
+    R7-T03: Verifies that all client-side JavaScript files (store.js, api.js, auth.js)
+    are syntactically valid ES6+, execute without runtime or syntax errors under strict mode,
+    and initialize their intended objects.
+    """
+    from playwright.async_api import async_playwright
+
+    js_files = [STORE_JS, API_JS, AUTH_JS]
+    for js_path in js_files:
+        assert js_path.exists(), f"{js_path} must exist"
+
+    async with async_playwright() as p:
+        browser = await p.chromium.launch(headless=True)
+        page = await browser.new_page()
+
+        # Provide in-memory localStorage polyfill for blank origin evaluation
+        await page.add_init_script("""
+            window._storage = {};
+            Object.defineProperty(window, 'localStorage', {
+                value: {
+                    getItem: (k) => window._storage[k] || null,
+                    setItem: (k, v) => { window._storage[k] = String(v); },
+                    removeItem: (k) => { delete window._storage[k]; },
+                    clear: () => { window._storage = {}; }
+                },
+                configurable: true
+            });
+        """)
+        await page.goto("data:text/html,<!DOCTYPE html><html><body></body></html>")
+
+        # Evaluate scripts in browser execution context
+        for js_path in js_files:
+            code = js_path.read_text(encoding="utf-8")
+            # Wrap in strict evaluation
+            wrapped = f"(() => {{\n'use strict';\n{code}\n}})();"
+            try:
+                await page.evaluate(wrapped)
+            except Exception as e:
+                pytest.fail(f"JavaScript evaluation failed for {js_path.name}: {e}")
+
+        # Check global variables defined
+        has_store = await page.evaluate("typeof window.store !== 'undefined'")
+        has_api = await page.evaluate("typeof window.API !== 'undefined'")
+        has_auth = await page.evaluate("typeof window.Auth !== 'undefined'")
+
+        assert has_store, "window.store must be defined"
+        assert has_api, "window.API must be defined"
+        assert has_auth, "window.Auth must be defined"
+
+        await browser.close()

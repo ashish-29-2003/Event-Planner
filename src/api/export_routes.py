@@ -3,6 +3,8 @@ Export & Sharing Route Handlers for Samaroh (समारोह).
 Generates RFC-5545 iCalendar (.ics) files and printable summaries.
 """
 
+from typing import Any
+
 from fastapi import APIRouter, Depends, HTTPException, Query, Response, status
 
 from src.services.calendar_service import create_google_calendar_url, generate_ics_calendar
@@ -18,7 +20,7 @@ async def create_event_share_token(
     event_id: str,
     ttl_days: int = 7,
     user: AuthenticatedUser = Depends(require_authenticated_user),
-):
+) -> dict[str, Any]:
     """
     Creates a time-bound HMAC-signed token for sharing this celebration with family & guests.
     Caller must own the celebration or interact with a demo template.
@@ -47,7 +49,7 @@ async def export_calendar_ics(
     event_id: str,
     token: str | None = Query(default=None),
     user: AuthenticatedUser = Depends(get_current_user_or_demo),
-):
+) -> Response:
     """
     Downloads RFC-5545 .ics file for calendar synchronization.
     Requires ownership, a valid HMAC share token, or a public demo template.
@@ -84,7 +86,7 @@ async def get_next_milestone_gcal_link(
     event_id: str,
     token: str | None = Query(default=None),
     user: AuthenticatedUser = Depends(get_current_user_or_demo),
-):
+) -> dict[str, Any]:
     """
     Returns a direct Google Calendar deep link for the earliest upcoming milestone.
     Requires ownership, a valid HMAC share token, or a public demo template.
@@ -108,10 +110,12 @@ async def get_next_milestone_gcal_link(
     tasks = storage_service.get_tasks(event_id)
     upcoming_tasks = [t for t in tasks if t.status != "done" and t.due_date]
 
-    if not upcoming_tasks:
-        target_task = tasks[0] if tasks else None
-    else:
+    if upcoming_tasks:
         target_task = upcoming_tasks[0]
+    elif tasks:
+        target_task = tasks[0]
+    else:
+        target_task = None
 
     if not target_task:
         raise HTTPException(status_code=404, detail="No tasks found for event")
@@ -135,7 +139,7 @@ async def get_export_summary(
     event_id: str,
     token: str | None = Query(default=None),
     user: AuthenticatedUser = Depends(get_current_user_or_demo),
-):
+) -> dict[str, Any]:
     """
     Returns consolidated celebration data for printable view or PDF export.
     Requires ownership, a valid HMAC share token, or a public demo template.

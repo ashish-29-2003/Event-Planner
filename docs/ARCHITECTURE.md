@@ -158,69 +158,89 @@ samaroh-event-planner/
 │   └── functions/               # Netlify Serverless Function Handlers
 │       ├── api.py               # Mangum entrypoint wrapping FastAPI app
 │       └── requirements.txt     # Python serverless dependencies
-├── public/                      # Static Web Assets (Served by Netlify & FastAPI)
-│   ├── index.html               # Main Single-Page Application Shell
+├── public/                      # Vanilla JS Single Page Application (0 external build steps)
+│   ├── index.html               # Main semantic HTML shell & modular templates
+│   ├── favicon.svg              # Saffron Devanagari ॥ vector favicon
 │   ├── css/
-│   │   ├── styles.css           # Tailwind + Custom Cultural Styling
-│   │   └── fonts.css            # Noto Serif Devanagari & Plus Jakarta Sans
-│   ├── js/
-│   │   ├── app.js               # Core UI orchestrator & router
-│   │   ├── api.js               # REST client for FastAPI endpoints
-│   │   ├── sse-client.js        # Streaming AI chat EventSource client
-│   │   ├── store.js             # Reactive client-side state store
-│   │   ├── components/          # Modular view components
-│   │   │   ├── budget.js        # Budget matrix & AI re-balancing UI
-│   │   │   ├── timeline.js      # Milestone checklist & .ics export
-│   │   │   ├── vendors.js       # Vendor quotes & discovery cards
-│   │   │   ├── ideas.js         # Cultural ideas deck
-│   │   │   ├── muhurat.js       # Auspicious dates helper
-│   │   │   └── export.js        # Printable PDF celebration brief
-│   │   └── mock-data.js         # Client-side instant demo fallback
-│   └── assets/                  # Diya, Kalash, Torana, Mandala SVGs
+│   │   └── styles.css           # Modern minimal aesthetic & WCAG 2.2 AA theme system
+│   └── js/
+│       ├── app.js               # UI controller, view renderers, and event handlers
+│       ├── auth.js              # Firebase authentication client & token management
+│       ├── store.js             # Reactive event store and state machine
+│       └── api.js               # Typed async HTTP & SSE API client
 ├── src/
 │   ├── __init__.py
-│   ├── main.py                  # FastAPI Application Factory & Lifespan
-│   ├── config.py                # Pydantic Settings (.env configuration)
+│   ├── main.py                  # FastAPI Application Factory, GZip & security middleware
+│   ├── config.py                # Centralized settings & immutable security headers
 │   ├── api/                     # Route Handlers
 │   │   ├── __init__.py
-│   │   ├── ai_routes.py         # /api/ai/plan, /api/ai/chat, /api/ai/rebalance
-│   │   ├── event_routes.py      # /api/events CRUD endpoints
-│   │   └── export_routes.py     # /api/export/calendar, /api/export/summary
-│   ├── models/                  # Pydantic v2 Models & Schemas
+│   │   ├── ai_routes.py         # /api/ai/plan, /api/ai/chat, /api/ai/rebalance, /api/ai/muhurat
+│   │   ├── event_routes.py      # /api/events CRUD, tasks, vendors, ideas, and guests
+│   │   ├── export_routes.py     # /api/export/calendar, summary, share-token, gcal deep-link
+│   │   └── places_routes.py     # /api/places/search Google Places discovery proxy
+│   ├── models/                  # Pydantic v2 Models with ConfigDict(extra='forbid')
 │   │   ├── __init__.py
-│   │   ├── event.py             # Event, Host & Metadata schemas
-│   │   ├── budget.py            # Budget items & rebalance schemas
-│   │   ├── timeline.py          # Task and milestone schemas
-│   │   ├── vendor.py            # Vendor quotes and categories
-│   │   └── ai_plan.py           # Unified EventMasterPlan schema
+│   │   ├── ai_plan.py           # Unified EventMasterPlan schema
+│   │   ├── budget.py            # BudgetItem & AI re-balance schemas
+│   │   ├── event.py             # Event metadata & CelebrationBrief
+│   │   ├── guest.py             # GuestItem, party size & RSVP status schemas
+│   │   ├── ideas.py             # Cultural suggestion dimensions & IdeaItem
+│   │   ├── timeline.py          # Milestone tasks and status schemas
+│   │   └── vendor.py            # Vendor quotes and categories
 │   ├── services/                # Business Logic & External Integrations
 │   │   ├── __init__.py
-│   │   ├── gemini_service.py    # Google GenAI SDK wrapper & repair loop
-│   │   ├── storage_service.py   # SQLite / Firestore multi-tenant persistence
+│   │   ├── gemini_service.py    # Google GenAI SDK orchestration & response cache
+│   │   ├── storage_service.py   # Multi-tenant Firestore & local disk JSON store
+│   │   ├── places_service.py    # Google Places API proxy & curated cultural registry
 │   │   └── calendar_service.py  # RFC-5545 iCalendar generation
-│   ├── data/                    # Curated Seed Data
+│   ├── data/                    # Curated Seed Celebrations
 │   │   ├── __init__.py
 │   │   ├── wedding_jaipur.py    # 350-guest Royal Rajasthani Wedding Seed
 │   │   ├── birthday_blr.py      # 45-guest Cosmic Space Explorer Birthday Seed
 │   │   └── community_delhi.py   # 800-resident Society Diwali Mela Seed
 │   └── utils/
 │       ├── __init__.py
-│       ├── rate_limiter.py      # Token-bucket sliding window rate limiter
+│       ├── app_check.py         # Firebase App Check attestation token validator
+│       ├── auth.py              # Firebase ID token verification & claim validator
+│       ├── currency.py          # Indian Lakh/Crore number formatting
+│       ├── rate_limiter.py      # Sliding-window rate limiter with standard headers
 │       ├── sanitizer.py         # Prompt injection & input sanitization
-│       └── currency.py          # Indian Lakh/Crore number formatting
-├── tests/                       # Automated Test Suite
+│       └── tokens.py            # HMAC-SHA256 signed share & export tokens
+├── tests/                       # Comprehensive Automated Test Suite (245+ tests)
 │   ├── conftest.py              # Pytest fixtures and test clients
-│   ├── test_budget_math.py      # Budget calculation unit tests
-│   ├── test_schemas.py          # Pydantic v2 validation tests
-│   ├── test_api_routes.py       # FastAPI TestClient endpoint integration tests
-│   ├── test_gemini_mock.py      # AI service mock tests (success & 429 fallback)
-│   ├── test_edge_cases.py       # Huge inputs, negative budget, Devanagari text
-│   └── test_loop_safety.py      # Iteration cap & timeout tests
-├── netlify.toml                 # Netlify Build, Functions & Redirects Config
+│   ├── security/                # Dedicated Security & Hardening Suite
+│   │   ├── test_error_schema.py
+│   │   ├── test_frontend_xss.py
+│   │   ├── test_idor.py
+│   │   ├── test_input_boundaries.py
+│   │   ├── test_prompt_injection.py
+│   │   ├── test_rate_limiter.py
+│   │   ├── test_security_headers.py
+│   │   ├── test_share_tokens.py
+│   │   ├── test_supply_chain.py
+│   │   └── test_token_verification.py
+│   ├── test_accessibility_axe.py# Automated axe-core accessibility matrix (WCAG AA)
+│   ├── test_performance_and_vitals.py # Web Vitals (LCP/CLS/TTFT) & bundle audit
+│   ├── test_e2e_journeys.py     # Playwright user planning journeys
+│   ├── test_frontend_store_api.py # Frontend store, api client & OpenAPI sync
+│   ├── test_mock_integrations.py# Gemini API repair loop & calendar compliance
+│   ├── test_edge_cases.py       # Numerical boundaries & Devanagari preservation
+│   ├── test_places_contract.py  # Google Maps Places API contract tests
+│   └── test_firestore_rules_matrix.py # Multi-tenant security rules matrix
+├── docs/                        # Architectural, Verification, and Status Docs
+│   ├── reports/                 # Audit artifacts (ui-after/, accessibility, performance, load)
+│   ├── ARCHITECTURE.md          # System design & topology specification
+│   ├── STAGE_STATUS.md          # Real stage gate log with verified commit SHAs
+│   ├── TASKS.md                 # Detailed checklist across stages R0-R8
+│   ├── TRD.md                   # Technical requirements & bundle metrics
+│   └── DECISIONS.md             # Architecture Decision Records (ADR-001..ADR-013)
+├── .github/workflows/ci.yml     # Multi-job GitHub Actions CI/CD Pipeline
+├── Dockerfile                   # Multi-stage non-root container for Google Cloud Run
+├── netlify.toml                 # Netlify Build, Functions & Edge Redirects
 ├── requirements.txt             # Project Python Dependencies
 ├── pyproject.toml               # Tool configuration (ruff, pytest, mypy)
 ├── run.py                       # Single-command local runner (`python run.py`)
-└── README.md                    # Root project documentation
+└── README.md                    # Root project documentation & services matrix
 ```
 
 ---

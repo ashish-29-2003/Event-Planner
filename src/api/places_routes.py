@@ -4,6 +4,8 @@ Enables secure client-side discovery of celebration venues and vendors
 without exposing Google Cloud API keys in frontend assets.
 """
 
+from typing import Any
+
 from fastapi import APIRouter, Depends, Query
 
 from src.services.places_service import places_service
@@ -18,7 +20,7 @@ async def search_places(
     city: str = Query("Jaipur", description="Target city for the celebration"),
     category: str = Query("venue", description="Category: venue, catering, decor, photography, priest"),
     user: AuthenticatedUser = Depends(get_current_user_or_demo),
-):
+) -> dict[str, Any]:
     """
     Searches for verified celebration venues and vendors.
     Proxies to Google Maps Places API when configured, degrading gracefully

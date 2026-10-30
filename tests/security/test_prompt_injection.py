@@ -26,7 +26,7 @@ CORPUS_PATH = Path(__file__).resolve().parent / "injection_corpus.json"
 def test_injection_corpus_completeness():
     """Asserts that the adversarial corpus is populated with at least 40 diverse test cases."""
     assert CORPUS_PATH.exists(), f"Corpus file not found at {CORPUS_PATH}"
-    with open(CORPUS_PATH, "r", encoding="utf-8") as f:
+    with open(CORPUS_PATH, encoding="utf-8") as f:
         corpus = json.load(f)
 
     assert len(corpus) >= 40, f"Expected at least 40 injection test cases, found {len(corpus)}"
@@ -47,7 +47,7 @@ def test_injection_corpus_completeness():
 
 def test_adversarial_detection_on_corpus():
     """Asserts that the sanitizer flags or sanitizes every attack in the corpus."""
-    with open(CORPUS_PATH, "r", encoding="utf-8") as f:
+    with open(CORPUS_PATH, encoding="utf-8") as f:
         corpus = json.load(f)
 
     flagged_or_cleaned = 0

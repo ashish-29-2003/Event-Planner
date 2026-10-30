@@ -61,7 +61,7 @@ async def capture_all(output_dir: Path):
             ("export", "Export"),
         ]
 
-        for tab_id, tab_label in tabs:
+        for tab_id, _tab_label in tabs:
             # Click tab
             tab_btn = page.locator(f".nav-tab[data-view='{tab_id}']")
             if await tab_btn.count() > 0:

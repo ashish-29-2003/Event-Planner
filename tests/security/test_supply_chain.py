@@ -24,7 +24,7 @@ def test_dockerfile_enforces_non_root_execution():
     assert "USER samaroh" in content
     # Assert it doesn't switch back to root
     lines = [line.strip() for line in content.splitlines()]
-    user_lines = [l for l in lines if l.startswith("USER ")]
+    user_lines = [line for line in lines if line.startswith("USER ")]
     assert user_lines[-1] != "USER root"
     assert user_lines[-1] == "USER samaroh"
 

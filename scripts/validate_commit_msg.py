@@ -10,7 +10,7 @@ import sys
 
 def validate_commit_msg(filepath: str) -> bool:
     try:
-        with open(filepath, "r", encoding="utf-8") as f:
+        with open(filepath, encoding="utf-8") as f:
             lines = [line.strip() for line in f if not line.startswith("#")]
     except Exception as e:
         print(f"ERROR: Unable to read commit message file: {e}")

@@ -20,7 +20,7 @@ def format_inr(amount: float) -> str:
     last_three = s[-3:]
     remaining = s[:-3]
 
-    parts = []
+    parts: list[str] = []
     while len(remaining) > 2:
         parts.insert(0, remaining[-2:])
         remaining = remaining[:-2]

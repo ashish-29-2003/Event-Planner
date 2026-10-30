@@ -3,11 +3,16 @@ Event & Entity CRUD Route Handlers for Samaroh (समारोह).
 Enforces owner verification, tenant isolation, read-only demo protections, and Firebase identity.
 """
 
+from typing import Any
+
 from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import BaseModel, ConfigDict, Field
 
 from src.models.budget import BudgetItem
 from src.models.guest import GuestItem, RSVPStatus
+from src.models.ideas import IdeaItem
+from src.models.timeline import TaskItem
+from src.models.vendor import VendorItem
 from src.services.storage_service import storage_service
 from src.utils.auth import (
     AuthenticatedUser,
@@ -36,7 +41,7 @@ class CloneEventRequest(BaseModel):
 @router.get("")
 async def list_celebrations(
     user: AuthenticatedUser = Depends(get_current_user_or_demo),
-):
+) -> list[dict[str, Any]]:
     """Lists all celebrations for the active user plus public demo celebrations."""
     return storage_service.list_events(user.uid)
 
@@ -45,7 +50,7 @@ async def list_celebrations(
 async def get_celebration(
     event_id: str,
     user: AuthenticatedUser = Depends(get_current_user_or_demo),
-):
+) -> dict[str, Any]:
     """Retrieves full metadata for a specific celebration."""
     event = storage_service.get_event(event_id)
     if not event:
@@ -62,7 +67,7 @@ async def get_celebration(
 async def delete_celebration(
     event_id: str,
     user: AuthenticatedUser = Depends(require_authenticated_user),
-):
+) -> dict[str, Any]:
     """Deletes a celebration. Requires owner authentication. Demo celebrations cannot be deleted."""
     if event_id.startswith("demo-"):
         raise HTTPException(
@@ -86,7 +91,7 @@ async def clone_celebration(
     event_id: str,
     req: CloneEventRequest | None = None,
     user: AuthenticatedUser = Depends(require_authenticated_user),
-):
+) -> dict[str, Any]:
     """Clones an existing celebration (including demo templates) into the user's private space."""
     event = storage_service.get_event(event_id)
     if not event:
@@ -119,7 +124,7 @@ async def clone_celebration(
 async def get_event_budget(
     event_id: str,
     user: AuthenticatedUser = Depends(get_current_user_or_demo),
-):
+) -> list[BudgetItem]:
     """Retrieves all budget line items for an event."""
     event = storage_service.get_event(event_id)
     if not event:
@@ -137,7 +142,7 @@ async def update_event_budget(
     event_id: str,
     items: list[BudgetItem],
     user: AuthenticatedUser = Depends(require_authenticated_user),
-):
+) -> dict[str, Any]:
     """Updates budget items. Demo celebrations are read-only and return 403."""
     if event_id.startswith("demo-"):
         raise HTTPException(
@@ -160,7 +165,7 @@ async def update_event_budget(
 async def get_event_tasks(
     event_id: str,
     user: AuthenticatedUser = Depends(get_current_user_or_demo),
-):
+) -> list[TaskItem]:
     """Retrieves all timeline milestone tasks for an event."""
     event = storage_service.get_event(event_id)
     if not event:
@@ -179,7 +184,7 @@ async def toggle_task_status(
     task_id: str,
     req: TaskToggleRequest,
     user: AuthenticatedUser = Depends(require_authenticated_user),
-):
+) -> dict[str, Any]:
     """Toggles task status. Demo celebrations are read-only and return 403."""
     if event_id.startswith("demo-"):
         raise HTTPException(
@@ -204,7 +209,7 @@ async def toggle_task_status(
 async def get_event_vendors(
     event_id: str,
     user: AuthenticatedUser = Depends(get_current_user_or_demo),
-):
+) -> list[VendorItem]:
     """Retrieves categorized vendors and quotes for an event."""
     event = storage_service.get_event(event_id)
     if not event:
@@ -221,7 +226,7 @@ async def get_event_vendors(
 async def get_event_ideas(
     event_id: str,
     user: AuthenticatedUser = Depends(get_current_user_or_demo),
-):
+) -> list[IdeaItem]:
     """Retrieves curated cultural suggestions across 6 dimensions."""
     event = storage_service.get_event(event_id)
     if not event:
@@ -238,7 +243,7 @@ async def get_event_ideas(
 async def get_event_guests(
     event_id: str,
     user: AuthenticatedUser = Depends(get_current_user_or_demo),
-):
+) -> list[GuestItem]:
     """Retrieves guest list and RSVP status for an event."""
     event = storage_service.get_event(event_id)
     if not event:
@@ -256,7 +261,7 @@ async def add_event_guest(
     event_id: str,
     guest: GuestItem,
     user: AuthenticatedUser = Depends(require_authenticated_user),
-):
+) -> dict[str, Any]:
     """Adds a guest to the guest list. Demo celebrations are read-only and return 403."""
     if event_id.startswith("demo-"):
         raise HTTPException(
@@ -281,7 +286,7 @@ async def update_guest_rsvp(
     guest_id: str,
     req: GuestRSVPRequest,
     user: AuthenticatedUser = Depends(require_authenticated_user),
-):
+) -> dict[str, Any]:
     """Updates a guest's RSVP status. Demo celebrations are read-only and return 403."""
     if event_id.startswith("demo-"):
         raise HTTPException(
