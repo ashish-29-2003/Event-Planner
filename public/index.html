@@ -3,8 +3,26 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Samaroh — Celebration & Event Planner</title>
-  <meta name="description" content="Minimal, intelligent event planning for Indian weddings, birthdays, and community festivals.">
+  <title>Samaroh (समारोह) — GenAI Celebration & Event Planner</title>
+  <meta name="description" content="Intelligent, culturally attuned event planning for Indian weddings, birthdays, and community festivals. Crafted with Google Gemini & Firebase.">
+  <meta name="theme-color" content="#18181B">
+
+  <!-- OpenGraph Metadata -->
+  <meta property="og:title" content="Samaroh (समारोह) — GenAI Celebration & Event Planner">
+  <meta property="og:description" content="Intelligent, culturally attuned event planning for Indian weddings, birthdays, and community festivals.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://utsav-ai.netlify.app/">
+  <meta property="og:site_name" content="Samaroh">
+  <meta property="og:image" content="/static/favicon.svg">
+
+  <!-- Twitter Card Metadata -->
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Samaroh (समारोह) — GenAI Celebration & Event Planner">
+  <meta name="twitter:description" content="Intelligent, culturally attuned event planning for Indian weddings, birthdays, and community festivals.">
+  <meta name="twitter:image" content="/static/favicon.svg">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
 
   <!-- Google Fonts: Plus Jakarta Sans & Noto Serif Devanagari -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -46,23 +64,67 @@
         </div>
       </a>
 
-      <!-- Center: Greeting & Event Switcher -->
+      <!-- Center: Greeting & Accessible Event Switcher (U10, U11) -->
       <div style="display: flex; align-items: center; gap: 0.85rem; flex-wrap: wrap;">
         <span id="cultural-greeting" style="font-size: 0.825rem; color: var(--text-secondary);">
           <strong style="color: var(--text-primary);">शुभ आरम्भ</strong>, Guest Explorer
         </span>
 
-        <select id="celebration-switcher" aria-label="Select celebration" style="width: auto; padding: 0.4rem 0.75rem; font-size: 0.825rem; font-weight: 500;">
-          <option value="demo-wedding-jaipur">Jaipur Royal Wedding (₹45L)</option>
-          <option value="demo-birthday-blr">Bengaluru Cosmic Birthday (₹85K)</option>
-          <option value="demo-community-delhi">Delhi Diwali Dandiya Mela (₹6.5L)</option>
-        </select>
+        <div class="custom-switcher-container" style="position: relative;">
+          <button id="switcher-toggle-btn" class="btn-secondary" aria-haspopup="listbox" aria-expanded="false" style="font-size: 0.825rem; font-weight: 600; display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.4rem 0.75rem;">
+            <span id="switcher-active-icon">💍</span>
+            <span id="switcher-active-label">Jaipur Royal Wedding (₹45L)</span>
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+          </button>
+          
+          <ul id="celebration-listbox" role="listbox" aria-label="Celebration switcher" class="celebration-listbox" style="display: none; position: absolute; top: calc(100% + 4px); left: 0; background: var(--bg-surface); border: 1px solid var(--border-color); border-radius: var(--radius-md); box-shadow: var(--shadow-md); list-style: none; padding: 0.35rem 0; min-width: 290px; z-index: 100;">
+            <li role="option" aria-selected="true" data-event-id="demo-wedding-jaipur" class="switcher-item active" tabindex="0">
+              <span class="switcher-icon">💍</span>
+              <div class="switcher-info">
+                <div class="switcher-title">Jaipur Royal Wedding</div>
+                <div class="switcher-meta">Marwari Hindu • 15 Dec 2026 • ₹45L</div>
+              </div>
+            </li>
+            <li role="option" aria-selected="false" data-event-id="demo-birthday-blr" class="switcher-item" tabindex="0">
+              <span class="switcher-icon">🎂</span>
+              <div class="switcher-info">
+                <div class="switcher-title">Bengaluru Cosmic Birthday</div>
+                <div class="switcher-meta">Contemporary • 28 Oct 2026 • ₹85K</div>
+              </div>
+            </li>
+            <li role="option" aria-selected="false" data-event-id="demo-community-delhi" class="switcher-item" tabindex="0">
+              <span class="switcher-icon">🪔</span>
+              <div class="switcher-info">
+                <div class="switcher-title">Delhi Diwali Dandiya Mela</div>
+                <div class="switcher-meta">Gujarati Community • 01 Nov 2026 • ₹6.5L</div>
+              </div>
+            </li>
+          </ul>
+
+          <!-- Hidden native select for fallback & test compatibility -->
+          <select id="celebration-switcher" style="display: none;" aria-hidden="true">
+            <option value="demo-wedding-jaipur">Jaipur Royal Wedding (₹45L)</option>
+            <option value="demo-birthday-blr">Bengaluru Cosmic Birthday (₹85K)</option>
+            <option value="demo-community-delhi">Delhi Diwali Dandiya Mela (₹6.5L)</option>
+          </select>
+        </div>
       </div>
 
-      <!-- Right Actions: Share, Theme, User Auth, Plan -->
-      <div style="display: flex; align-items: center; gap: 0.5rem;">
-        <button id="btn-share-celebration" class="btn-secondary" title="Share Celebration Link">Share</button>
-        <button id="theme-toggle" class="btn-secondary" title="Toggle Theme" style="padding: 0.5rem 0.65rem;">🌙</button>
+      <!-- Right Actions: Language Toggle, Share, Theme SVG, User Auth, Plan (U6) -->
+      <div style="display: flex; align-items: center; gap: 0.45rem;">
+        <button id="lang-toggle" class="btn-secondary" title="Switch Language / भाषा बदलें" style="padding: 0.45rem 0.65rem; font-size: 0.8rem; font-weight: 600;">
+          <span id="lang-label">हिन्दी</span>
+        </button>
+
+        <button id="btn-share-celebration" class="btn-secondary" title="Share Celebration Link">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>
+          <span>Share</span>
+        </button>
+        
+        <button id="theme-toggle" class="btn-secondary" title="Toggle Theme" aria-label="Toggle dark and light theme" style="padding: 0.5rem 0.65rem;">
+          <svg id="theme-icon-moon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+          <svg id="theme-icon-sun" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display: none;"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+        </button>
         
         <!-- Auth Profile & Sign In -->
         <button id="btn-auth-signin" class="btn-secondary" onclick="Auth.signInWithGoogle()" style="display: inline-flex; align-items: center; gap: 0.35rem; font-size: 0.8rem; padding: 0.45rem 0.75rem;">
@@ -90,7 +152,7 @@
     <section class="card" style="margin-bottom: 1.5rem;">
       <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 1.5rem;">
         <div>
-          <span class="badge badge-warm" style="margin-bottom: 0.5rem;">Active Blueprint</span>
+          <span id="overview-status-badge" class="badge badge-warm" style="margin-bottom: 0.5rem;">Active plan</span>
           <h1 id="overview-title" style="font-size: 1.5rem; font-weight: 700; margin: 0.15rem 0 0.35rem 0;">Riya & Kabir's Royal Vivaha & Sangeet</h1>
           <p id="overview-culture-city" style="color: var(--text-secondary); font-size: 0.875rem;">Marwari Hindu • Jaipur, Rajasthan</p>
         </div>
@@ -110,8 +172,8 @@
           </div>
         </div>
 
-        <!-- Financial Metrics -->
-        <div style="display: flex; gap: 2rem; align-items: flex-end;">
+        <!-- Financial Metrics (U3) -->
+        <div style="display: flex; gap: 1.5rem; align-items: flex-end; flex-wrap: wrap;">
           <div class="metric-box">
             <span class="metric-label">Target Budget</span>
             <span id="overview-target-budget" class="metric-value">₹45,00,000</span>
@@ -119,18 +181,48 @@
           <div class="metric-box">
             <span class="metric-label">Allocated</span>
             <span id="overview-allocated" class="metric-value" style="color: var(--text-secondary);">₹43,10,000</span>
+            <span id="overview-allocated-pct" style="font-size: 0.725rem; color: var(--text-muted); margin-top: 0.1rem;">95.8% committed</span>
           </div>
           <div class="metric-box">
             <span class="metric-label">Advance Paid</span>
             <span id="overview-paid" class="metric-value" style="color: var(--accent-success);">₹15,10,000</span>
+            <span id="overview-paid-pct" style="font-size: 0.725rem; color: var(--text-muted); margin-top: 0.1rem;">35.0% settled</span>
+          </div>
+          <div class="metric-box">
+            <span class="metric-label">Remaining</span>
+            <span id="overview-remaining" class="metric-value" style="color: var(--accent-warm);">₹1,90,000</span>
+            <span id="overview-remaining-caption" style="font-size: 0.725rem; color: var(--text-muted); margin-top: 0.1rem;">Buffer available</span>
           </div>
         </div>
       </div>
 
-      <!-- Budget Progress Bar -->
+      <!-- Two-Segment Budget Progress Bar (U2) -->
       <div style="margin-top: 1.25rem;">
-        <div style="height: 6px; background: var(--bg-subtle); border-radius: var(--radius-full); overflow: hidden;">
-          <div id="overview-budget-bar" style="height: 100%; width: 95%; background: var(--text-primary); transition: width 0.4s ease;"></div>
+        <div 
+          id="overview-progress-track"
+          role="progressbar" 
+          aria-label="Budget allocation and settlement progress"
+          aria-valuemin="0" 
+          aria-valuemax="100" 
+          aria-valuenow="95"
+          style="position: relative; height: 8px; background: var(--bg-subtle); border-radius: var(--radius-full); overflow: hidden; display: flex;"
+        >
+          <div id="overview-paid-bar" style="height: 100%; width: 35%; background: var(--accent-success); transition: width 0.4s ease;" title="Advance Paid"></div>
+          <div id="overview-allocated-bar" style="height: 100%; width: 60%; background: var(--text-primary); transition: width 0.4s ease;" title="Committed Balance"></div>
+        </div>
+        <!-- Accessible Progress Bar Legend -->
+        <div id="overview-budget-legend" style="display: flex; justify-content: space-between; align-items: center; margin-top: 0.45rem; font-size: 0.75rem; color: var(--text-secondary); flex-wrap: wrap; gap: 0.5rem;">
+          <div style="display: flex; align-items: center; gap: 0.85rem;">
+            <span style="display: inline-flex; align-items: center; gap: 0.35rem;">
+              <span style="width: 8px; height: 8px; border-radius: 50%; background: var(--accent-success);"></span>
+              <span>Paid: <strong id="legend-paid-val" style="color: var(--text-primary);">₹15,10,000</strong></span>
+            </span>
+            <span style="display: inline-flex; align-items: center; gap: 0.35rem;">
+              <span style="width: 8px; height: 8px; border-radius: 50%; background: var(--text-primary);"></span>
+              <span>Committed: <strong id="legend-allocated-val" style="color: var(--text-primary);">₹28,00,000</strong></span>
+            </span>
+          </div>
+          <span id="legend-remaining-val">Buffer Available: <strong id="legend-avail-num" style="color: var(--text-primary);">₹1,90,000</strong></span>
         </div>
       </div>
 
@@ -143,52 +235,91 @@
       </div>
     </section>
 
-    <!-- Navigation Segmented Tabs -->
-    <nav class="tabs-container" style="margin-bottom: 1.5rem;" aria-label="Celebration Modules">
-      <button class="nav-tab active" data-view="overview">Overview</button>
-      <button class="nav-tab" data-view="budget">Budget & AI Rebalance</button>
-      <button class="nav-tab" data-view="timeline">Timeline & Calendar</button>
-      <button class="nav-tab" data-view="vendors">Vendors</button>
-      <button class="nav-tab" data-view="ideas">Ideas Hub</button>
-      <button class="nav-tab" data-view="muhurat">Muhurat</button>
-      <button class="nav-tab" data-view="chat">AI Assistant</button>
-      <button class="nav-tab" data-view="export">Export Sheet</button>
-    </nav>
+    <!-- Navigation Segmented Tabs (U7: ARIA tabs + edge fade wrapper + Guests tab) -->
+    <div class="tabs-scroll-wrapper">
+      <nav class="tabs-container" role="tablist" aria-label="Celebration Modules">
+        <button role="tab" id="tab-overview" aria-controls="view-overview" aria-selected="true" class="nav-tab active" data-view="overview">Overview</button>
+        <button role="tab" id="tab-budget" aria-controls="view-budget" aria-selected="false" class="nav-tab" data-view="budget">Budget & AI Rebalance</button>
+        <button role="tab" id="tab-timeline" aria-controls="view-timeline" aria-selected="false" class="nav-tab" data-view="timeline">Timeline & Calendar</button>
+        <button role="tab" id="tab-vendors" aria-controls="view-vendors" aria-selected="false" class="nav-tab" data-view="vendors">Vendors</button>
+        <button role="tab" id="tab-guests" aria-controls="view-guests" aria-selected="false" class="nav-tab" data-view="guests">Guests & RSVP</button>
+        <button role="tab" id="tab-ideas" aria-controls="view-ideas" aria-selected="false" class="nav-tab" data-view="ideas">Ideas Hub</button>
+        <button role="tab" id="tab-muhurat" aria-controls="view-muhurat" aria-selected="false" class="nav-tab" data-view="muhurat">Muhurat</button>
+        <button role="tab" id="tab-chat" aria-controls="view-chat" aria-selected="false" class="nav-tab" data-view="chat">AI Assistant</button>
+        <button role="tab" id="tab-export" aria-controls="view-export" aria-selected="false" class="nav-tab" data-view="export">Export Sheet</button>
+      </nav>
+    </div>
 
-    <!-- VIEW 1: Overview Summary -->
-    <div id="view-overview" class="view-panel">
+    <!-- VIEW 1: Overview Summary (U5 Live Dynamic Metrics) -->
+    <div id="view-overview" class="view-panel" role="tabpanel" aria-labelledby="tab-overview">
       <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem;">
         
-        <div class="card">
-          <div class="card-title">1. Budget & Rebalance</div>
-          <p class="card-subtitle" style="margin-bottom: 1rem;">
-            Real-time tracking of advances and balances. If one category spikes, AI proportionally recalibrates other allocations.
-          </p>
+        <div class="card" style="display: flex; flex-direction: column; justify-content: space-between;">
+          <div>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+              <span class="badge badge-warm">Financial Ledger</span>
+              <span id="ovcard-budget-status" class="badge">Balanced</span>
+            </div>
+            <div class="card-title" id="ovcard-budget-headline" style="font-size: 1.15rem; font-weight: 700;">₹43,10,000 Allocated</div>
+            <p id="ovcard-budget-sub" class="card-subtitle" style="margin: 0.35rem 0 0.85rem 0;">
+              Real-time tracking of advances and balances. If one category spikes, AI proportionally recalibrates other allocations.
+            </p>
+            <div id="ovcard-budget-topcat" style="font-size: 0.775rem; color: var(--text-secondary); background: var(--bg-subtle); padding: 0.4rem 0.65rem; border-radius: var(--radius-sm); margin-bottom: 1rem;">
+              Largest allocation: Venue & Decor
+            </div>
+          </div>
           <button onclick="document.querySelector('[data-view=budget]').click()" class="btn-secondary" style="width: 100%;">Open Ledger →</button>
         </div>
 
-        <div class="card">
-          <div class="card-title">2. Countdown & Calendar</div>
-          <p class="card-subtitle" style="margin-bottom: 1rem;">
-            Phased breakdown from foundational logistics to sacred ceremony schedules. Export directly to Google Calendar.
-          </p>
+        <div class="card" style="display: flex; flex-direction: column; justify-content: space-between;">
+          <div>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+              <span class="badge badge-warm">Countdown & Calendar</span>
+              <span id="ovcard-tasks-badge" class="badge">In Progress</span>
+            </div>
+            <div class="card-title" id="ovcard-tasks-headline" style="font-size: 1.15rem; font-weight: 700;">4 of 12 Completed</div>
+            <p id="ovcard-tasks-sub" class="card-subtitle" style="margin: 0.35rem 0 0.85rem 0;">
+              Phased breakdown from foundational logistics to sacred ceremony schedules. Synchronize with Google Calendar.
+            </p>
+            <div id="ovcard-tasks-next" style="font-size: 0.775rem; color: var(--text-secondary); background: var(--bg-subtle); padding: 0.4rem 0.65rem; border-radius: var(--radius-sm); margin-bottom: 1rem;">
+              Next milestone: Finalize Mandap Decor
+            </div>
+          </div>
           <button onclick="document.querySelector('[data-view=timeline]').click()" class="btn-secondary" style="width: 100%;">View Milestones →</button>
         </div>
 
-        <div class="card">
-          <div class="card-title">3. Verified Vendors</div>
-          <p class="card-subtitle" style="margin-bottom: 1rem;">
-            Shortlisted profiles for Decorators, Caterers, Pandits, and Photographers with realistic quote bands.
-          </p>
+        <div class="card" style="display: flex; flex-direction: column; justify-content: space-between;">
+          <div>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+              <span class="badge badge-warm">Verified Vendors</span>
+              <span id="ovcard-vendors-badge" class="badge">Shortlisted</span>
+            </div>
+            <div class="card-title" id="ovcard-vendors-headline" style="font-size: 1.15rem; font-weight: 700;">6 Vendors Selected</div>
+            <p id="ovcard-vendors-sub" class="card-subtitle" style="margin: 0.35rem 0 0.85rem 0;">
+              Shortlisted regional profiles for Decorators, Caterers, Pandits, and Photographers with fair quotes.
+            </p>
+            <div id="ovcard-vendors-quotes" style="font-size: 0.775rem; color: var(--text-secondary); background: var(--bg-subtle); padding: 0.4rem 0.65rem; border-radius: var(--radius-sm); margin-bottom: 1rem;">
+              Committed quote sum: ₹38,50,000
+            </div>
+          </div>
           <button onclick="document.querySelector('[data-view=vendors]').click()" class="btn-secondary" style="width: 100%;">Manage Vendors →</button>
         </div>
 
-        <div class="card">
-          <div class="card-title">4. Cultural Ideas Hub</div>
-          <p class="card-subtitle" style="margin-bottom: 1rem;">
-            Bespoke ceremonial themes, regional live feast counters, and eco-friendly favors curated to your tradition.
-          </p>
-          <button onclick="document.querySelector('[data-view=ideas]').click()" class="btn-secondary" style="width: 100%;">Explore Ideas →</button>
+        <div class="card" style="display: flex; flex-direction: column; justify-content: space-between;">
+          <div>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+              <span class="badge badge-warm">Guests & RSVP</span>
+              <span id="ovcard-guests-badge" class="badge badge-success">85% Attending</span>
+            </div>
+            <div class="card-title" id="ovcard-guests-headline" style="font-size: 1.15rem; font-weight: 700;">300 Invited Guests</div>
+            <p id="ovcard-guests-sub" class="card-subtitle" style="margin: 0.35rem 0 0.85rem 0;">
+              Family-side RSVPs, seating logistics, ceremonial themes, and personalized favors curated to your tradition.
+            </p>
+            <div id="ovcard-guests-rsvp" style="font-size: 0.775rem; color: var(--text-secondary); background: var(--bg-subtle); padding: 0.4rem 0.65rem; border-radius: var(--radius-sm); margin-bottom: 1rem;">
+              Bride's Side: 150 • Groom's Side: 150
+            </div>
+          </div>
+          <button onclick="document.querySelector('[data-view=guests]').click()" class="btn-secondary" style="width: 100%;">View Guests & RSVP →</button>
         </div>
 
       </div>
@@ -248,7 +379,7 @@
     </div>
 
     <!-- VIEW 4: Vendors Checklist -->
-    <div id="view-vendors" class="view-panel" style="display: none;">
+    <div id="view-vendors" class="view-panel" role="tabpanel" aria-labelledby="tab-vendors" style="display: none;">
       <div style="margin-bottom: 1.25rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.75rem;">
         <div>
           <h2 style="font-size: 1.15rem; font-weight: 600;">Vendor Directory</h2>
@@ -264,6 +395,66 @@
         </div>
       </div>
       <div id="vendors-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem;"></div>
+    </div>
+
+    <!-- VIEW 5: Guests & RSVP (U7) -->
+    <div id="view-guests" class="view-panel" role="tabpanel" aria-labelledby="tab-guests" style="display: none;">
+      <div class="card">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.25rem;">
+          <div>
+            <h2 style="font-size: 1.15rem; font-weight: 600;">Guest List & RSVP Tracking</h2>
+            <p style="font-size: 0.825rem; color: var(--text-secondary);">Manage invitations, dietary preferences, and real-time attendance confirmations.</p>
+          </div>
+          <div style="display: flex; gap: 0.5rem; align-items: center;">
+            <button id="btn-open-guest-modal" class="btn-primary" style="font-size: 0.8rem; padding: 0.45rem 0.85rem;">+ Add Guest</button>
+          </div>
+        </div>
+
+        <!-- Guest Summary Metrics -->
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 0.75rem; margin-bottom: 1.25rem;">
+          <div style="background: var(--bg-subtle); padding: 0.75rem; border-radius: var(--radius-sm); border: 1px solid var(--border-color);">
+            <div style="font-size: 0.7rem; text-transform: uppercase; color: var(--text-secondary); font-weight: 600;">Total Invited</div>
+            <div id="guests-metric-total" style="font-size: 1.25rem; font-weight: 700; color: var(--text-primary); margin-top: 0.2rem;">0</div>
+          </div>
+          <div style="background: var(--bg-subtle); padding: 0.75rem; border-radius: var(--radius-sm); border: 1px solid var(--border-color);">
+            <div style="font-size: 0.7rem; text-transform: uppercase; color: var(--accent-success); font-weight: 600;">Confirmed (Attending)</div>
+            <div id="guests-metric-attending" style="font-size: 1.25rem; font-weight: 700; color: var(--accent-success); margin-top: 0.2rem;">0</div>
+          </div>
+          <div style="background: var(--bg-subtle); padding: 0.75rem; border-radius: var(--radius-sm); border: 1px solid var(--border-color);">
+            <div style="font-size: 0.7rem; text-transform: uppercase; color: var(--text-secondary); font-weight: 600;">Awaiting Response</div>
+            <div id="guests-metric-pending" style="font-size: 1.25rem; font-weight: 700; color: var(--text-secondary); margin-top: 0.2rem;">0</div>
+          </div>
+          <div style="background: var(--bg-subtle); padding: 0.75rem; border-radius: var(--radius-sm); border: 1px solid var(--border-color);">
+            <div style="font-size: 0.7rem; text-transform: uppercase; color: var(--accent-warning); font-weight: 600;">Declined / Regrets</div>
+            <div id="guests-metric-declined" style="font-size: 1.25rem; font-weight: 700; color: var(--accent-warning); margin-top: 0.2rem;">0</div>
+          </div>
+        </div>
+
+        <!-- Filter Bar -->
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.5rem;">
+          <div id="guest-filter-bar" style="display: flex; gap: 0.35rem;">
+            <button class="guest-filter-pill active btn-primary" data-side="all" style="padding: 0.25rem 0.65rem; font-size: 0.75rem;">All Guests</button>
+            <button class="guest-filter-pill btn-secondary" data-side="bride" style="padding: 0.25rem 0.65rem; font-size: 0.75rem;">Bride's Side</button>
+            <button class="guest-filter-pill btn-secondary" data-side="groom" style="padding: 0.25rem 0.65rem; font-size: 0.75rem;">Groom's Side</button>
+            <button class="guest-filter-pill btn-secondary" data-side="general" style="padding: 0.25rem 0.65rem; font-size: 0.75rem;">General / VIP</button>
+          </div>
+        </div>
+
+        <div style="overflow-x: auto;">
+          <table class="minimal-table">
+            <thead>
+              <tr>
+                <th>Guest / Family</th>
+                <th>Affiliation</th>
+                <th>Party Size</th>
+                <th>Dietary & Notes</th>
+                <th>RSVP Status</th>
+              </tr>
+            </thead>
+            <tbody id="guests-table-body"></tbody>
+          </table>
+        </div>
+      </div>
     </div>
 
     <!-- VIEW 5: Personalized Ideas -->
@@ -388,6 +579,139 @@
       </form>
     </div>
   </div>
+
+  <!-- Share Celebration Drawer Modal (U9) -->
+  <div id="share-modal" class="modal-overlay" style="display: none;" role="dialog" aria-modal="true" aria-labelledby="share-heading">
+    <div class="modal-content" style="max-width: 520px;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem;">
+        <div>
+          <h3 id="share-heading" style="font-size: 1.15rem; font-weight: 600;">Share Celebration Plan</h3>
+          <p style="font-size: 0.8rem; color: var(--text-secondary); margin-top: 0.15rem;">Invite family coordinators and guests with a secure view-only link.</p>
+        </div>
+        <button id="btn-close-share" style="background: none; border: none; font-size: 1.25rem; cursor: pointer; color: var(--text-secondary);">&times;</button>
+      </div>
+
+      <!-- Share Link Copy Box -->
+      <div style="margin-bottom: 1.25rem;">
+        <label style="display: block; font-size: 0.775rem; font-weight: 600; text-transform: uppercase; color: var(--text-secondary); margin-bottom: 0.35rem;">Celebration Link</label>
+        <div style="display: flex; gap: 0.5rem;">
+          <input type="text" id="share-link-input" readonly style="font-size: 0.85rem; background: var(--bg-subtle);">
+          <button id="btn-copy-share" class="btn-primary" style="white-space: nowrap; padding: 0.5rem 0.85rem;">Copy</button>
+        </div>
+        <span id="copy-feedback" style="display: none; font-size: 0.75rem; color: var(--accent-success); margin-top: 0.25rem; font-weight: 500;">✓ Link copied to clipboard!</span>
+      </div>
+
+      <!-- India-First Direct Action Buttons -->
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-bottom: 1.25rem;">
+        <a id="btn-whatsapp-share" href="#" target="_blank" class="btn-secondary" style="justify-content: center; background: #25D366; color: #FFFFFF; border-color: transparent; font-weight: 600; text-decoration: none;">
+          <span>💬 WhatsApp Share</span>
+        </a>
+        <button id="btn-share-print" class="btn-secondary" style="justify-content: center;">
+          <span>📄 Save as PDF</span>
+        </button>
+      </div>
+
+      <!-- Traditional Blessing Card Preview -->
+      <div style="background: var(--bg-subtle); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 1rem; border-left: 3px solid var(--accent-warm);">
+        <div style="font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent-warm); margin-bottom: 0.25rem;">॥ मङ्गलम् ॥ Sacred Blessing</div>
+        <p id="share-blessing-text" style="font-size: 0.85rem; font-style: italic; color: var(--text-primary); line-height: 1.5;">
+          "May this auspicious celebration bring enduring joy, good health, and abundant prosperity to all families."
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add Guest Modal (U7) -->
+  <div id="guest-modal" class="modal-overlay" style="display: none;" role="dialog" aria-modal="true" aria-labelledby="guest-modal-heading">
+    <div class="modal-content" style="max-width: 480px;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem;">
+        <h3 id="guest-modal-heading" style="font-size: 1.15rem; font-weight: 600;">Add Guest / Family Group</h3>
+        <button id="btn-close-guest-modal" style="background: none; border: none; font-size: 1.25rem; cursor: pointer; color: var(--text-secondary);">&times;</button>
+      </div>
+
+      <form id="guest-form">
+        <div style="margin-bottom: 0.85rem;">
+          <label for="guest-name" style="display: block; font-size: 0.8rem; font-weight: 500; margin-bottom: 0.25rem; color: var(--text-secondary);">Primary Guest / Family Name</label>
+          <input type="text" id="guest-name" placeholder="e.g. Verma Family / Dr. Sameer Gupta" required>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-bottom: 0.85rem;">
+          <div>
+            <label for="guest-side" style="display: block; font-size: 0.8rem; font-weight: 500; margin-bottom: 0.25rem; color: var(--text-secondary);">Affiliation / Side</label>
+            <select id="guest-side">
+              <option value="bride">Bride's Side</option>
+              <option value="groom">Groom's Side</option>
+              <option value="general">General / Friends</option>
+              <option value="vip">VIP / Dignitary</option>
+            </select>
+          </div>
+          <div>
+            <label for="guest-count" style="display: block; font-size: 0.8rem; font-weight: 500; margin-bottom: 0.25rem; color: var(--text-secondary);">Party Size (Count)</label>
+            <input type="number" id="guest-count" value="2" min="1" max="50" required>
+          </div>
+        </div>
+
+        <div style="margin-bottom: 0.85rem;">
+          <label for="guest-rsvp" style="display: block; font-size: 0.8rem; font-weight: 500; margin-bottom: 0.25rem; color: var(--text-secondary);">RSVP Status</label>
+          <select id="guest-rsvp">
+            <option value="attending">Confirmed Attending</option>
+            <option value="pending" selected>Awaiting Response (Pending)</option>
+            <option value="declined">Declined (Regrets)</option>
+          </select>
+        </div>
+
+        <div style="margin-bottom: 1.25rem;">
+          <label for="guest-notes" style="display: block; font-size: 0.8rem; font-weight: 500; margin-bottom: 0.25rem; color: var(--text-secondary);">Dietary & Travel Notes</label>
+          <textarea id="guest-notes" rows="2" placeholder="e.g. Pure Vegetarian, requires airport pickup, ground-floor room preferred"></textarea>
+        </div>
+
+        <div style="display: flex; justify-content: flex-end; gap: 0.5rem;">
+          <button type="button" onclick="document.getElementById('guest-modal').style.display='none'" class="btn-secondary">Cancel</button>
+          <button type="submit" class="btn-primary">Save Guest</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Structured Cultural & Trust Footer (U13) -->
+  <footer class="site-footer" role="contentinfo">
+    <div class="footer-inner">
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1.5rem; margin-bottom: 1.5rem;">
+        <div>
+          <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
+            <span class="brand-icon" style="width: 22px; height: 22px; font-size: 0.75rem;">॥</span>
+            <strong style="font-size: 0.95rem; letter-spacing: 0.03em;">SAMAROH समारोह</strong>
+          </div>
+          <p style="font-size: 0.825rem; color: var(--text-secondary); line-height: 1.5;">
+            An intelligent celebration planner balancing modern fiscal rigor with authentic cultural reverence across Indian weddings, birthdays, and community festivals.
+          </p>
+        </div>
+
+        <div>
+          <strong style="font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.04em; color: var(--text-secondary); display: block; margin-bottom: 0.5rem;">Vedic Guidance Notice</strong>
+          <p style="font-size: 0.8rem; color: var(--text-muted); line-height: 1.5;">
+            Panchang, Lagna, and Muhurat suggestions provide general seasonal reference based on classical Hindu calendar traditions. Please consult your family astrologer or priest for personal Kundali-based auspicious muhurats.
+          </p>
+        </div>
+
+        <div>
+          <strong style="font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.04em; color: var(--text-secondary); display: block; margin-bottom: 0.5rem;">Privacy & Stewardship</strong>
+          <p style="font-size: 0.8rem; color: var(--text-muted); line-height: 1.5;">
+            Zero advertising. Your guest contact directories and budget figures are private to your workspace and never shared or sold.
+          </p>
+        </div>
+      </div>
+
+      <div style="border-top: 1px solid var(--border-color); padding-top: 1rem; display: flex; justify-content: space-between; align-items: center; font-size: 0.775rem; color: var(--text-secondary); flex-wrap: wrap; gap: 0.75rem;">
+        <div>© 2026 Samaroh. Crafted with care • Powered by Google Gemini & Firebase.</div>
+        <div style="display: flex; gap: 1rem;">
+          <a href="/api/health" style="color: inherit; text-decoration: none;">System Status</a>
+          <a href="/api/docs" style="color: inherit; text-decoration: none;">API Documentation</a>
+          <a href="#" onclick="window.scrollTo({top: 0, behavior: 'smooth'}); return false;" style="color: inherit; text-decoration: none;">Back to top ↑</a>
+        </div>
+      </div>
+    </div>
+  </footer>
 
   <!-- Scripts -->
   <!-- Firebase App & Auth Web SDK (Compat) -->

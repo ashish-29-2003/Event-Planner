@@ -164,6 +164,17 @@ const API = {
       headers: this.getHeaders()
     });
     return await res.json();
+  },
+
+  async getShareToken(id, ttlDays = 7) {
+    const res = await fetch(`${this.baseUrl}/api/export/${id}/share-token?ttl_days=${ttlDays}`, {
+      method: 'POST',
+      headers: this.getHeaders()
+    });
+    if (!res.ok) {
+      return null;
+    }
+    return await res.json();
   }
 };
 
