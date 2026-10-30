@@ -28,6 +28,7 @@ if str(ROOT_DIR) not in sys.path:
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.middleware.gzip import GZipMiddleware
 from fastapi.responses import FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 
@@ -73,6 +74,9 @@ def create_app() -> FastAPI:
         allow_methods=["*"],
         allow_headers=["*"],
     )
+
+    # GZip compression middleware for assets and responses >= 500 bytes
+    app.add_middleware(GZipMiddleware, minimum_size=500)
 
     # Request Body Size Limit Middleware (Max 1MB)
     max_body_bytes = 1024 * 1024
@@ -152,12 +156,20 @@ def create_app() -> FastAPI:
         headers["X-Request-ID"] = request_id
         return JSONResponse(status_code=500, content=content, headers=headers)
 
-    # Security Headers Middleware
+    # Security & Cache Control Headers Middleware
     @app.middleware("http")
     async def add_security_headers(request: Request, call_next):
         response = await call_next(request)
         for header_name, header_value in SECURITY_HEADERS.items():
             response.headers[header_name] = header_value
+
+        # Optimized Cache-Control headers
+        path = request.url.path
+        if path.startswith("/static/"):
+            response.headers["Cache-Control"] = "public, max-age=31536000, immutable"
+        elif path in ("/", "/index.html"):
+            response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
+
         return response
 
     # Structured JSON Logging & Request ID Middleware

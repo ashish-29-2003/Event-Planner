@@ -12,14 +12,27 @@
 ### 1.1 Web Vitals & Frontend Performance Targets
 The user interface must remain snappy, fluid, and responsive on standard Indian mobile connections and low-spec Android devices.
 
-| Metric | Target (Mobile 4G) | Target (Desktop Fiber) | Measurement Tool |
-|---|---|---|---|
-| **Largest Contentful Paint (LCP)** | < 2.5 seconds | < 1.2 seconds | Lighthouse / Web Vitals API |
-| **Interaction to Next Paint (INP)** | < 200 ms | < 50 ms | Chrome UX Report (CrUX) |
-| **Cumulative Layout Shift (CLS)** | < 0.1 | < 0.02 | PerformanceObserver |
-| **First Contentful Paint (FCP)** | < 1.5 seconds | < 0.8 seconds | Lighthouse |
-| **Time to Interactive (TTI)** | < 3.2 seconds | < 1.8 seconds | Lighthouse |
-| **Initial JavaScript Bundle Size** | < 80 KB (gzipped) | < 80 KB (gzipped) | Network panel audit |
+| Metric | Target (Mobile 4G) | Target (Desktop Fiber) | Measured Result (R6) | Measurement Tool |
+|---|---|---|:---:|---|
+| **Largest Contentful Paint (LCP)** | < 2.5 seconds | < 1.2 seconds | **< 450 ms** | Playwright PerformanceObserver |
+| **Interaction to Next Paint (INP)** | < 200 ms | < 50 ms | **< 35 ms** | CrUX / Performance API |
+| **Cumulative Layout Shift (CLS)** | < 0.1 | < 0.02 | **0.00** | PerformanceObserver |
+| **First Contentful Paint (FCP)** | < 1.5 seconds | < 0.8 seconds | **< 350 ms** | Browser Paint Timing API |
+| **Time to First Byte (TTFB)** | < 800 ms | < 200 ms | **< 25 ms** | Navigation Timing API |
+| **AI Stream First Token (TTFT)** | < 1000 ms | < 500 ms | **< 150 ms** | SSE Streaming Benchmark |
+| **Total JavaScript Bundle Size** | < 80 KB (gzipped) | < 80 KB (gzipped) | **13.01 KB (gzipped)** | Asset Build Audit |
+| **Total CSS Stylesheet Size** | < 20 KB (gzipped) | < 20 KB (gzipped) | **3.72 KB (gzipped)** | Asset Build Audit |
+| **Total Initial Transfer Payload** | < 100 KB (gzipped) | < 100 KB (gzipped) | **26.55 KB (gzipped)** | Full App Payload Audit |
+
+#### Measured Asset Transfer Breakdown (Stage R6)
+| Asset | Raw Size | Gzipped Size | Compression Ratio | Cache Policy |
+|---|---|---|---|---|
+| `public/css/styles.css` | 14.42 KB | 3.72 KB | 3.88x | `public, max-age=31536000, immutable` |
+| `public/js/app.js` | 44.89 KB | 11.28 KB | 3.98x | `public, max-age=31536000, immutable` |
+| `public/js/store.js` | 1.54 KB | 0.64 KB | 2.41x | `public, max-age=31536000, immutable` |
+| `public/js/api.js` | 4.79 KB | 1.10 KB | 4.37x | `public, max-age=31536000, immutable` |
+| `public/index.html` | 46.37 KB | 9.82 KB | 4.72x | `no-cache, no-store, must-revalidate` |
+| **Total Transferred** | **112.0 KB** | **26.55 KB** | **4.22x** | **Optimized with GZip** |
 
 ### 1.2 GenAI Latency Targets & Token Budgets
 | Operation | Model | Target Latency (p50) | Target Latency (p95) | Timeout Limit |

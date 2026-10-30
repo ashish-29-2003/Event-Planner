@@ -34,12 +34,40 @@ class GeminiService:
         self.api_key = settings.GEMINI_API_KEY
         self.model_name = settings.GEMINI_MODEL
         self._client: genai.Client | None = None
+        self._cache: dict[str, tuple[EventMasterPlan, bool]] = {}
+        self._cache_stats: dict[str, int] = {"hits": 0, "misses": 0}
 
         if self.api_key:
             try:
                 self._client = genai.Client(api_key=self.api_key)
             except Exception as e:
                 logger.warning(f"Failed to initialize Google GenAI Client: {e}")
+
+    def normalize_brief_key(self, brief: CelebrationBrief) -> str:
+        """
+        Computes a deterministic cache key from normalized celebration brief parameters.
+        Normalizes casing, trims whitespace, and rounds budget to nearest 5000 to enhance cache reuse.
+        """
+        ev_type = str(
+            brief.event_type.value if hasattr(brief.event_type, "value") else brief.event_type
+        ).lower().strip()
+        city = (brief.city or "").lower().strip()
+        culture = (brief.culture or "").lower().strip()
+        lang = (brief.language or "en").lower().strip()
+        rounded_budget = int(round(brief.target_budget / 5000.0) * 5000)
+        rounded_guests = int(round(brief.guest_count / 10.0) * 10)
+        return f"{ev_type}:{city}:{culture}:{lang}:{rounded_budget}:{rounded_guests}"
+
+    def get_cache_stats(self) -> dict[str, int]:
+        return {
+            "hits": self._cache_stats["hits"],
+            "misses": self._cache_stats["misses"],
+            "cached_entries": len(self._cache),
+        }
+
+    def clear_cache(self) -> None:
+        self._cache.clear()
+        self._cache_stats = {"hits": 0, "misses": 0}
 
     def get_seed_for_event_type(self, event_type: str) -> EventMasterPlan:
         """Returns pre-built production-grade celebration blueprint matching event type."""
@@ -55,7 +83,21 @@ class GeminiService:
         """
         Synthesizes a full celebration master plan.
         Returns: (EventMasterPlan, is_fallback: bool)
+        Utilizes an in-memory normalized response cache to eliminate redundant LLM calls and latency.
         """
+        cache_key = self.normalize_brief_key(brief)
+        if cache_key in self._cache:
+            self._cache_stats["hits"] += 1
+            cached_plan, is_fallback = self._cache[cache_key]
+            logger.info(
+                f"Serving celebration master plan from AI response cache (hits: {self._cache_stats['hits']}, key: {cache_key})"
+            )
+            if brief.title and cached_plan.celebration_title != brief.title:
+                return cached_plan.model_copy(update={"celebration_title": brief.title}), is_fallback
+            return cached_plan, is_fallback
+
+        self._cache_stats["misses"] += 1
+
         # If API key is missing or client not initialized, return curated seed immediately
         if not self._client or not self.api_key:
             logger.info("Gemini API key not configured. Serving curated seed celebration.")
@@ -63,7 +105,7 @@ class GeminiService:
                 brief.event_type.value if hasattr(brief.event_type, "value") else brief.event_type
             )
             # Personalize title and parameters from user's brief
-            return EventMasterPlan(
+            plan = EventMasterPlan(
                 celebration_title=brief.title or seed.celebration_title,
                 event_type=brief.event_type.value
                 if hasattr(brief.event_type, "value")
@@ -77,7 +119,9 @@ class GeminiService:
                 personalized_ideas=seed.personalized_ideas,
                 auspicious_guidance=seed.auspicious_guidance,
                 disclaimer="Notice: Timings, muhurat guidance, and vendor quotes are AI-assisted estimates for budgeting purposes only.",
-            ), True
+            )
+            self._cache[cache_key] = (plan, True)
+            return plan, True
 
         # Sanitize user inputs
         clean_title = sanitize_prompt_input(brief.title)
@@ -126,6 +170,7 @@ Generate a complete EventMasterPlan in JSON format.
             response = await asyncio.wait_for(asyncio.to_thread(_call), timeout=12.0)
             raw_text = response.text
             plan = EventMasterPlan.model_validate_json(raw_text)
+            self._cache[cache_key] = (plan, False)
             return plan, False
 
         except ValidationError as val_err:
@@ -157,16 +202,21 @@ ORIGINAL RAW JSON:
                     asyncio.to_thread(_repair_call), timeout=8.0
                 )
                 plan = EventMasterPlan.model_validate_json(repair_response.text)
+                self._cache[cache_key] = (plan, False)
                 return plan, False
             except Exception as repair_e:
                 logger.error(f"Repair prompt failed: {repair_e}. Falling back to curated seed.")
-                return self.get_seed_for_event_type(brief.event_type), True
+                seed_plan = self.get_seed_for_event_type(brief.event_type)
+                self._cache[cache_key] = (seed_plan, True)
+                return seed_plan, True
 
         except Exception as e:
             logger.warning(
                 f"Gemini API call failed ({e}). Gracefully falling back to curated seed."
             )
-            return self.get_seed_for_event_type(brief.event_type), True
+            seed_plan = self.get_seed_for_event_type(brief.event_type)
+            self._cache[cache_key] = (seed_plan, True)
+            return seed_plan, True
 
     async def rebalance_budget(self, request: BudgetRebalanceRequest) -> BudgetRebalanceResponse:
         """

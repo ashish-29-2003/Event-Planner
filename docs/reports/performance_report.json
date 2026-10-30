@@ -1,0 +1,57 @@
+{
+  "timestamp": 1793344861.0860472,
+  "performance_budgets": {
+    "css_max_kb": 15.0,
+    "js_max_kb": 30.0,
+    "total_max_kb": 60.0
+  },
+  "measured_bundles": {
+    "styles.css": {
+      "raw_bytes": 14765,
+      "raw_kb": 14.42,
+      "gzipped_bytes": 3807,
+      "gzipped_kb": 3.72,
+      "compression_ratio": 3.88
+    },
+    "app.js": {
+      "raw_bytes": 45966,
+      "raw_kb": 44.89,
+      "gzipped_bytes": 11553,
+      "gzipped_kb": 11.28,
+      "compression_ratio": 3.98
+    },
+    "store.js": {
+      "raw_bytes": 1573,
+      "raw_kb": 1.54,
+      "gzipped_bytes": 652,
+      "gzipped_kb": 0.64,
+      "compression_ratio": 2.41
+    },
+    "api.js": {
+      "raw_bytes": 4902,
+      "raw_kb": 4.79,
+      "gzipped_bytes": 1122,
+      "gzipped_kb": 1.1,
+      "compression_ratio": 4.37
+    },
+    "index.html": {
+      "raw_bytes": 47487,
+      "raw_kb": 46.37,
+      "gzipped_bytes": 10052,
+      "gzipped_kb": 9.82,
+      "compression_ratio": 4.72
+    }
+  },
+  "summary": {
+    "total_raw_kb": 112.0,
+    "total_gzipped_kb": 26.55,
+    "total_js_gzipped_kb": 13.01,
+    "total_css_gzipped_kb": 3.72
+  },
+  "web_vitals_targets": {
+    "LCP": "< 2.5s",
+    "INP": "< 200ms",
+    "CLS": "< 0.1",
+    "TTFT": "< 1000ms"
+  }
+}
