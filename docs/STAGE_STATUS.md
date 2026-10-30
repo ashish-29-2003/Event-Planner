@@ -5,7 +5,7 @@
 | **R0: Reality Check & Git Hygiene** | **PASSED** | 2026-10-29 | 92bb256..12400bf | Setup verified from README, 76% real coverage recorded, commit-msg hook active, ui-before screenshots captured |
 | **R1: Google Services, Auth & Persistence** | **PASSED** | 2026-10-29 | 3dd1b0b..9d3937a | R1-C closure complete: browser auth, Firestore storage backend fail-fast, rules matrix (85 tests), route guards, smoke test (6/6 local), structured logging, README services matrix, suite runtime 12.98s (149 passed), 81% coverage, Places contract tests |
 | **R2: Security Hardening** | **PASSED** | 2026-10-30 | c24143c..0359460 | IDOR suite (10 tests), persistent sliding-window rate limiter, strict extra='forbid' & 1MB limit, 45-sample prompt injection corpus, DOMPurify & XSS sinks defanged, strict CSP & security headers, non-root Dockerfile & supply chain audit, uniform error schema, strict token claims validation, HMAC-SHA256 share tokens, 194 passed, 85% coverage |
-| **R3: UI Refinement & Completeness** | **IN PROGRESS** | 2026-10-30 | - | Items U1 to U14, Guests & RSVP tab, bilingual EN/Hindi toggle, responsive breakpoints 360-1920px |
+| **R3: UI Refinement & Completeness** | **PASSED** | 2026-10-30 | ed21992..1e1694a | Items U1 to U14 verified with 13 tests in test_ui_refinements.py, 16 after-screenshots captured in docs/reports/ui-after/, full suite 207 passed in 22.2s |
 | **R4: Testing Depth & Resilience** | **NOT STARTED** | - | - | ≥80% coverage gate, edge-case matrix, integration tests, Playwright E2E journeys, 3 consecutive green runs |
 | **R5: Accessibility with Proof** | **NOT STARTED** | - | - | @axe-core/playwright 0 violations, Lighthouse accessibility ≥95, screen-reader walkthrough notes |
 | **R6: Efficiency with Measured Numbers** | **NOT STARTED** | - | - | Lighthouse ≥90 in all 4 categories on mobile, LCP <2.5s, INP <200ms, measured TTFT, AI cache |
@@ -34,20 +34,20 @@
 
 | ID | Observation / Target | Done? | Commit SHA | Screenshot |
 |---|---|:---:|:---:|---|
-| **U1** | Reintroduce subtle cultural warmth (mandala line-art 3-6%, restrained gold accents) | [ ] | - | - |
-| **U2** | Two-segment progress bar with accessible aria-valuenow and legend | [ ] | - | - |
-| **U3** | Allocated budget hierarchy, caption percentage, and remaining balance metric | [ ] | - | - |
-| **U4** | Clean milestone row with separate time, relative date ("in 10 days"), and checkbox | [ ] | - | - |
-| **U5** | Overview cards showing live dynamic metrics rather than text duplicates | [ ] | - | - |
-| **U6** | High-contrast Subhashita bar, SVG theme toggle, EN/Hindi switch, and auth menu | [ ] | - | - |
-| **U7** | Mobile horizontally scrollable tabs, ARIA tabs pattern, and new Guests & RSVP tab | [ ] | - | - |
-| **U8** | Replace "Active Blueprint" badge with on-palette "Active plan" | [ ] | - | - |
-| **U9** | Share drawer: copy link, WhatsApp share, PDF export, and blessing note | [ ] | - | - |
-| **U10** | Accessible custom listbox/combobox for plan switcher with event icons | [ ] | - | - |
-| **U11** | Clean single-language greeting by time of day respecting language toggle | [ ] | - | - |
-| **U12** | Event-type accent personalization (wedding gold/vermilion, birthday marigold, community indigo) | [ ] | - | - |
-| **U13** | Footer with Panchang disclaimer, privacy link, and credits | [ ] | - | - |
-| **U14** | Complete metadata: title, description, OG tags, and custom favicon | [ ] | - | - |
+| **U1** | Reintroduce subtle cultural warmth (mandala line-art 3-6%, restrained gold accents) | [x] | `ed21992` | `docs/reports/ui-after/overview-light.png` |
+| **U2** | Two-segment progress bar with accessible aria-valuenow and legend | [x] | `ed21992` | `docs/reports/ui-after/overview-light.png` |
+| **U3** | Allocated budget hierarchy, caption percentage, and remaining balance metric | [x] | `ed21992` | `docs/reports/ui-after/overview-light.png` |
+| **U4** | Clean milestone row with separate time, relative date ("in 10 days"), and checkbox | [x] | `ed21992` | `docs/reports/ui-after/timeline-light.png` |
+| **U5** | Overview cards showing live dynamic metrics rather than text duplicates | [x] | `ed21992` | `docs/reports/ui-after/overview-light.png` |
+| **U6** | High-contrast Subhashita bar, SVG theme toggle, EN/Hindi switch, and auth menu | [x] | `ed21992` | `docs/reports/ui-after/overview-dark.png` |
+| **U7** | Mobile horizontally scrollable tabs, ARIA tabs pattern, and new Guests & RSVP tab | [x] | `ed21992` | `docs/reports/ui-after/overview-light.png` |
+| **U8** | Replace "Active Blueprint" badge with on-palette "Active plan" | [x] | `ed21992` | `docs/reports/ui-after/overview-light.png` |
+| **U9** | Share drawer: copy link, WhatsApp share, PDF export, and blessing note | [x] | `ed21992` | `docs/reports/ui-after/export-light.png` |
+| **U10** | Accessible custom listbox/combobox for plan switcher with event icons | [x] | `ed21992` | `docs/reports/ui-after/overview-light.png` |
+| **U11** | Clean single-language greeting by time of day respecting language toggle | [x] | `ed21992` | `docs/reports/ui-after/overview-light.png` |
+| **U12** | Event-type accent personalization (wedding gold/vermilion, birthday marigold, community indigo) | [x] | `ed21992` | `docs/reports/ui-after/overview-light.png` |
+| **U13** | Footer with Panchang disclaimer, privacy link, and credits | [x] | `ed21992` | `docs/reports/ui-after/overview-light.png` |
+| **U14** | Complete metadata: title, description, OG tags, and custom favicon | [x] | `ed21992` | `public/favicon.svg` |
 
 ---
 
@@ -209,3 +209,67 @@
   - Documented complete threat model and 10-suite testing matrix in `docs/SECURITY_AND_TESTING.md`.
   - Verified full test suite passes with **194 passed in 26.48s** and **85% statement coverage** (1437 statements, 221 missed; threshold ≥80%).
   - Commit SHA: `0359460`.
+
+---
+
+### Stage R3 Log (Completed & Verified)
+- **R3-T01 (U1): Subtle Cultural Warmth**
+  - Integrated restrained geometric mandala/rangoli vector line-art (3-4% opacity) into `body` background pattern across light and dark themes in `public/css/styles.css`.
+  - Tested in `tests/test_ui_refinements.py` (test_u01_cultural_accents_and_rangoli).
+  - Commit SHA: `ed21992`.
+- **R3-T02 (U2): Two-Segment Progress Bar**
+  - Added two-segment visual indicator (Paid vs Committed Allocated vs Remaining Target) with accessible `role="progressbar"` and `aria-valuenow`.
+  - Tested in `tests/test_ui_refinements.py` (test_u02_and_u03_two_segment_progress_and_budget_hierarchy).
+  - Commit SHA: `ed21992`.
+- **R3-T03 (U3): Budget Financial Hierarchy**
+  - Surfaced % committed, % settled, and buffer remaining / over-budget metric cards with color coding.
+  - Tested in `tests/test_ui_refinements.py`.
+  - Commit SHA: `ed21992`.
+- **R3-T04 (U4): Milestone Rows & Relative Due Dates**
+  - Implemented `formatRelativeDueDate()` providing dynamic relative badges ("in 10 days", "Due today", "overdue") and interactive milestone completion checkboxes.
+  - Tested in `tests/test_ui_refinements.py` (test_u04_milestones_and_relative_due_dates).
+  - Commit SHA: `ed21992`.
+- **R3-T05 (U5): Overview Live Dynamic Metrics**
+  - Upgraded cards in `view-overview` to live dynamic metrics computing top expense category, vendor committed quotes, and guest RSVP rates.
+  - Tested in `tests/test_ui_refinements.py` (test_u05_overview_live_dynamic_metrics).
+  - Commit SHA: `ed21992`.
+- **R3-T06 (U6): Header, Subhashita & SVG Theme Toggle**
+  - Upgraded header with high-contrast Subhashita bar, animated SVG sun/moon theme toggle, bilingual switch, and user profile menu.
+  - Tested in `tests/test_ui_refinements.py` (test_u06_header_and_subhashita_and_theme_svg).
+  - Commit SHA: `ed21992`.
+- **R3-T07 (U7): Horizontally Scrollable Tabs & Guests Module**
+  - Added mobile horizontally scrollable tabs wrapper with edge fades, ARIA tablist pattern, and full Guests & RSVP module with party sizing, dietary notes, and filter pills.
+  - Tested in `tests/test_ui_refinements.py` (test_u07_guests_rsvp_module_and_tabs).
+  - Commit SHA: `ed21992`.
+- **R3-T08 (U8): Standardized Badges**
+  - Renamed "Active Blueprint" badge to standardized on-palette "Active plan".
+  - Tested in `tests/test_ui_refinements.py` (test_u08_active_plan_badge).
+  - Commit SHA: `ed21992`.
+- **R3-T09 (U9): Comprehensive Share Drawer**
+  - Added modal with share token generation, instant clipboard copy, feedback toast, India-first WhatsApp sharing, PDF trigger, and blessing note.
+  - Tested in `tests/test_ui_refinements.py` (test_u09_share_drawer_and_modal).
+  - Commit SHA: `ed21992`.
+- **R3-T10 (U10): Accessible Custom Celebration Switcher**
+  - Upgraded celebration selector to accessible ARIA `role="listbox"` with keyboard navigation (Arrow Up/Down, Enter, Escape) and event type icons.
+  - Tested in `tests/test_ui_refinements.py` (test_u10_accessible_celebration_switcher).
+  - Commit SHA: `ed21992`.
+- **R3-T11 (U11): Single-Language Cultural Greeting**
+  - Implemented single-language greeting by time of day (e.g. "शुभ प्रभात" in Hindi, "Good Morning" in English) based on active language toggle.
+  - Tested in `tests/test_ui_refinements.py` (test_u11_cultural_greeting_single_language).
+  - Commit SHA: `ed21992`.
+- **R3-T12 (U12): Event-Type Accent Personalization**
+  - Added dynamic theme classes (`.theme-wedding`, `.theme-birthday`, `.theme-community`) dynamically attached to `body`.
+  - Tested in `tests/test_ui_refinements.py` (test_u12_event_type_theme_personalization).
+  - Commit SHA: `ed21992`.
+- **R3-T13 (U13): Structured Cultural Footer**
+  - Added `.site-footer` with Vedic guidance notice, privacy guarantee, copyright, and system links.
+  - Tested in `tests/test_ui_refinements.py` (test_u13_structured_cultural_footer).
+  - Commit SHA: `ed21992`.
+- **R3-T14 (U14): Social Metadata & SVG Favicon**
+  - Authored custom saffron Devanagari ॥ SVG favicon in `public/favicon.svg` and full OpenGraph/Twitter meta tags in `public/index.html`.
+  - Tested in `tests/test_ui_refinements.py` (test_u14_metadata_and_favicon).
+  - Commit SHA: `ed21992`.
+- **R3-T15: Post-Refinement Screenshot Capture**
+  - Captured complete 16-screenshot suite across light and dark themes for all 8 application views in `docs/reports/ui-after/`.
+  - Commit SHA: `1e1694a`.
+

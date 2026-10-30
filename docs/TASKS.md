@@ -68,21 +68,21 @@
 
 ## Stage R3: UI Refinement & Feature Completeness
 
-- [ ] **R3-T01 (U1):** Reintroduce subtle cultural warmth: low-opacity mandala/rangoli line-art (3-6%) and restrained gold accents.  
-- [ ] **R3-T02 (U2):** Build two-segment progress bar (Paid vs Allocated vs Target) with accessible `aria-valuenow` and legend.  
-- [ ] **R3-T03 (U3):** Enhance Allocated budget hierarchy with percentage caption and Remaining Balance metric.  
-- [ ] **R3-T04 (U4):** Refactor milestone rows: separate time field, relative dates ("in 10 days"), and interactive checkboxes.  
-- [ ] **R3-T05 (U5):** Upgrade overview cards to display live dynamic metrics (top category budget donut, vendor count, pending tasks).  
-- [ ] **R3-T06 (U6):** Upgrade header: high-contrast Subhashita bar, SVG theme toggle, bilingual EN/Hindi toggle, and user account menu.  
-- [ ] **R3-T07 (U7):** Implement mobile horizontally scrollable tabs with edge fades, ARIA tabs pattern, and new Guests & RSVP module.  
-- [ ] **R3-T08 (U8):** Standardize badges: rename "Active Blueprint" to "Active plan" using semantic palette tokens.  
-- [ ] **R3-T09 (U9):** Build comprehensive Share Drawer: copy link, WhatsApp share (India-first), PDF export, and personalized blessing note.  
-- [ ] **R3-T10 (U10):** Upgrade celebration switcher to accessible custom listbox with event icons, date, and budget details.  
-- [ ] **R3-T11 (U11):** Refactor cultural greeting to single-language display based on language toggle.  
-- [ ] **R3-T12 (U12):** Apply per-event accent personalization (wedding vermilion/gold, birthday marigold, community indigo).  
-- [ ] **R3-T13 (U13):** Add structured footer with Panchang astrological disclaimer, privacy policy link, and credits.  
-- [ ] **R3-T14 (U14):** Complete metadata: title, description, OpenGraph tags, and custom SVG favicon.  
-- [ ] **R3-T15:** Capture 16 after-screenshots across all screens into `docs/reports/ui-after/`.
+- [x] **R3-T01 (U1):** Reintroduce subtle cultural warmth: low-opacity mandala/rangoli line-art (3-6%) and restrained gold accents.  
+- [x] **R3-T02 (U2):** Build two-segment progress bar (Paid vs Allocated vs Target) with accessible `aria-valuenow` and legend.  
+- [x] **R3-T03 (U3):** Enhance Allocated budget hierarchy with percentage caption and Remaining Balance metric.  
+- [x] **R3-T04 (U4):** Refactor milestone rows: separate time field, relative dates ("in 10 days"), and interactive checkboxes.  
+- [x] **R3-T05 (U5):** Upgrade overview cards to display live dynamic metrics (top category budget donut, vendor count, pending tasks).  
+- [x] **R3-T06 (U6):** Upgrade header: high-contrast Subhashita bar, SVG theme toggle, bilingual EN/Hindi toggle, and user account menu.  
+- [x] **R3-T07 (U7):** Implement mobile horizontally scrollable tabs with edge fades, ARIA tabs pattern, and new Guests & RSVP module.  
+- [x] **R3-T08 (U8):** Standardize badges: rename "Active Blueprint" to "Active plan" using semantic palette tokens.  
+- [x] **R3-T09 (U9):** Build comprehensive Share Drawer: copy link, WhatsApp share (India-first), PDF export, and personalized blessing note.  
+- [x] **R3-T10 (U10):** Upgrade celebration switcher to accessible custom listbox with event icons, date, and budget details.  
+- [x] **R3-T11 (U11):** Refactor cultural greeting to single-language display based on language toggle.  
+- [x] **R3-T12 (U12):** Apply per-event accent personalization (wedding vermilion/gold, birthday marigold, community indigo).  
+- [x] **R3-T13 (U13):** Add structured footer with Panchang astrological disclaimer, privacy policy link, and credits.  
+- [x] **R3-T14 (U14):** Complete metadata: title, description, OpenGraph tags, and custom SVG favicon.  
+- [x] **R3-T15:** Capture 16 after-screenshots across all screens into `docs/reports/ui-after/`.
 
 ---
 
