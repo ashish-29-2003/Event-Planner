@@ -201,7 +201,7 @@ ORIGINAL RAW JSON:
         updated_items = []
         for item in current_items:
             if item.category == changed_cat:
-                updated_items.append(item)
+                updated_items.append(item.model_copy(update={'estimated_cost': new_amt}))
             else:
                 scale = (
                     (

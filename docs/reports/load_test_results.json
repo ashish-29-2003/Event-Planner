@@ -1,0 +1,19 @@
+{
+  "timestamp": 1793342335.0811434,
+  "total_requests": 200,
+  "concurrency": 20,
+  "total_duration_sec": 2.59,
+  "requests_per_second": 77.2,
+  "successful_requests": 200,
+  "failed_requests": 0,
+  "error_rate_pct": 0.0,
+  "latency_ms": {
+    "min": 20.59,
+    "p50": 127.95,
+    "p90": 510.11,
+    "p95": 658.03,
+    "p99": 1162.25,
+    "max": 1178.43,
+    "mean": 205.83
+  }
+}
