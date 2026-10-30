@@ -1,0 +1,17 @@
+
+==================================================
+SAMAROH (à¤¸à¤®à¤¾à¤°à¥‹à¤¹) LIVE SMOKE TEST
+Target: http://127.0.0.1:8001
+==================================================
+
+Check                                    | Status   | Detail
+--------------------------------------------------------------------------------
+1. Health Check (/api/health)            | PASS     | Status 200, environment=development
+2. Demo Celebration Read                 | PASS     | Found 'Riya & Kabir's Royal Vivaha & Sangeet' in Jaipur
+3. Auth Guard (POST /api/ai/plan)        | PASS     | Protected route returned 401 Unauthorized
+4. Security Headers (/)                  | PASS     | All security headers present (nosniff, DENY, referrer-policy)
+5. Places Discovery Proxy                | PASS     | Returned 7 candidates (source: curated_catalog)
+6. Authenticated Plan Synthesis          | PASS     | Plan synthesized, event_id=event-c89c9b66 (fallback=True)
+
+================================================================================
+ALL SMOKE CHECKS PASSED SUCCESSFULLY (Exit Code 0)

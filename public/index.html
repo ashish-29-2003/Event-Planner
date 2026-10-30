@@ -51,6 +51,12 @@
     <button id="banner-signin-btn" class="btn-signin-small" onclick="Auth.signInWithGoogle()">Sign in with Google</button>
   </div>
 
+  <!-- AI Live/Fallback Status Notification -->
+  <div id="ai-fallback-banner" class="ai-fallback-banner" role="status" style="display: none;">
+    <span id="ai-fallback-text">ℹ️ <strong>AI Notice:</strong> Showing a sample plan; live AI is unavailable.</span>
+    <button type="button" class="btn-signin-small" onclick="document.getElementById('ai-fallback-banner').style.display='none'" aria-label="Dismiss notice">Dismiss</button>
+  </div>
+
   <!-- Main Navigation Header -->
   <header class="site-header" role="banner">
     <div class="header-inner">

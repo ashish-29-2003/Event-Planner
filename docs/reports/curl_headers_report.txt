@@ -1,0 +1,43 @@
+======================================================================
+Curl HTTP Headers Comparison & Audit Report
+======================================================================
+Date: 2026-10-30
+
+1. Live URL (https://utsav-ai.netlify.app/)
+----------------------------------------------------------------------
+HTTP/1.1 200 OK
+Server: Netlify
+Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
+Content-Type: text/html; charset=UTF-8
+Cache-Control: public,max-age=0,must-revalidate
+Cache-Status: "Netlify Edge"; fwd=miss; fwd-status=200; stored
+X-Nf-Request-Id: 01M669DH258RMRQ267DWW71S3H
+
+Audit Note on Live URL:
+The live domain https://utsav-ai.netlify.app serves static Next.js assets from an earlier deployment.
+The Python Mangum serverless functions for /api/* return 404 on the deployed instance because the repository
+code has not yet been synced to this Netlify site via a Netlify build webhook or Netlify CLI deployment token.
+
+2. Samaroh Python FastAPI Backend (http://127.0.0.1:8001/)
+----------------------------------------------------------------------
+HTTP/1.1 200 OK
+date: Fri, 30 Oct 2026 11:36:18 GMT
+server: uvicorn
+content-type: text/html; charset=utf-8
+x-frame-options: DENY
+x-content-type-options: nosniff
+referrer-policy: strict-origin-when-cross-origin
+strict-transport-security: max-age=31536000; includeSubDomains; preload
+permissions-policy: camera=(), microphone=(), geolocation=()
+cross-origin-opener-policy: same-origin
+content-security-policy: default-src 'self'; script-src 'self' https://cdn.jsdelivr.net https://www.gstatic.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://generativelanguage.googleapis.com https://maps.googleapis.com https://firestore.googleapis.com; frame-ancestors 'none'; base-uri 'self'; form-action 'self';
+cache-control: no-cache, no-store, must-revalidate
+x-request-id: 9a781be9-826c-4824-8aa4-4cae5d95d134
+transfer-encoding: chunked
+
+Security Controls Verification:
+- nosniff: ENFORCED
+- DENY frame-ancestors: ENFORCED
+- CSP: ENFORCED (restricts script, font, image, connect origins)
+- Request-ID tracking: ENFORCED
+======================================================================

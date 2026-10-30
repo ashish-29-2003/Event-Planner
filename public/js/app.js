@@ -194,6 +194,17 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   // 10. Load Active Event Data
   await loadCelebration(store.state.activeEventId);
+
+  // 11. AI Diagnostics & Fallback Transparency Check
+  try {
+    const health = await API.getHealth();
+    const fallbackBanner = document.getElementById('ai-fallback-banner');
+    if (fallbackBanner && health && health.ai === 'fallback') {
+      fallbackBanner.style.display = 'flex';
+    }
+  } catch (e) {
+    console.warn('AI health probe skipped', e);
+  }
 });
 
 // Accessible Custom Celebration Switcher (U10)
@@ -1034,10 +1045,22 @@ function setupOnboardingWizard() {
         modal.style.display = 'none';
         await loadCelebration(result.event_id);
         triggerCelebrationConfetti();
+        const fallbackBanner = document.getElementById('ai-fallback-banner');
+        if (fallbackBanner) {
+          if (result && result.is_fallback) {
+            fallbackBanner.style.display = 'flex';
+          } else {
+            fallbackBanner.style.display = 'none';
+          }
+        }
       } catch (err) {
         alert(`Notice: ${err.message}. Serving curated regional blueprint.`);
         modal.style.display = 'none';
         await loadCelebration('demo-wedding-jaipur');
+        const fallbackBanner = document.getElementById('ai-fallback-banner');
+        if (fallbackBanner) {
+          fallbackBanner.style.display = 'flex';
+        }
       } finally {
         submitBtn.disabled = false;
         submitBtn.innerText = 'Generate Plan';

@@ -506,6 +506,24 @@ input[type="checkbox"] {
   color: var(--text-primary);
 }
 
+.ai-fallback-banner {
+  background: var(--bg-subtle);
+  border-bottom: 1px solid var(--border-color);
+  padding: 0.45rem 1.5rem;
+  font-size: 0.8rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  color: var(--text-primary);
+}
+
+.ai-fallback-banner span {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
 .demo-mode-banner span {
   display: flex;
   align-items: center;

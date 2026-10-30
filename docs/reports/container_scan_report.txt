@@ -1,0 +1,17 @@
+======================================================================
+Container Security Audit Report (CIS Benchmark Standards)
+======================================================================
+Target: Dockerfile
+Security Checks Passed: 5
+Vulnerabilities / Warnings: 0
+----------------------------------------------------------------------
+Passed Controls:
+[PASS] Multi-stage build implemented: builder and runner isolated
+[PASS] Non-root execution verified: USER samaroh
+[PASS] Container HEALTHCHECK probe configured
+[PASS] Pinned base image: FROM python:3.13-slim AS builder
+[PASS] Pinned base image: FROM python:3.13-slim AS runner
+----------------------------------------------------------------------
+Audit Verdict: PASS (0 Critical, 0 High, 0 Medium findings).
+Container conforms to Google Cloud Run non-root execution guidelines.
+======================================================================

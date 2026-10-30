@@ -29,9 +29,9 @@ class Settings:
         x.strip() for x in os.getenv("CORS_ORIGINS", "*").split(",") if x.strip()
     ]
 
-    # Google Gemini API Key
+    # Google Gemini API Key & Model Configuration
     GEMINI_API_KEY: str = os.getenv("GEMINI_API_KEY", "")
-    GEMINI_MODEL: str = os.getenv("GEMINI_MODEL", "gemini-1.5-flash")
+    GEMINI_MODEL: str = os.getenv("GEMINI_MODEL", "gemini-2.0-flash")
 
     # HMAC Signing Secret for export/share tokens
     SECRET_KEY: str = os.getenv("SECRET_KEY", "samaroh-secure-hmac-signing-key-for-export-links")

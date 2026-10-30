@@ -39,6 +39,7 @@ from src.api.event_routes import router as event_router
 from src.api.export_routes import router as export_router
 from src.api.places_routes import router as places_router
 from src.config import SECURITY_HEADERS, settings
+from src.services.gemini_service import gemini_service
 
 PUBLIC_DIR = ROOT_DIR / "public"
 
@@ -222,12 +223,20 @@ def create_app() -> FastAPI:
     @app.get("/api/health")
     @app.get("/health")
     async def health_check() -> dict[str, Any]:
+        ai_status = (
+            "live"
+            if (gemini_service._client is not None and bool(gemini_service.api_key))
+            else "fallback"
+        )
         return {
             "status": "healthy",
             "project": "Samaroh (समारोह)",
             "version": settings.VERSION,
             "environment": settings.ENVIRONMENT,
+            "storage": settings.STORAGE_BACKEND,
+            "ai": ai_status,
             "gemini_configured": bool(settings.GEMINI_API_KEY),
+            "gemini_model": settings.GEMINI_MODEL,
             "google_maps_configured": bool(settings.GOOGLE_MAPS_API_KEY),
         }
 
