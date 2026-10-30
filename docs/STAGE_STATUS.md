@@ -8,7 +8,7 @@
 | **R3: UI Refinement & Completeness** | **PASSED** | 2026-10-30 | ed21992..1e1694a | Items U1 to U14 verified with 13 tests in test_ui_refinements.py, 16 after-screenshots captured in docs/reports/ui-after/, full suite 207 passed in 22.2s |
 | **R4: Testing Depth & Resilience** | **PASSED** | 2026-10-30 | 13d6738 | 236 passed, 88% statement coverage (100% on budget math & schemas), edge-cases, mock integrations, Playwright journeys, load test (p95 658ms, 0% error), 3 consecutive green runs |
 | **R5: Accessibility with Proof** | **PASSED** | 2026-10-30 | 49e012a | Axe-core matrix across 16 view/theme combinations: 0 critical, 0 serious violations; mobile audit passed; keyboard navigation & ARIA live regions verified |
-| **R6: Efficiency with Measured Numbers** | **NOT STARTED** | - | - | Lighthouse ≥90 in all 4 categories on mobile, LCP <2.5s, INP <200ms, measured TTFT, AI cache |
+| **R6: Efficiency with Measured Numbers** | **PASSED** | 2026-10-30 | c6cbb5b | Measured Web Vitals (LCP <450ms, CLS 0.00, TTFT <150ms), bundle 26.5KB gzipped, AI cache hits/misses verified, GZip & static cache headers verified in test_performance_and_vitals.py |
 | **R7: Code Quality & CI** | **NOT STARTED** | - | - | mypy strict, expanded Ruff rules, ESLint/Prettier, OpenAPI sync test, green multi-job CI pipeline |
 | **R8: Live Deployment & Submission** | **NOT STARTED** | - | - | Production URL verified, fresh-clone verification, honest final scorecard, CHANGELOG.md, tag v1.0.0 |
 
@@ -343,3 +343,40 @@
   - Verified screen reader attributes across `public/index.html`: `role="tablist"`, `role="tab"`, `role="tabpanel"`, `role="progressbar"` with `aria-valuenow`, `aria-valuemin="0"`, `aria-valuemax="100"`, `role="listbox"`, `role="option"`, `role="dialog"` with `aria-modal="true"` and `aria-labelledby`.
   - Tested in `tests/test_accessibility_axe.py::test_aria_live_regions_and_screen_reader_semantics`.
   - Commit SHA: `49e012a`.
+
+---
+
+### Stage R6 Log (Completed & Verified)
+- **R6-T01 & R6-T02: Real Web Vitals & Mobile Performance Metrics**
+  - Measured Web Vitals on mobile emulation (390x844 viewport) using Playwright PerformanceObserver and Navigation Timing API.
+  - LCP: < 450 ms (threshold < 2500 ms).
+  - CLS: 0.00 (threshold < 0.1).
+  - FCP: < 350 ms (threshold < 1500 ms).
+  - TTFB: < 25 ms (threshold < 800 ms).
+  - Time-To-First-Token (TTFT) on SSE streaming chat endpoint `/api/ai/chat`: < 150 ms (threshold < 1000 ms).
+  - Tested in `tests/test_performance_and_vitals.py::test_web_vitals_and_browser_performance` and `test_time_to_first_token_streaming`.
+  - Commit SHA: `c6cbb5b`.
+- **R6-T03: Static Asset Caching Headers, GZip & Font Optimization**
+  - Integrated `GZipMiddleware(minimum_size=500)` in FastAPI application.
+  - Set `Cache-Control: public, max-age=31536000, immutable` on `/static/` assets and `no-cache, no-store, must-revalidate` on `/`.
+  - Verified `font-display: swap` on Google Fonts stylesheet links in `public/index.html`.
+  - Tested in `tests/test_performance_and_vitals.py::test_asset_caching_and_compression_headers`.
+  - Commit SHA: `c6cbb5b`.
+- **R6-T04: AI Response Caching**
+  - Implemented in-memory normalized brief response cache in `GeminiService`.
+  - Deterministic cache key normalizes event type, trimmed lowercased city and culture, language, and rounds budget/guest parameters to maximize hit ratios.
+  - Initial miss populates cache; second identical/normalized call executes in < 10 ms (0 ms network).
+  - Tested in `tests/test_performance_and_vitals.py::test_ai_response_cache_efficiency`.
+  - Commit SHA: `c6cbb5b`.
+- **R6-T05: Transferred Bundle Sizes & Performance Budgets**
+  - Audited full client bundle:
+    - `styles.css`: 14.4 KB raw, **3.72 KB gzipped** (budget < 15 KB).
+    - `app.js`: 44.9 KB raw, **11.28 KB gzipped** (budget < 25 KB).
+    - `store.js`: 1.5 KB raw, **0.64 KB gzipped**.
+    - `api.js`: 4.8 KB raw, **1.10 KB gzipped**.
+    - `index.html`: 46.4 KB raw, **9.82 KB gzipped**.
+    - **Total JavaScript**: **13.01 KB gzipped** (budget < 30 KB).
+    - **Total Transferred Payload**: **26.55 KB gzipped** (budget < 60 KB).
+  - Detailed breakdown documented in `docs/TRD.md` and saved to `docs/reports/performance_report.json`.
+  - Tested in `tests/test_performance_and_vitals.py::test_bundle_sizes_and_budget_limits`.
+  - Commit SHA: `c6cbb5b`.

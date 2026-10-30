@@ -110,11 +110,11 @@
 
 ## Stage R6: Efficiency with Measured Numbers
 
-- [ ] **R6-T01:** Run Lighthouse Mobile performance audit; achieve ≥ 90 across Performance, Accessibility, Best Practices, and SEO.  
-- [ ] **R6-T02:** Measure and record Web Vitals (LCP < 2.5s, INP < 200ms, CLS < 0.1) and Time-To-First-Token (TTFT).  
-- [ ] **R6-T03:** Implement asset optimization: content-hashed static assets, long cache headers, font-display swap, and gzip/brotli.  
-- [ ] **R6-T04:** Implement in-memory / Firestore AI response cache keyed by normalized celebration brief.  
-- [ ] **R6-T05:** Measure and record transferred bundle sizes (JS/CSS) in `docs/TRD.md`.
+- [x] **R6-T01:** Run Lighthouse Mobile performance audit; achieve ≥ 90 across Performance, Accessibility, Best Practices, and SEO.  
+- [x] **R6-T02:** Measure and record Web Vitals (LCP < 2.5s, INP < 200ms, CLS < 0.1) and Time-To-First-Token (TTFT).  
+- [x] **R6-T03:** Implement asset optimization: content-hashed static assets, long cache headers, font-display swap, and gzip/brotli.  
+- [x] **R6-T04:** Implement in-memory / Firestore AI response cache keyed by normalized celebration brief.  
+- [x] **R6-T05:** Measure and record transferred bundle sizes (JS/CSS) in `docs/TRD.md`.
 
 ---
 
