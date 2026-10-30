@@ -16,18 +16,18 @@
   --border-focus: #18181B;
 
   --text-primary: #18181B;
-  --text-secondary: #71717A;
-  --text-muted: #A1A1AA;
+  --text-secondary: #3F3F46;
+  --text-muted: #52525B;
 
   /* Restrained, Dignified Accents */
   --accent-primary: #18181B;
   --accent-primary-text: #FFFFFF;
-  --accent-warm: #B45309;       /* Muted warm amber */
+  --accent-warm: #9A3412;       /* High-contrast warm amber */
   --accent-warm-subtle: #FEF3C7;/* Very soft amber tint */
   --accent-gold: #92400E;
-  --accent-success: #059669;
+  --accent-success: #047857;    /* High-contrast emerald */
   --accent-success-subtle: #ECFDF5;
-  --accent-warning: #DC2626;
+  --accent-warning: #B91C1C;    /* High-contrast red */
   --accent-warning-subtle: #FEF2F2;
 
   /* Refined Elevation & Geometry */
@@ -58,8 +58,8 @@
   --border-focus: #F4F4F5;
 
   --text-primary: #F4F4F5;
-  --text-secondary: #A1A1AA;
-  --text-muted: #71717A;
+  --text-secondary: #D4D4D8;
+  --text-muted: #A1A1AA;
 
   --accent-primary: #F4F4F5;
   --accent-primary-text: #09090B;
@@ -348,12 +348,12 @@ h1, h2, h3, h4, .brand-font {
   align-items: center;
   gap: 0.3rem;
   font-size: 0.75rem;
-  font-weight: 500;
+  font-weight: 600;
   padding: 0.2rem 0.55rem;
   border-radius: var(--radius-full);
   border: 1px solid var(--border-color);
   background: var(--bg-subtle);
-  color: var(--text-secondary);
+  color: var(--text-primary);
 }
 
 .badge-warm {
@@ -503,7 +503,7 @@ input[type="checkbox"] {
   align-items: center;
   justify-content: space-between;
   gap: 1rem;
-  color: var(--text-secondary);
+  color: var(--text-primary);
 }
 
 .demo-mode-banner span {

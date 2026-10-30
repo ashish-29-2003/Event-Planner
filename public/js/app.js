@@ -672,7 +672,7 @@ function renderTimeline() {
         >
         <div style="flex: 1;">
           <div style="display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap; gap: 0.4rem;">
-            <label for="task-chk-${escapeHTML(t.id)}" style="font-size: 0.925rem; font-weight: 600; cursor: pointer; text-decoration: ${isDone ? 'line-through' : 'none'}; color: ${isDone ? 'var(--text-muted)' : 'var(--text-primary)'};">
+            <label for="task-chk-${escapeHTML(t.id)}" style="font-size: 0.925rem; font-weight: 600; cursor: pointer; text-decoration: ${isDone ? 'line-through' : 'none'}; color: ${isDone ? 'var(--text-secondary)' : 'var(--text-primary)'};">
               ${escapeHTML(t.title)}
             </label>
             <div style="display: flex; align-items: center; gap: 0.35rem;">
@@ -742,8 +742,8 @@ function renderVendors(filterCategory = 'all') {
         </div>
         <h3 style="font-size: 0.975rem; font-weight: 600; margin-bottom: 0.25rem;">${escapeHTML(v.business_name)}</h3>
         <p style="font-size: 0.825rem; color: var(--text-secondary); margin-bottom: 0.65rem;">${escapeHTML(v.notes || 'Deliverables confirmed per brief.')}</p>
-        <div style="font-size: 0.775rem; color: var(--text-muted); margin-bottom: 0.2rem;">📍 ${escapeHTML(v.address || 'Local vendor')}</div>
-        <div style="font-size: 0.775rem; color: var(--text-muted);">📞 ${escapeHTML(v.phone || 'Available upon request')}</div>
+        <div style="font-size: 0.775rem; color: var(--text-secondary); margin-bottom: 0.2rem;">📍 ${escapeHTML(v.address || 'Local vendor')}</div>
+        <div style="font-size: 0.775rem; color: var(--text-secondary);">📞 ${escapeHTML(v.phone || 'Available upon request')}</div>
       </div>
       <div style="margin-top: 1rem; padding-top: 0.75rem; border-top: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: baseline;">
         <div>
@@ -985,7 +985,7 @@ function renderExportSheet() {
         </div>
       </div>
 
-      <div style="text-align: center; font-size: 0.8rem; color: var(--text-muted); border-top: 1px solid var(--border-color); padding-top: 1rem;">
+      <div style="text-align: center; font-size: 0.8rem; color: var(--text-secondary); border-top: 1px solid var(--border-color); padding-top: 1rem;">
         Generated via Samaroh (समारोह) • AI Celebration Planner
       </div>
     </div>
