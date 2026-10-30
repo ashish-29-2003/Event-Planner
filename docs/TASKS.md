@@ -120,12 +120,12 @@
 
 ## Stage R7: Code Quality & CI
 
-- [ ] **R7-T01:** Python strict typing audit with `mypy --strict` passing across `src/`.  
-- [ ] **R7-T02:** Expand Ruff rules (E, F, I, B, UP, S, SIM, C4) with zero errors.  
-- [ ] **R7-T03:** Frontend JavaScript linting and formatting with ESLint and Prettier.  
-- [ ] **R7-T04:** Author OpenAPI schema sync test verifying frontend expectations against backend contracts.  
-- [ ] **R7-T05:** Configure multi-job GitHub Actions CI pipeline running lint, mypy, pytest, Playwright, and commit-msg verification.  
-- [ ] **R7-T06:** Update `docs/ARCHITECTURE.md` to ensure diagrams and directory trees match real code.
+- [x] **R7-T01:** Python strict typing audit with `mypy --strict` passing across `src/`.  
+- [x] **R7-T02:** Expand Ruff rules (E, F, I, B, UP, S, SIM, C4) with zero errors.  
+- [x] **R7-T03:** Frontend JavaScript linting and formatting with ESLint and Prettier.  
+- [x] **R7-T04:** Author OpenAPI schema sync test verifying frontend expectations against backend contracts.  
+- [x] **R7-T05:** Configure multi-job GitHub Actions CI pipeline running lint, mypy, pytest, Playwright, and commit-msg verification.  
+- [x] **R7-T06:** Update `docs/ARCHITECTURE.md` to ensure diagrams and directory trees match real code.
 
 ---
 
