@@ -33,6 +33,9 @@ class Settings:
     GEMINI_API_KEY: str = os.getenv("GEMINI_API_KEY", "")
     GEMINI_MODEL: str = os.getenv("GEMINI_MODEL", "gemini-1.5-flash")
 
+    # HMAC Signing Secret for export/share tokens
+    SECRET_KEY: str = os.getenv("SECRET_KEY", "samaroh-secure-hmac-signing-key-for-export-links")
+
     # Optional Google Maps Key
     GOOGLE_MAPS_API_KEY: str = os.getenv("GOOGLE_MAPS_API_KEY", "")
 
