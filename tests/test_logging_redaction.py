@@ -107,3 +107,27 @@ async def test_app_check_dev_bypass_fails_closed_in_production(monkeypatch):
         await verify_app_check_token("test-dev-bypass")
     assert exc_info.value.status_code == 401
     assert "Dev bypass tokens rejected in production" in exc_info.value.detail
+
+
+def test_service_account_json_and_gemini_key_never_logged(caplog, monkeypatch):
+    """
+    Asserts that sensitive service account JSON and GEMINI_API_KEY
+    are never leaked into log records or config representations.
+    """
+    fake_secret_key = "AIzaSyFakeSecretGeminiKeyForAudit789"
+    fake_sa_json = '{"type": "service_account", "private_key": "-----BEGIN PRIVATE KEY-----\\nFAKEKEY123\\n-----END PRIVATE KEY-----\\n"}'
+    monkeypatch.setattr(settings, "GEMINI_API_KEY", fake_secret_key)
+    monkeypatch.setattr(settings, "FIREBASE_SERVICE_ACCOUNT_JSON", fake_sa_json)
+
+    with caplog.at_level(logging.DEBUG):
+        assert settings.GEMINI_API_KEY == fake_secret_key
+
+        # Re-initialize firebase app if needed
+        from src.utils import auth
+        monkeypatch.setattr(auth, "_firebase_initialized", False)
+        auth._init_firebase_app()
+
+        all_logs = caplog.text
+        assert fake_secret_key not in all_logs, "GEMINI_API_KEY leaked in logs!"
+        assert "-----BEGIN PRIVATE KEY-----" not in all_logs, "Service account private key leaked in logs!"
+        assert "FAKEKEY123" not in all_logs, "Private key content leaked in logs!"
