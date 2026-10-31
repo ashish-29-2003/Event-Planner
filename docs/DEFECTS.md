@@ -144,8 +144,45 @@ This document tracks all bugs, regressions, security findings, and architectural
 
 ---
 
-## Summary of Defects (Stage R11 Audit)
-- **Block A (D1, D2, D5, D6, D9):** Fixed & Verified locally with regression tests in `tests/test_block_a_regression.py`.
-- **Block B (D3, D4, D7, D11):** In progress.
-- **Block C (D8, D12, D13, D14, D15, D10):** Pending.
-- **Block D (Walkthrough & Release):** Pending.
+---
+
+## Stage R12 Work Packages & Resolution Register
+
+### R12-WP0: Live Diagnosis Matrix
+- **Status:** **RESOLVED**
+- **Artifact:** `docs/reports/live/diagnosis-r12.md`
+- **Summary:** Probed all 3 celebration endpoints under Mode (a) Public No-Auth and Mode (b) Bearer mock token. Confirmed 4 root causes: stale tokens in client storage, 401s on optional demo routes, silent array coercions in `api.js`, and auth lock on plan synthesis.
+
+### R12-WP1: Session Purge and Universal Public Demo Reads
+- **Status:** **RESOLVED**
+- **Commit:** `a3ca82a`
+- **Regression Test:** `tests/test_wp1_session.py` (4 passed)
+- **Live Check:** `GET /api/events/demo-wedding-jaipur` returns 200 with Bearer mock token; `GET /api/me` returns 401 without Bearer token.
+
+### R12-WP2: Elimination of Silent Failures & Typed ApiError
+- **Status:** **RESOLVED**
+- **Commit:** `abff379`
+- **Regression Test:** `tests/test_wp2_error_handling.py` (3 passed)
+- **Summary:** Introduced typed `ApiError`, explicit tab states (`loading`, `ready`, `empty`, `error` with Retry button), and accessible floating toast notifications replacing disruptive `alert()` popups.
+
+### R12-WP3: Seed Data Consistency & Authentic Panchang Dates
+- **Status:** **RESOLVED**
+- **Commit:** `a695252`
+- **Regression Test:** `tests/test_wp3_seed_consistency.py` (4 passed)
+- **Summary:** Calibrated Delhi Diwali community celebration to authentic Kartik Amavasya date (Nov 8, 2026), stripped all invented phone numbers (`phone=None`), and added seed integrity self-check in `/api/health`.
+
+### R12-WP4: Deterministic Offline Plan Generation Engine
+- **Status:** **RESOLVED**
+- **Commit:** `77772c2`
+- **Regression Test:** `tests/test_wp4_planner.py` (4 passed)
+- **Summary:** Built `planner_service.py` synthesizing mathematically balanced budgets (Venue 35%, Catering 28%, Decor 15%, Photo 10%, Attire 7%, Rituals 5%), chronological milestones backwards from celebration date, regional vendors, and 6-dimension cultural ideas.
+
+### R12-WP5: Personal Plan Creation, Draft Mode & Celebration Switcher
+- **Status:** **RESOLVED**
+- **Commit:** `e046422`
+- **Regression Test:** `tests/test_wp5_creation_flow.py` (2 passed)
+- **Live Check on Render:**
+  - `POST https://samaroh.onrender.com/api/ai/plan/draft` -> Created `event-a7912139` ("Ashish Personal Birthday Celebration", ₹1,20,000, 6 budget lines, 6 tasks).
+  - `GET https://samaroh.onrender.com/api/events/event-a7912139` -> HTTP 200 with full data.
+  - Dynamically rendered in celebration switcher with persistent `localStorage` synchronization.
+
