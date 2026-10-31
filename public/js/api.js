@@ -4,7 +4,7 @@
  * and Google Maps Places discovery proxy.
  */
 const API = {
-  baseUrl: window.location.origin,
+  baseUrl: (window.__API_BASE__ && window.__API_BASE__.trim()) || window.location.origin,
   authToken: null,
   appCheckToken: null,
 

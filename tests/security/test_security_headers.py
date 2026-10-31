@@ -25,7 +25,7 @@ def test_api_health_carries_complete_security_headers():
     assert headers.get("Referrer-Policy") == "strict-origin-when-cross-origin"
     assert "max-age=31536000" in headers.get("Strict-Transport-Security", "")
     assert "camera=()" in headers.get("Permissions-Policy", "")
-    assert headers.get("Cross-Origin-Opener-Policy") == "same-origin"
+    assert headers.get("Cross-Origin-Opener-Policy") == "same-origin-allow-popups"
 
     csp = headers.get("Content-Security-Policy", "")
     assert "default-src 'self'" in csp
@@ -63,5 +63,21 @@ def test_netlify_toml_synchronized_with_fastapi_headers():
     assert values.get("Referrer-Policy") == "strict-origin-when-cross-origin"
     assert "Strict-Transport-Security" in values
     assert "Permissions-Policy" in values
-    assert "Cross-Origin-Opener-Policy" in values
+    assert values.get("Cross-Origin-Opener-Policy") == "same-origin-allow-popups"
     assert "Content-Security-Policy" in values
+
+
+def test_public_headers_file_synchronized_with_fastapi_headers():
+    """Asserts that public/_headers exists and defines strict OWASP security headers matching FastAPI."""
+    headers_path = Path("public/_headers")
+    assert headers_path.exists(), "public/_headers must exist for Netlify edge CDN security"
+
+    text = headers_path.read_text(encoding="utf-8")
+    assert "X-Frame-Options: DENY" in text
+    assert "X-Content-Type-Options: nosniff" in text
+    assert "Referrer-Policy: strict-origin-when-cross-origin" in text
+    assert "Strict-Transport-Security: max-age=31536000" in text
+    assert "Permissions-Policy: camera=(), microphone=(), geolocation=()" in text
+    assert "Cross-Origin-Opener-Policy: same-origin-allow-popups" in text
+    assert "Content-Security-Policy:" in text
+    assert "https://samaroh-api.onrender.com" in text

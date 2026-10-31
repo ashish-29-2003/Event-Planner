@@ -134,6 +134,32 @@ global_rate_limiter = SlidingWindowRateLimiter(
 )
 
 
+def extract_client_ip(request: Request) -> str:
+    """
+    Extracts the genuine client IP address.
+    Prioritizes Netlify's dedicated client IP header (x-nf-client-connection-ip),
+    followed by the first IP in x-forwarded-for, and falls back to request.client.host.
+    Prevents proxy IP pooling across multiple distinct users behind reverse proxies.
+    """
+    # 1. Netlify-specific client IP header
+    nf_ip = request.headers.get("x-nf-client-connection-ip")
+    if nf_ip and nf_ip.strip():
+        return nf_ip.strip()
+
+    # 2. Standard X-Forwarded-For header (comma-separated, first IP is original client)
+    xff = request.headers.get("x-forwarded-for")
+    if xff and xff.strip():
+        first_ip = xff.split(",")[0].strip()
+        if first_ip:
+            return first_ip
+
+    # 3. Direct client connection
+    if request.client and request.client.host:
+        return request.client.host
+
+    return "127.0.0.1"
+
+
 def enforce_rate_limit(
     request: Request,
     response: Response,
@@ -148,7 +174,7 @@ def enforce_rate_limit(
     - Retry-After (on 429)
     """
     active_limiter = limiter or global_rate_limiter
-    client_ip = request.client.host if request.client else "127.0.0.1"
+    client_ip = extract_client_ip(request)
 
     # Evaluate per-IP
     ip_result = active_limiter.check(f"ip:{client_ip}", increment=True)

@@ -1,5 +1,5 @@
 {
-  "timestamp": 1793360993.0112226,
+  "timestamp": 1793424061.984711,
   "performance_budgets": {
     "css_max_kb": 15.0,
     "js_max_kb": 30.0,
@@ -28,11 +28,11 @@
       "compression_ratio": 2.41
     },
     "api.js": {
-      "raw_bytes": 4902,
-      "raw_kb": 4.79,
-      "gzipped_bytes": 1122,
-      "gzipped_kb": 1.1,
-      "compression_ratio": 4.37
+      "raw_bytes": 4957,
+      "raw_kb": 4.84,
+      "gzipped_bytes": 1149,
+      "gzipped_kb": 1.12,
+      "compression_ratio": 4.31
     },
     "index.html": {
       "raw_bytes": 47935,
@@ -43,9 +43,9 @@
     }
   },
   "summary": {
-    "total_raw_kb": 113.6,
-    "total_gzipped_kb": 26.89,
-    "total_js_gzipped_kb": 13.2,
+    "total_raw_kb": 113.65,
+    "total_gzipped_kb": 26.92,
+    "total_js_gzipped_kb": 13.22,
     "total_css_gzipped_kb": 3.74
   },
   "web_vitals_targets": {

@@ -7,10 +7,13 @@ Validates:
 4. Dual-key (per-IP and per-user) enforcement.
 """
 
+import uuid
+
 from fastapi.testclient import TestClient
+from starlette.requests import Request
 
 from src.main import app
-from src.utils.rate_limiter import SlidingWindowRateLimiter
+from src.utils.rate_limiter import SlidingWindowRateLimiter, extract_client_ip
 
 client = TestClient(app)
 
@@ -75,8 +78,9 @@ def test_api_plan_rate_limit_headers_and_429(monkeypatch):
 
     monkeypatch.setattr(rl_mod, "global_rate_limiter", test_limiter)
 
+    uid = f"rate-user-{uuid.uuid4().hex[:8]}"
     auth_headers = {
-        "Authorization": "Bearer test-token-rate-tester",
+        "Authorization": f"Bearer test-token-{uid}",
         "X-Firebase-AppCheck": "test-dev-bypass",
     }
     payload = {
@@ -105,3 +109,52 @@ def test_api_plan_rate_limit_headers_and_429(monkeypatch):
     assert "Retry-After" in resp3.headers
     assert resp3.headers.get("X-RateLimit-Remaining") == "0"
     assert int(resp3.headers.get("Retry-After", "0")) > 0
+
+
+def test_extract_client_ip_netlify_header():
+    """Verifies that x-nf-client-connection-ip takes precedence for Netlify edge CDN."""
+    scope = {
+        "type": "http",
+        "headers": [
+            (b"x-nf-client-connection-ip", b"203.0.113.195"),
+            (b"x-forwarded-for", b"198.51.100.1, 10.0.0.1"),
+        ],
+        "client": ("10.0.0.1", 12345),
+    }
+    req = Request(scope)
+    assert extract_client_ip(req) == "203.0.113.195"
+
+
+def test_extract_client_ip_forwarded_for():
+    """Verifies that the first IP in x-forwarded-for is used when netlify header is absent."""
+    scope = {
+        "type": "http",
+        "headers": [
+            (b"x-forwarded-for", b"203.0.113.42, 198.51.100.10, 10.0.0.2"),
+        ],
+        "client": ("10.0.0.2", 12345),
+    }
+    req = Request(scope)
+    assert extract_client_ip(req) == "203.0.113.42"
+
+
+def test_extract_client_ip_direct_fallback():
+    """Verifies fallback to request.client.host when no proxy headers are present."""
+    scope = {
+        "type": "http",
+        "headers": [],
+        "client": ("192.168.1.50", 54321),
+    }
+    req = Request(scope)
+    assert extract_client_ip(req) == "192.168.1.50"
+
+
+def test_extract_client_ip_none_fallback():
+    """Verifies safe 127.0.0.1 fallback when client is None."""
+    scope = {
+        "type": "http",
+        "headers": [],
+        "client": None,
+    }
+    req = Request(scope)
+    assert extract_client_ip(req) == "127.0.0.1"
