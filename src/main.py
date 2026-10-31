@@ -39,6 +39,7 @@ from src.api.event_routes import router as event_router
 from src.api.export_routes import router as export_router
 from src.api.places_routes import router as places_router
 from src.config import SECURITY_HEADERS, settings
+from src.data import BLR_BIRTHDAY_SEED, DELHI_COMMUNITY_SEED, JAIPUR_WEDDING_SEED
 from src.services.gemini_service import gemini_service
 from src.utils.auth import AuthenticatedUser, require_authenticated_user
 
@@ -257,10 +258,16 @@ def create_app() -> FastAPI:
             if (gemini_service._client is not None and bool(gemini_service.api_key))
             else "fallback"
         )
+        seeds_ok = bool(
+            JAIPUR_WEDDING_SEED.budget_breakdown
+            and BLR_BIRTHDAY_SEED.budget_breakdown
+            and DELHI_COMMUNITY_SEED.budget_breakdown
+        )
         return {
             "status": "healthy",
             "project": "Samaroh (समारोह)",
             "version": settings.VERSION,
+            "seeds": "ok" if seeds_ok else "error",
             "commit": commit_sha[:7] if commit_sha else "unknown",
             "commit_sha": commit_sha,
             "environment": settings.ENVIRONMENT,

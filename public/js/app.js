@@ -336,7 +336,7 @@ function renderSwitcherItems() {
   const defaultSeeds = [
     { id: 'demo-wedding-jaipur', icon: '💍', title: 'Jaipur Royal Wedding', meta: 'Marwari Hindu • 15 Dec 2026 • ₹45L' },
     { id: 'demo-birthday-blr', icon: '🎂', title: 'Bengaluru Cosmic Birthday', meta: 'Contemporary • 28 Oct 2026 • ₹85K' },
-    { id: 'demo-community-delhi', icon: '🪔', title: 'Delhi Diwali Dandiya Mela', meta: 'Gujarati Community • 01 Nov 2026 • ₹6.5L' }
+    { id: 'demo-community-delhi', icon: '🪔', title: 'Delhi Diwali Dandiya Mela', meta: 'Gujarati Community • 08 Nov 2026 • ₹6.5L' }
   ];
 
   const customPlans = getCustomPlans();
