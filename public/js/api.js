@@ -4,6 +4,18 @@
  * pre-warming and exponential backoff retry, and provides automatic graceful
  * degradation to static demo celebration data if the server is unreachable.
  */
+
+class ApiError extends Error {
+  constructor(status, code, message, retryable = true) {
+    super(message);
+    this.name = 'ApiError';
+    this.status = status;
+    this.code = code;
+    this.retryable = retryable;
+  }
+}
+window.ApiError = ApiError;
+
 const API = {
   baseUrl: (window.__API_BASE__ && window.__API_BASE__.trim()) || window.location.origin,
   authToken: null,
@@ -135,12 +147,15 @@ const API = {
             const fbRes = await fetch(fallbackPath);
             return await fbRes.json();
           }
-          const errData = await res.json().catch(() => ({ detail: res.statusText }));
-          throw new Error(errData.detail || `Server error (${res.status})`);
+          const errData = await res.json().catch(() => ({}));
+          const code = (errData.error && errData.error.code) || `HTTP_${res.status}`;
+          const message = (errData.error && errData.error.message) || errData.detail || res.statusText || `Request failed (${res.status})`;
+          const retryable = res.status >= 500 || res.status === 429;
+          throw new ApiError(res.status, code, message, retryable);
         }
       } catch (err) {
         const elapsed = Date.now() - startTime;
-        if (!isIdempotent || elapsed >= maxTimeoutMs) {
+        if (!isIdempotent || elapsed >= maxTimeoutMs || (err instanceof ApiError && !err.retryable)) {
           if (fallbackPath) {
             console.warn(`API connection failed (${err.message}). Falling back to static demo data: ${fallbackPath}`);
             this.setDegradedMode(true);
@@ -176,6 +191,9 @@ const API = {
 
   async getBudget(id) {
     const data = await this.fetchWithRetry(`/api/events/${id}/budget`, {}, true, `/demo-data/${id}_budget.json`);
+    if (data && typeof data === 'object' && !Array.isArray(data) && (data.detail || data.error)) {
+      throw new ApiError(500, 'MALFORMED_RESPONSE', data.detail || (data.error && data.error.message) || 'Invalid budget payload');
+    }
     return Array.isArray(data) ? data : [];
   },
 
@@ -200,6 +218,9 @@ const API = {
 
   async getTasks(id) {
     const data = await this.fetchWithRetry(`/api/events/${id}/tasks`, {}, true, `/demo-data/${id}_tasks.json`);
+    if (data && typeof data === 'object' && !Array.isArray(data) && (data.detail || data.error)) {
+      throw new ApiError(500, 'MALFORMED_RESPONSE', data.detail || (data.error && data.error.message) || 'Invalid tasks payload');
+    }
     return Array.isArray(data) ? data : [];
   },
 
@@ -212,16 +233,25 @@ const API = {
 
   async getVendors(id) {
     const data = await this.fetchWithRetry(`/api/events/${id}/vendors`, {}, true, `/demo-data/${id}_vendors.json`);
+    if (data && typeof data === 'object' && !Array.isArray(data) && (data.detail || data.error)) {
+      throw new ApiError(500, 'MALFORMED_RESPONSE', data.detail || (data.error && data.error.message) || 'Invalid vendors payload');
+    }
     return Array.isArray(data) ? data : [];
   },
 
   async getIdeas(id) {
     const data = await this.fetchWithRetry(`/api/events/${id}/ideas`, {}, true, `/demo-data/${id}_ideas.json`);
+    if (data && typeof data === 'object' && !Array.isArray(data) && (data.detail || data.error)) {
+      throw new ApiError(500, 'MALFORMED_RESPONSE', data.detail || (data.error && data.error.message) || 'Invalid ideas payload');
+    }
     return Array.isArray(data) ? data : [];
   },
 
   async getGuests(id) {
     const data = await this.fetchWithRetry(`/api/events/${id}/guests`, {}, true, `/demo-data/${id}_guests.json`);
+    if (data && typeof data === 'object' && !Array.isArray(data) && (data.detail || data.error)) {
+      throw new ApiError(500, 'MALFORMED_RESPONSE', data.detail || (data.error && data.error.message) || 'Invalid guests payload');
+    }
     return Array.isArray(data) ? data : [];
   },
 

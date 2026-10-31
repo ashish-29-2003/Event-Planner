@@ -47,6 +47,48 @@ function formatINR(val) {
   return "₹" + Number(val).toLocaleString('en-IN');
 }
 
+// Accessible Toast Notification System (WP2)
+function showToast(message, type = 'info') {
+  let container = document.getElementById('toast-container');
+  if (!container) {
+    container = document.createElement('div');
+    container.id = 'toast-container';
+    container.setAttribute('aria-live', 'polite');
+    container.setAttribute('aria-atomic', 'true');
+    container.style.cssText = 'position: fixed; bottom: 1.5rem; right: 1.5rem; display: flex; flex-direction: column; gap: 0.5rem; z-index: 10000; max-width: 420px;';
+    document.body.appendChild(container);
+  }
+
+  const toast = document.createElement('div');
+  toast.className = `toast toast-${type}`;
+  const bgColor = type === 'error' ? 'var(--accent-warm)' : (type === 'success' ? 'var(--accent-success)' : 'var(--bg-surface)');
+  const textColor = (type === 'error' || type === 'success') ? '#ffffff' : 'var(--text-primary)';
+  const borderColor = type === 'error' ? 'var(--accent-warm)' : 'var(--border-color)';
+
+  toast.style.cssText = `background: ${bgColor}; color: ${textColor}; border: 1px solid ${borderColor}; padding: 0.75rem 1rem; border-radius: var(--radius-md); box-shadow: var(--shadow-md); font-size: 0.875rem; display: flex; align-items: center; justify-content: space-between; gap: 0.75rem;`;
+
+  const icon = type === 'error' ? '⚠️' : (type === 'success' ? '✅' : 'ℹ️');
+  toast.innerHTML = `
+    <div style="display: flex; align-items: center; gap: 0.5rem;">
+      <span>${icon}</span>
+      <span>${escapeHTML(message)}</span>
+    </div>
+    <button style="background: none; border: none; color: inherit; font-size: 1.1rem; cursor: pointer; padding: 0;" aria-label="Close">&times;</button>
+  `;
+
+  const closeBtn = toast.querySelector('button');
+  const dismiss = () => {
+    toast.style.opacity = '0';
+    toast.style.transition = 'opacity 0.2s ease-out';
+    setTimeout(() => toast.remove(), 200);
+  };
+  closeBtn.onclick = dismiss;
+  setTimeout(dismiss, 4500);
+
+  container.appendChild(toast);
+}
+window.showToast = showToast;
+
 // Subtle celebratory confetti
 function triggerCelebrationConfetti() {
   if (window.confetti) {
@@ -447,18 +489,44 @@ function computeRsvpCounters(guests) {
   };
 }
 
-// Master Celebration Loader
+// Master Celebration Loader (WP2 Isolated Error & State Handling)
 async function loadCelebration(eventId) {
   try {
     store.resetCelebration(eventId);
-    const [event, budgets, tasks, vendors, ideas, guests] = await Promise.all([
-      API.getEvent(eventId),
+    const tabPanels = document.querySelectorAll('.tab-panel');
+    tabPanels.forEach(p => p.setAttribute('data-state', 'loading'));
+
+    // 1. Fetch Master Event Record
+    let event = null;
+    try {
+      event = await API.getEvent(eventId);
+    } catch (e) {
+      console.error(`Failed to load event ${eventId}:`, e);
+      tabPanels.forEach(p => p.setAttribute('data-state', 'error'));
+      showToast(`Could not load celebration details: ${e.message}`, 'error');
+      return;
+    }
+
+    // 2. Fetch subcollections in parallel with isolated error capture
+    const errors = {};
+    const [budgetsRes, tasksRes, vendorsRes, ideasRes, guestsRes] = await Promise.allSettled([
       API.getBudget(eventId),
       API.getTasks(eventId),
       API.getVendors(eventId),
       API.getIdeas(eventId),
-      API.getGuests(eventId).catch(() => [])
+      API.getGuests(eventId),
     ]);
+
+    const budgets = budgetsRes.status === 'fulfilled' ? budgetsRes.value : (errors.budget = budgetsRes.reason, []);
+    const tasks = tasksRes.status === 'fulfilled' ? tasksRes.value : (errors.tasks = tasksRes.reason, []);
+    const vendors = vendorsRes.status === 'fulfilled' ? vendorsRes.value : (errors.vendors = vendorsRes.reason, []);
+    const ideas = ideasRes.status === 'fulfilled' ? ideasRes.value : (errors.ideas = ideasRes.reason, []);
+    const guests = guestsRes.status === 'fulfilled' ? guestsRes.value : (errors.guests = guestsRes.reason, []);
+
+    if (Object.keys(errors).length > 0) {
+      console.error('Errors encountered while loading celebration resources:', errors);
+      showToast('Some celebration details could not be loaded. You can retry each tab.', 'error');
+    }
 
     store.setState({
       activeEventId: eventId,
@@ -467,7 +535,8 @@ async function loadCelebration(eventId) {
       tasks: Array.isArray(tasks) ? tasks : [],
       vendors: Array.isArray(vendors) ? vendors : [],
       ideas: Array.isArray(ideas) ? ideas : [],
-      guests: Array.isArray(guests) ? guests : []
+      guests: Array.isArray(guests) ? guests : [],
+      errors
     });
 
     renderExecutiveOverview();
@@ -480,6 +549,7 @@ async function loadCelebration(eventId) {
     renderGuests();
   } catch (err) {
     console.error('Failed to load celebration:', err);
+    showToast(`Failed to load celebration: ${err.message}`, 'error');
   }
 }
 
@@ -681,9 +751,38 @@ function renderExecutiveOverview() {
 }
 
 function renderBudgetMatrix() {
-  const { budgets, activeEvent } = store.state;
+  const { budgets, activeEvent, errors, activeEventId } = store.state;
   const container = document.getElementById('budget-items-list');
+  const panel = document.getElementById('tab-budget');
   if (!container) return;
+
+  if (errors && errors.budget) {
+    if (panel) panel.setAttribute('data-state', 'error');
+    container.innerHTML = `
+      <tr>
+        <td colspan="5" style="text-align: center; padding: 2.5rem 1rem;">
+          <div style="color: var(--accent-warm); font-weight: 600; margin-bottom: 0.5rem;">⚠️ Failed to load budget items: ${escapeHTML(errors.budget.message || 'Server error')}</div>
+          <button class="btn-secondary" onclick="loadCelebration('${escapeHTML(activeEventId)}')" style="margin-top: 0.5rem;">🔄 Retry Loading Budget</button>
+        </td>
+      </tr>
+    `;
+    return;
+  }
+
+  if (panel) {
+    panel.setAttribute('data-state', budgets.length === 0 ? 'empty' : 'ready');
+  }
+
+  if (budgets.length === 0) {
+    container.innerHTML = `
+      <tr>
+        <td colspan="5" style="text-align: center; padding: 2.5rem 1rem; color: var(--text-secondary);">
+          <div>✨ No budget allocations recorded yet for this celebration.</div>
+        </td>
+      </tr>
+    `;
+    return;
+  }
 
   const targetBudget = activeEvent?.target_budget || 0;
   const allocated = budgets.reduce((sum, b) => sum + (b.estimated_cost || 0), 0);
@@ -723,10 +822,10 @@ function renderBudgetMatrix() {
         store.setState({ budgets: res.updated_items });
         renderBudgetMatrix();
         renderExecutiveOverview();
-        alert(`Budget re-balanced:\n\n${res.rebalance_rationale}`);
+        showToast(`Budget re-balanced: ${res.rebalance_rationale || 'Adjusted allocations'}`, 'success');
         triggerCelebrationConfetti();
       } catch (e) {
-        alert('Re-balancing completed using proportional distribution.');
+        showToast('Re-balancing completed using proportional distribution.', 'info');
       } finally {
         rebalanceBtn.disabled = false;
         rebalanceBtn.innerText = 'AI Rebalance Budget';
@@ -736,9 +835,34 @@ function renderBudgetMatrix() {
 }
 
 function renderTimeline() {
-  const { tasks, activeEventId } = store.state;
+  const { tasks, activeEventId, errors } = store.state;
   const container = document.getElementById('timeline-tasks-list');
+  const panel = document.getElementById('tab-timeline');
   if (!container) return;
+
+  if (errors && errors.tasks) {
+    if (panel) panel.setAttribute('data-state', 'error');
+    container.innerHTML = `
+      <div class="card" style="text-align: center; padding: 2.5rem 1rem;">
+        <div style="color: var(--accent-warm); font-weight: 600; margin-bottom: 0.5rem;">⚠️ Failed to load timeline tasks: ${escapeHTML(errors.tasks.message || 'Server error')}</div>
+        <button class="btn-secondary" onclick="loadCelebration('${escapeHTML(activeEventId)}')" style="margin-top: 0.5rem;">🔄 Retry Loading Timeline</button>
+      </div>
+    `;
+    return;
+  }
+
+  if (panel) {
+    panel.setAttribute('data-state', tasks.length === 0 ? 'empty' : 'ready');
+  }
+
+  if (tasks.length === 0) {
+    container.innerHTML = `
+      <div class="card" style="text-align: center; padding: 2.5rem 1rem; color: var(--text-secondary);">
+        <div>📅 No milestone tasks scheduled yet for this celebration.</div>
+      </div>
+    `;
+    return;
+  }
 
   container.innerHTML = tasks.map(t => {
     const rel = formatRelativeDueDate(t.due_date);
@@ -808,9 +932,34 @@ window.toggleTaskStatus = async (eventId, taskId, isChecked) => {
 };
 
 function renderVendors(filterCategory = 'all') {
-  const { vendors } = store.state;
+  const { vendors, errors, activeEventId } = store.state;
   const container = document.getElementById('vendors-grid');
+  const panel = document.getElementById('tab-vendors');
   if (!container) return;
+
+  if (errors && errors.vendors) {
+    if (panel) panel.setAttribute('data-state', 'error');
+    container.innerHTML = `
+      <div class="card" style="grid-column: 1 / -1; text-align: center; padding: 2.5rem 1rem;">
+        <div style="color: var(--accent-warm); font-weight: 600; margin-bottom: 0.5rem;">⚠️ Failed to load shortlisted vendors: ${escapeHTML(errors.vendors.message || 'Server error')}</div>
+        <button class="btn-secondary" onclick="loadCelebration('${escapeHTML(activeEventId)}')" style="margin-top: 0.5rem;">🔄 Retry Loading Vendors</button>
+      </div>
+    `;
+    return;
+  }
+
+  if (panel) {
+    panel.setAttribute('data-state', vendors.length === 0 ? 'empty' : 'ready');
+  }
+
+  if (vendors.length === 0) {
+    container.innerHTML = `
+      <div class="card" style="grid-column: 1 / -1; text-align: center; padding: 2.5rem 1rem; color: var(--text-secondary);">
+        <div>🤝 No vendors shortlisted yet for this celebration.</div>
+      </div>
+    `;
+    return;
+  }
 
   const filtered = filterCategory === 'all'
     ? vendors
@@ -840,9 +989,34 @@ function renderVendors(filterCategory = 'all') {
 }
 
 function renderIdeas() {
-  const { ideas } = store.state;
+  const { ideas, errors, activeEventId } = store.state;
   const container = document.getElementById('ideas-container');
+  const panel = document.getElementById('tab-ideas');
   if (!container) return;
+
+  if (errors && errors.ideas) {
+    if (panel) panel.setAttribute('data-state', 'error');
+    container.innerHTML = `
+      <div class="card" style="text-align: center; padding: 2.5rem 1rem;">
+        <div style="color: var(--accent-warm); font-weight: 600; margin-bottom: 0.5rem;">⚠️ Failed to load personalized ideas: ${escapeHTML(errors.ideas.message || 'Server error')}</div>
+        <button class="btn-secondary" onclick="loadCelebration('${escapeHTML(activeEventId)}')" style="margin-top: 0.5rem;">🔄 Retry Loading Ideas</button>
+      </div>
+    `;
+    return;
+  }
+
+  if (panel) {
+    panel.setAttribute('data-state', ideas.length === 0 ? 'empty' : 'ready');
+  }
+
+  if (ideas.length === 0) {
+    container.innerHTML = `
+      <div class="card" style="text-align: center; padding: 2.5rem 1rem; color: var(--text-secondary);">
+        <div>💡 No personalized ideas generated yet for this celebration.</div>
+      </div>
+    `;
+    return;
+  }
 
   container.innerHTML = ideas.map(i => `
     <div class="card" style="margin-bottom: 0.85rem;">
@@ -1142,13 +1316,8 @@ function setupOnboardingWizard() {
           }
         }
       } catch (err) {
-        alert(`Notice: ${err.message}. Serving curated regional blueprint.`);
-        modal.style.display = 'none';
-        await loadCelebration('demo-wedding-jaipur');
-        const fallbackBanner = document.getElementById('ai-fallback-banner');
-        if (fallbackBanner) {
-          fallbackBanner.style.display = 'flex';
-        }
+        showToast(`Could not generate plan: ${err.message}`, 'error');
+        console.error('Plan synthesis failed:', err);
       } finally {
         submitBtn.disabled = false;
         submitBtn.innerText = 'Generate Plan';

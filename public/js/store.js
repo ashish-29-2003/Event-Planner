@@ -65,6 +65,7 @@ class EventStore {
     this.state.vendors = [];
     this.state.ideas = [];
     this.state.guests = [];
+    this.state.errors = {};
     this.notify();
   }
 
