@@ -1,0 +1,57 @@
+[
+  {
+    "id": "t-comm-01",
+    "event_id": null,
+    "phase": "Phase 1: Approvals & Notices (6 Weeks Out)",
+    "title": "File MCD & Delhi Police Sound Clearance Application",
+    "description": "Submit layout plan, sound decibel limits, and emergency exits to ACP office.",
+    "due_date": "2026-09-20",
+    "owner_role": "RWA Secretary",
+    "priority": "high",
+    "status": "done"
+  },
+  {
+    "id": "t-comm-02",
+    "event_id": null,
+    "phase": "Phase 2: Stall Bookings (4 Weeks Out)",
+    "title": "Allot 25 Society Home-Baker & Artisan Stalls",
+    "description": "Issue guidelines on food safety hygiene and electric load caps (1 kW/stall).",
+    "due_date": "2026-10-05",
+    "owner_role": "Cultural Committee",
+    "priority": "high",
+    "status": "done"
+  },
+  {
+    "id": "t-comm-03",
+    "event_id": null,
+    "phase": "Phase 3: Logistics & Safety (2 Weeks Out)",
+    "title": "Inspect Silent Generator & Fire Hose Hydrants",
+    "description": "Run 30-minute load test on society perimeter circuits with electricians.",
+    "due_date": "2026-10-18",
+    "owner_role": "Maintenance Head",
+    "priority": "high",
+    "status": "done"
+  },
+  {
+    "id": "t-comm-04",
+    "event_id": null,
+    "phase": "Phase 4: Day-Of Setup (Morning)",
+    "title": "Conduct Gate Security Briefing & Sound Check",
+    "description": "Instruct traffic marshals on resident visitor parking protocol.",
+    "due_date": "2026-11-01",
+    "owner_role": "Security Lead",
+    "priority": "high",
+    "status": "todo"
+  },
+  {
+    "id": "t-comm-05",
+    "event_id": null,
+    "phase": "Phase 5: Event Schedule (05:00 PM - 10:00 PM)",
+    "title": "06:30 PM - Grand Maha Aarti & 5,000 Diya Illumination",
+    "description": "Society children and elders gather at amphitheatre for unified Deepotsav prayer.",
+    "due_date": "2026-11-01",
+    "owner_role": "President / Pandit",
+    "priority": "high",
+    "status": "todo"
+  }
+]

@@ -108,7 +108,7 @@ SECURITY_HEADERS: dict[str, str] = {
         "img-src 'self' data: https:; "
         "connect-src 'self' https://identitytoolkit.googleapis.com https://securetoken.googleapis.com "
         "https://generativelanguage.googleapis.com https://maps.googleapis.com https://firestore.googleapis.com "
-        "https://samaroh-api.onrender.com; "
+        "https://samaroh-api.onrender.com https://samaroh.onrender.com; "
         "frame-ancestors 'none'; "
         "base-uri 'self'; "
         "form-action 'self';"

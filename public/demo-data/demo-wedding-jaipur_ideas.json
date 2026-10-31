@@ -1,0 +1,56 @@
+[
+  {
+    "id": "i-wed-01",
+    "event_id": null,
+    "tab_category": "theme_mood",
+    "title": "Gulabi Nagari Royal Heritage Elegance",
+    "description": "Warm terracotta, pale pink, and antique brass tones reflecting the Pink City's architecture, lit by 1,000 flickering clay diyas at dusk.",
+    "cultural_context": "Honors historic Rajputana palace aesthetics with sustainable local terracotta crafts.",
+    "cost_bracket": "₹₹"
+  },
+  {
+    "id": "i-wed-02",
+    "event_id": null,
+    "tab_category": "decor",
+    "title": "Torana of Mango Leaves & Marigold Shimmer",
+    "description": "Entrance gates adorned with auspicious mango leaves (Amra pallava) and layered saffron genda phool to invite divine blessings.",
+    "cultural_context": "Traditional Indian welcome symbolism dispelling negative energies.",
+    "cost_bracket": "₹"
+  },
+  {
+    "id": "i-wed-03",
+    "event_id": null,
+    "tab_category": "menu",
+    "title": "Live Ker Sangri & Kesari Ghevar Stations",
+    "description": "Authentic Rajasthani desert delicacies prepared hot on live griddles, paired with saffron-infused rabri in eco-friendly clay bowls.",
+    "cultural_context": "Signature celebratory dessert of Rajasthan symbolizing sweetness in married life.",
+    "cost_bracket": "₹₹"
+  },
+  {
+    "id": "i-wed-04",
+    "event_id": null,
+    "tab_category": "rituals",
+    "title": "Mayra (Bhaat) Maternal Blessing Ceremony",
+    "description": "Grand maternal uncle procession carrying traditional silver gifts, brass cookware, and handwoven Bandhej sarees to honor the bride's lineage.",
+    "cultural_context": "Essential Marwari kinship ritual honoring maternal family ties.",
+    "cost_bracket": "₹₹"
+  },
+  {
+    "id": "i-wed-05",
+    "event_id": null,
+    "tab_category": "games",
+    "title": "Palki Arrival & Antakshari Jugalbandi",
+    "description": "Friendly musical face-off between Bride's and Groom's families featuring classic Bollywood and Rajasthani folk lyrics.",
+    "cultural_context": "Breaks the ice between families before formal Pheras begin.",
+    "cost_bracket": "₹"
+  },
+  {
+    "id": "i-wed-06",
+    "event_id": null,
+    "tab_category": "gifts",
+    "title": "Handcrafted Blue Pottery & Attar Vials",
+    "description": "Authentic Jaipur GI-tagged blue pottery spice jars paired with pure Kannauj Gulab attar in embroidered silk pouches.",
+    "cultural_context": "Supports local heritage artisans and provides guests with an everlasting fragrant keepsake.",
+    "cost_bracket": "₹₹"
+  }
+]

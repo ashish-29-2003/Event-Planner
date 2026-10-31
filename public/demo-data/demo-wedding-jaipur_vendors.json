@@ -1,0 +1,62 @@
+[
+  {
+    "id": "v-wed-01",
+    "event_id": null,
+    "category": "venue",
+    "business_name": "Rajvilas Palace Heritage Courtyards",
+    "contact_person": "Digvijay Singh (Banquets)",
+    "phone": "+91 141 268 0000",
+    "email": "events@rajvilasjaipur.com",
+    "quote_amount": 1800000.0,
+    "status": "booked",
+    "notes": "Includes lawns, 40 suites, generator backup, and lighting permits.",
+    "address": "Goner Road, Jaipur, Rajasthan",
+    "rating": 4.9,
+    "is_estimate": false
+  },
+  {
+    "id": "v-wed-02",
+    "event_id": null,
+    "category": "catering",
+    "business_name": "Mewar Royal Halwai & Gourmet Banquets",
+    "contact_person": "Rameshwar Sharma",
+    "phone": "+91 98290 12345",
+    "email": "rameshwar@mewarcaterers.in",
+    "quote_amount": 1150000.0,
+    "status": "booked",
+    "notes": "350 Pax, 6 feasts, copper chafing dishes, kulhad chai counters.",
+    "address": "MI Road, Jaipur",
+    "rating": 4.9,
+    "is_estimate": false
+  },
+  {
+    "id": "v-wed-03",
+    "event_id": null,
+    "category": "decor",
+    "business_name": "Virasat Floral & Mandap Designers",
+    "contact_person": "Ananya Shekhawat",
+    "phone": "+91 98281 67890",
+    "email": "ananya@virasatdecor.com",
+    "quote_amount": 520000.0,
+    "status": "shortlisted",
+    "notes": "Marigold chandeliers, brass diya pathways, temple lotus mandap.",
+    "address": "C-Scheme, Jaipur",
+    "rating": 4.8,
+    "is_estimate": true
+  },
+  {
+    "id": "v-wed-04",
+    "event_id": null,
+    "category": "photography",
+    "business_name": "Dharohar Wedding Cinematography",
+    "contact_person": "Kunal Mathur",
+    "phone": "+91 99280 44556",
+    "email": "kunal@dharoharfilms.com",
+    "quote_amount": 300000.0,
+    "status": "booked",
+    "notes": "3 candid photographers, 2 cinematographers, drone operator.",
+    "address": "Vaishali Nagar, Jaipur",
+    "rating": 4.9,
+    "is_estimate": false
+  }
+]

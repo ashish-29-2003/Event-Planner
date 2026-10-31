@@ -1,0 +1,101 @@
+[
+  {
+    "id": "t-wed-01",
+    "event_id": null,
+    "phase": "Phase 1: Foundation (6 Months Out)",
+    "title": "Confirm Heritage Palace Booking & Deposit in Jaipur",
+    "description": "Sign legal contract for banquet laws, 40 rooms, and sound permissions.",
+    "due_date": "2026-06-15",
+    "owner_role": "Host",
+    "priority": "high",
+    "status": "done"
+  },
+  {
+    "id": "t-wed-02",
+    "event_id": null,
+    "phase": "Phase 1: Foundation (6 Months Out)",
+    "title": "Consult Family Pandit for Sacred Muhurat Windows",
+    "description": "Finalize exact Lagna and Phera muhurat timings (Godhuli Vela).",
+    "due_date": "2026-06-25",
+    "owner_role": "Parents",
+    "priority": "high",
+    "status": "done"
+  },
+  {
+    "id": "t-wed-03",
+    "event_id": null,
+    "phase": "Phase 2: Core Bookings (3 Months Out)",
+    "title": "Book Halwai Catering Team & Tasting Session",
+    "description": "Finalize menu selections: Dal Baati, Gatte ki Sabzi, Malpua, and dry fruit counters.",
+    "due_date": "2026-09-10",
+    "owner_role": "Host",
+    "priority": "high",
+    "status": "done"
+  },
+  {
+    "id": "t-wed-04",
+    "event_id": null,
+    "phase": "Phase 2: Core Bookings (3 Months Out)",
+    "title": "Engage Wedding Cinematography & Photography Team",
+    "description": "Sign contract with drone permissions and shot list for Mehendi & Pheras.",
+    "due_date": "2026-09-20",
+    "owner_role": "Couple",
+    "priority": "medium",
+    "status": "done"
+  },
+  {
+    "id": "t-wed-05",
+    "event_id": null,
+    "phase": "Phase 3: Details & Invites (1 Month Out)",
+    "title": "Dispatch Digital Invites & Track Outstation RSVPs",
+    "description": "Share flight recommendations to Jaipur (JAI) and airport shuttle details.",
+    "due_date": "2026-11-15",
+    "owner_role": "Host",
+    "priority": "high",
+    "status": "in_progress"
+  },
+  {
+    "id": "t-wed-06",
+    "event_id": null,
+    "phase": "Phase 4: Final Week (7 Days Out)",
+    "title": "Assemble Puja Samagri & Organic Haldi Cones",
+    "description": "Procure gangajal, dry fruits, supari, and ceremonial shawls.",
+    "due_date": "2026-12-08",
+    "owner_role": "Maternal Uncle",
+    "priority": "high",
+    "status": "todo"
+  },
+  {
+    "id": "t-wed-07",
+    "event_id": null,
+    "phase": "Phase 5: Day-Of Schedule (Hour-by-Hour)",
+    "title": "09:00 AM - Shubh Ganesh Puja & Mehendi Dawn",
+    "description": "Blessings invocation, acoustic Shehnai, floral seating for bride.",
+    "due_date": "2026-12-15",
+    "owner_role": "Pandit / Host",
+    "priority": "high",
+    "status": "todo"
+  },
+  {
+    "id": "t-wed-08",
+    "event_id": null,
+    "phase": "Phase 5: Day-Of Schedule (Hour-by-Hour)",
+    "title": "05:30 PM - Royal Baraat Procession & Milni",
+    "description": "Dhol ensemble, vintage car escort, rose-petal shower at palace gates.",
+    "due_date": "2026-12-15",
+    "owner_role": "Groom's Side",
+    "priority": "high",
+    "status": "todo"
+  },
+  {
+    "id": "t-wed-09",
+    "event_id": null,
+    "phase": "Phase 5: Day-Of Schedule (Hour-by-Hour)",
+    "title": "07:15 PM - Godhuli Lagna Pheras & Saptapadi",
+    "description": "Sacred 7 vows around the holy agni under floral mandap.",
+    "due_date": "2026-12-15",
+    "owner_role": "Officiant",
+    "priority": "high",
+    "status": "todo"
+  }
+]

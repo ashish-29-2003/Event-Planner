@@ -1,0 +1,47 @@
+[
+  {
+    "id": "v-comm-01",
+    "event_id": null,
+    "category": "venue",
+    "business_name": "Gulmohar Enclave Society Central Park",
+    "contact_person": "RWA Estate Office",
+    "phone": "+91 11 2808 0000",
+    "email": null,
+    "quote_amount": 0.0,
+    "status": "booked",
+    "notes": "Society amenity space approved by General Body Meeting (GBM).",
+    "address": "Sector 12, Dwarka, New Delhi",
+    "rating": 5.0,
+    "is_estimate": false
+  },
+  {
+    "id": "v-comm-02",
+    "event_id": null,
+    "category": "music_entertainment",
+    "business_name": "Swara Tarang Sound & Light Engineers",
+    "contact_person": "Vikram Sachdeva",
+    "phone": "+91 98111 22334",
+    "email": null,
+    "quote_amount": 140000.0,
+    "status": "booked",
+    "notes": "Dual 15kW speakers, wireless mics, moving head lights, digital mixer.",
+    "address": "Janakpuri, New Delhi",
+    "rating": 4.8,
+    "is_estimate": false
+  },
+  {
+    "id": "v-comm-03",
+    "event_id": null,
+    "category": "decor",
+    "business_name": "Delhi Shahi Tent House & Fabrication",
+    "contact_person": "Charan Singh",
+    "phone": "+91 98100 88990",
+    "email": null,
+    "quote_amount": 175000.0,
+    "status": "booked",
+    "notes": "Waterproof German hanger canopies for stalls, 250 senior citizen banquet chairs.",
+    "address": "Palam, New Delhi",
+    "rating": 4.7,
+    "is_estimate": false
+  }
+]

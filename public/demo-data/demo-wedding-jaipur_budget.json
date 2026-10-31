@@ -1,0 +1,90 @@
+[
+  {
+    "id": "b-wed-01",
+    "event_id": null,
+    "category": "Venue & Accommodation",
+    "name": "Heritage Palace Courtyard & 40 Guest Suites (2 Nights)",
+    "estimated_cost": 1800000.0,
+    "actual_cost": 1800000.0,
+    "advance_paid": 600000.0,
+    "status": "partial",
+    "notes": "Includes Royal Lawns, Sangeet Amphitheatre, and poolside Mehendi cabanas."
+  },
+  {
+    "id": "b-wed-02",
+    "event_id": null,
+    "category": "Catering & Royal Feasts",
+    "name": "Royal Rajasthani & Continental Gourmet (6 Feasts for 350 Guests)",
+    "estimated_cost": 1200000.0,
+    "actual_cost": 1150000.0,
+    "advance_paid": 400000.0,
+    "status": "partial",
+    "notes": "Pure vegetarian royal thali, Dal Baati Churma live counter, Ker Sangri, Jalebi live tawa."
+  },
+  {
+    "id": "b-wed-03",
+    "event_id": null,
+    "category": "Decor & Floral Architecture",
+    "name": "Genda Phool, Rajnigandha, Velvet Drapes & Mandap Setup",
+    "estimated_cost": 550000.0,
+    "actual_cost": 520000.0,
+    "advance_paid": 200000.0,
+    "status": "partial",
+    "notes": "Eco-friendly temple flowers, brass diyas, and mirrored toranas."
+  },
+  {
+    "id": "b-wed-04",
+    "event_id": null,
+    "category": "Photography & Cinematography",
+    "name": "Candid Wedding Cinema, Drone Coverage & Traditional Album",
+    "estimated_cost": 320000.0,
+    "actual_cost": 300000.0,
+    "advance_paid": 100000.0,
+    "status": "partial",
+    "notes": "3-day coverage, teaser film in 48 hours, full 4K documentary."
+  },
+  {
+    "id": "b-wed-05",
+    "event_id": null,
+    "category": "Music & Entertainment",
+    "name": "Rajasthani Manganiyar Troupe, DJ & Sangeet Choreographer",
+    "estimated_cost": 250000.0,
+    "actual_cost": 240000.0,
+    "advance_paid": 100000.0,
+    "status": "partial",
+    "notes": "Live Shenai for morning rituals, Bollywood DJ for Sangeet night."
+  },
+  {
+    "id": "b-wed-06",
+    "event_id": null,
+    "category": "Mehendi & Bridal Styling",
+    "name": "Bridal Mehendi Artist, Guest Mehendi Team & Salon Services",
+    "estimated_cost": 120000.0,
+    "actual_cost": 110000.0,
+    "advance_paid": 50000.0,
+    "status": "partial",
+    "notes": "Organic Marwari henna cones, floral jewelry for Haldi."
+  },
+  {
+    "id": "b-wed-07",
+    "event_id": null,
+    "category": "Puja & Officiant",
+    "name": "Vedic Pandit Team & Sacred Hawan Samagri",
+    "estimated_cost": 60000.0,
+    "actual_cost": 50000.0,
+    "advance_paid": 20000.0,
+    "status": "partial",
+    "notes": "Sanskrit Vedic recitations with English explanations for younger guests."
+  },
+  {
+    "id": "b-wed-08",
+    "event_id": null,
+    "category": "Favors & Mithai Hampers",
+    "name": "Silver Coin Keepsakes & Handcrafted Ghevar Boxes",
+    "estimated_cost": 200000.0,
+    "actual_cost": 180000.0,
+    "advance_paid": 90000.0,
+    "status": "partial",
+    "notes": "Custom laser-etched royal boxes for all 350 attending families."
+  }
+]

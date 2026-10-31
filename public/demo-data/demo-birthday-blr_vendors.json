@@ -1,0 +1,47 @@
+[
+  {
+    "id": "v-bday-01",
+    "event_id": null,
+    "category": "venue",
+    "business_name": "Palm Meadows Club Clubhouse",
+    "contact_person": "Muralidhar (Estate Manager)",
+    "phone": "+91 80 2845 0000",
+    "email": null,
+    "quote_amount": 15000.0,
+    "status": "booked",
+    "notes": "Includes terrace party zone and projector screen.",
+    "address": "Whitefield, Bengaluru",
+    "rating": 4.7,
+    "is_estimate": false
+  },
+  {
+    "id": "v-bday-02",
+    "event_id": null,
+    "category": "catering",
+    "business_name": "Green Kitchen Gourmet Bites",
+    "contact_person": "Smita Rao",
+    "phone": "+91 98450 77889",
+    "email": null,
+    "quote_amount": 22000.0,
+    "status": "booked",
+    "notes": "Fresh fruit mocktails, baked nachos, cheese poppers, and mini dosa counter.",
+    "address": "Koramangala, Bengaluru",
+    "rating": 4.9,
+    "is_estimate": false
+  },
+  {
+    "id": "v-bday-03",
+    "event_id": null,
+    "category": "entertainment",
+    "business_name": "Curious Sparks Science Theater",
+    "contact_person": "Rohan Deshmukh",
+    "phone": "+91 99001 23456",
+    "email": null,
+    "quote_amount": 14000.0,
+    "status": "booked",
+    "notes": "Liquid nitrogen show, foam eruptions, and take-home slime experiment.",
+    "address": "HSR Layout, Bengaluru",
+    "rating": 4.8,
+    "is_estimate": false
+  }
+]

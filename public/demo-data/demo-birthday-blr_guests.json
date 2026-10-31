@@ -1,0 +1,26 @@
+[
+  {
+    "id": "guest-demo-birthday-blr-1",
+    "name": "Rajesh Sharma & Family",
+    "phone": "+91 98765 43210",
+    "email": null,
+    "affiliation": "family",
+    "rsvp_status": "attending",
+    "plus_ones": 3,
+    "dietary_preference": "Strict Vegetarian (Jain)",
+    "invitation_sent": true,
+    "notes": null
+  },
+  {
+    "id": "guest-demo-birthday-blr-2",
+    "name": "Pooja & Sameer Verma",
+    "phone": "+91 98111 22334",
+    "email": null,
+    "affiliation": "friend",
+    "rsvp_status": "pending",
+    "plus_ones": 1,
+    "dietary_preference": "Vegetarian",
+    "invitation_sent": true,
+    "notes": null
+  }
+]

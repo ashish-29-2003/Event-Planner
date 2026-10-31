@@ -81,3 +81,4 @@ def test_public_headers_file_synchronized_with_fastapi_headers():
     assert "Cross-Origin-Opener-Policy: same-origin-allow-popups" in text
     assert "Content-Security-Policy:" in text
     assert "https://samaroh-api.onrender.com" in text
+    assert "https://samaroh.onrender.com" in text

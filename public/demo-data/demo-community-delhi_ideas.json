@@ -1,0 +1,56 @@
+[
+  {
+    "id": "i-comm-01",
+    "event_id": null,
+    "tab_category": "theme_mood",
+    "title": "Vedic Deepotsav: 5,000 Terracotta Diyas & Zero Smoke",
+    "description": "Illuminating central park trees and pathways with oil lamps made by local potters from Uttam Nagar.",
+    "cultural_context": "Deepawali's authentic victory-of-light symbolism without air pollution.",
+    "cost_bracket": "₹"
+  },
+  {
+    "id": "i-comm-02",
+    "event_id": null,
+    "tab_category": "decor",
+    "title": "Mega Rangoli Mandala Competition",
+    "description": "Inter-tower floral and organic color rangoli art competition centered on harmony and prosperity.",
+    "cultural_context": "Unites resident artists across all age brackets.",
+    "cost_bracket": "₹"
+  },
+  {
+    "id": "i-comm-03",
+    "event_id": null,
+    "tab_category": "menu",
+    "title": "Old Delhi Chaat Street & Kesar Kulhad Jalebis",
+    "description": "Live hygienic counters offering Chandni Chowk style Dahi Bhalle, Golgappe, and sizzling hot Jalebi.",
+    "cultural_context": "Celebrates Delhi's historic street culinary treasures.",
+    "cost_bracket": "₹₹"
+  },
+  {
+    "id": "i-comm-04",
+    "event_id": null,
+    "tab_category": "games",
+    "title": "Inter-Tower Tambola & Best Traditional Attire Awards",
+    "description": "Grand society-wide Tambola with silver coin prizes, followed by prizes for Best Kurta and Best Saree.",
+    "cultural_context": "Fosters neighborly bonding and festive camaraderie.",
+    "cost_bracket": "₹"
+  },
+  {
+    "id": "i-comm-05",
+    "event_id": null,
+    "tab_category": "rituals",
+    "title": "Maha Lakshmi Puja & Elder Felicitations",
+    "description": "Collective community invocation prayer honoring the society's octogenarian residents with shawls.",
+    "cultural_context": "Respect for elders (*Matru Devo Bhava, Pitru Devo Bhava*).",
+    "cost_bracket": "₹"
+  },
+  {
+    "id": "i-comm-06",
+    "event_id": null,
+    "tab_category": "gifts",
+    "title": "Tulsi Sapling & Eco-friendly Terracotta Diya Boxes",
+    "description": "Every resident family receives a sacred Krishna Tulsi plant in a clay pot and 4 handmade diyas.",
+    "cultural_context": "Green, living gift that purifies the home environment.",
+    "cost_bracket": "₹"
+  }
+]

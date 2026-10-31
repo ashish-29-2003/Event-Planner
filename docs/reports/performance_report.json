@@ -1,5 +1,5 @@
 {
-  "timestamp": 1793424061.984711,
+  "timestamp": 1793430600.3649318,
   "performance_budgets": {
     "css_max_kb": 15.0,
     "js_max_kb": 30.0,
@@ -7,11 +7,11 @@
   },
   "measured_bundles": {
     "styles.css": {
-      "raw_bytes": 15120,
-      "raw_kb": 14.77,
-      "gzipped_bytes": 3829,
-      "gzipped_kb": 3.74,
-      "compression_ratio": 3.95
+      "raw_bytes": 16313,
+      "raw_kb": 15.93,
+      "gzipped_bytes": 4104,
+      "gzipped_kb": 4.01,
+      "compression_ratio": 3.97
     },
     "app.js": {
       "raw_bytes": 46792,
@@ -28,25 +28,25 @@
       "compression_ratio": 2.41
     },
     "api.js": {
-      "raw_bytes": 4957,
-      "raw_kb": 4.84,
-      "gzipped_bytes": 1149,
-      "gzipped_kb": 1.12,
-      "compression_ratio": 4.31
+      "raw_bytes": 8072,
+      "raw_kb": 7.88,
+      "gzipped_bytes": 2376,
+      "gzipped_kb": 2.32,
+      "compression_ratio": 3.4
     },
     "index.html": {
-      "raw_bytes": 47935,
-      "raw_kb": 46.81,
-      "gzipped_bytes": 10196,
-      "gzipped_kb": 9.96,
-      "compression_ratio": 4.7
+      "raw_bytes": 48783,
+      "raw_kb": 47.64,
+      "gzipped_bytes": 10459,
+      "gzipped_kb": 10.21,
+      "compression_ratio": 4.66
     }
   },
   "summary": {
-    "total_raw_kb": 113.65,
-    "total_gzipped_kb": 26.92,
-    "total_js_gzipped_kb": 13.22,
-    "total_css_gzipped_kb": 3.74
+    "total_raw_kb": 118.68,
+    "total_gzipped_kb": 28.64,
+    "total_js_gzipped_kb": 14.42,
+    "total_css_gzipped_kb": 4.01
   },
   "web_vitals_targets": {
     "LCP": "< 2.5s",

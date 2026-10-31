@@ -1,0 +1,79 @@
+[
+  {
+    "id": "b-comm-01",
+    "event_id": null,
+    "category": "Stage, Audio & Sound",
+    "name": "Main Amphitheatre Sound Rig, Line-Arrays & Lighting Tower",
+    "estimated_cost": 150000.0,
+    "actual_cost": 140000.0,
+    "advance_paid": 50000.0,
+    "status": "partial",
+    "notes": "Includes acoustic limits (sound clearance until 10:00 PM), mics, and DJ console."
+  },
+  {
+    "id": "b-comm-02",
+    "event_id": null,
+    "category": "Tents, Shamiana & Stalls",
+    "name": "25 Artisan & Food Stalls, Canopy Waterproofing & Seating for Seniors",
+    "estimated_cost": 180000.0,
+    "actual_cost": 175000.0,
+    "advance_paid": 60000.0,
+    "status": "partial",
+    "notes": "Covers resident entrepreneur stalls, fire extinguisher stands per stall."
+  },
+  {
+    "id": "b-comm-03",
+    "event_id": null,
+    "category": "Generator & Electricals",
+    "name": "125 kVA Silent DG Set & Society Perimeter LED Diya Strings",
+    "estimated_cost": 80000.0,
+    "actual_cost": 75000.0,
+    "advance_paid": 25000.0,
+    "status": "partial",
+    "notes": "Zero load disruption, 8 hours diesel backup, fire department safety certification."
+  },
+  {
+    "id": "b-comm-04",
+    "event_id": null,
+    "category": "Security & Traffic Management",
+    "name": "10 Certified Bouncers, Traffic Marshals & First-Aid Ambulance Standby",
+    "estimated_cost": 55000.0,
+    "actual_cost": 50000.0,
+    "advance_paid": 20000.0,
+    "status": "partial",
+    "notes": "Gate scanning, metal detector gates, ambulance on call with EMT."
+  },
+  {
+    "id": "b-comm-05",
+    "event_id": null,
+    "category": "Cultural Troupe & Live Dandiya",
+    "name": "Live Gujarati Folk Dandiya Orchestra & Dhol Tasha Troupe",
+    "estimated_cost": 95000.0,
+    "actual_cost": 90000.0,
+    "advance_paid": 30000.0,
+    "status": "partial",
+    "notes": "4-piece folk ensemble with traditional instruments."
+  },
+  {
+    "id": "b-comm-06",
+    "event_id": null,
+    "category": "Prasad, Sweets & Waste Disposal",
+    "name": "Community Prasad Distribution & Green-Waste Composting Crew",
+    "estimated_cost": 50000.0,
+    "actual_cost": 48000.0,
+    "advance_paid": 20000.0,
+    "status": "partial",
+    "notes": "Dry fruit besan laddoos for 800 residents, segregated color-coded dustbins."
+  },
+  {
+    "id": "b-comm-07",
+    "event_id": null,
+    "category": "Municipal Permissions & Legal",
+    "name": "Delhi Police, Fire Department & MCD Green Firecracker Permits",
+    "estimated_cost": 40000.0,
+    "actual_cost": 35000.0,
+    "advance_paid": 35000.0,
+    "status": "paid",
+    "notes": "All statutory NOCs secured 14 days in advance."
+  }
+]

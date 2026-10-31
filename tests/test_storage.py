@@ -133,7 +133,7 @@ async def test_guest_api_endpoints():
         # 4. Clone celebration to private workspace
         res_clone = await client.post(
             "/api/events/demo-wedding-jaipur/clone",
-            headers={"Authorization": "Bearer test-token-demo"},
+            headers={"Authorization": "Bearer test-token-guest-tester"},
             json={"title": "Private Celebration For Guests"},
         )
         assert res_clone.status_code == 200
@@ -142,7 +142,7 @@ async def test_guest_api_endpoints():
         # 5. Add guest to private event
         res_auth = await client.post(
             f"/api/events/{user_event_id}/guests",
-            headers={"Authorization": "Bearer test-token-demo"},
+            headers={"Authorization": "Bearer test-token-guest-tester"},
             json={
                 "id": "g-new-1",
                 "name": "Aarushi Mehta",
@@ -159,7 +159,7 @@ async def test_guest_api_endpoints():
         # 6. Update RSVP status on private event
         res_rsvp = await client.post(
             f"/api/events/{user_event_id}/guests/g-new-1/rsvp",
-            headers={"Authorization": "Bearer test-token-demo"},
+            headers={"Authorization": "Bearer test-token-guest-tester"},
             json={"status": "attending"},
         )
         assert res_rsvp.status_code == 200

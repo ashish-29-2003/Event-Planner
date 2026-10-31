@@ -1,0 +1,57 @@
+[
+  {
+    "id": "t-bday-01",
+    "event_id": null,
+    "phase": "Phase 1: Foundation (3 Weeks Out)",
+    "title": "Book Community Club Hall & Security Clearance",
+    "description": "Reserve Whitefield clubhouse terrace and pay refundable deposit.",
+    "due_date": "2026-11-20",
+    "owner_role": "Host Dad",
+    "priority": "high",
+    "status": "done"
+  },
+  {
+    "id": "t-bday-02",
+    "event_id": null,
+    "phase": "Phase 2: Bookings (2 Weeks Out)",
+    "title": "Order Custom Solar System Cake & Dessert Cups",
+    "description": "Send flavor specs to artisan baker in Indiranagar.",
+    "due_date": "2026-11-28",
+    "owner_role": "Host Mom",
+    "priority": "high",
+    "status": "done"
+  },
+  {
+    "id": "t-bday-03",
+    "event_id": null,
+    "phase": "Phase 3: Invites (10 Days Out)",
+    "title": "Send WhatsApp Animated Video Invite with RSVP Form",
+    "description": "Track dietary preferences and child age brackets.",
+    "due_date": "2026-12-02",
+    "owner_role": "Host",
+    "priority": "high",
+    "status": "done"
+  },
+  {
+    "id": "t-bday-04",
+    "event_id": null,
+    "phase": "Phase 4: Day-Of Setup (2 Hours Prior)",
+    "title": "Set Up Rocket Launch Pad & Cosmic Light Projector",
+    "description": "Test audio mics for science show and chill juice dispensers.",
+    "due_date": "2026-12-12",
+    "owner_role": "Host",
+    "priority": "high",
+    "status": "todo"
+  },
+  {
+    "id": "t-bday-05",
+    "event_id": null,
+    "phase": "Phase 5: Run of Show (04:30 PM - 07:30 PM)",
+    "title": "05:30 PM - Cake Cutting & 'Happy Birthday' Astronaut Anthem",
+    "description": "Gather kids around the solar system table for sparkler candle celebration.",
+    "due_date": "2026-12-12",
+    "owner_role": "Host",
+    "priority": "high",
+    "status": "todo"
+  }
+]

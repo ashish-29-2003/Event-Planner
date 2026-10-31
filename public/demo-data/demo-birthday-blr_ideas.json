@@ -1,0 +1,56 @@
+[
+  {
+    "id": "i-bday-01",
+    "event_id": null,
+    "tab_category": "theme_mood",
+    "title": "Mission to Mars: Junior Cosmonaut Academy",
+    "description": "Kids receive customized astronaut badges and mission logbooks at the check-in gate.",
+    "cultural_context": "Celebrates India's proud space exploration heritage (ISRO Chandrayaan & Gaganyaan).",
+    "cost_bracket": "₹"
+  },
+  {
+    "id": "i-bday-02",
+    "event_id": null,
+    "tab_category": "decor",
+    "title": "Honeycomb Planet Orbs & Cosmic Constellation Wall",
+    "description": "Eco-friendly paper honeycomb lanterns illuminated from within, forming an interactive solar system.",
+    "cultural_context": "100% plastic-free, recyclable festive decor.",
+    "cost_bracket": "₹₹"
+  },
+  {
+    "id": "i-bday-03",
+    "event_id": null,
+    "tab_category": "menu",
+    "title": "Galaxy Smoothies & Rocket Skewers",
+    "description": "Blueberry-banana layered smoothies served in glass bottles with bamboo straws, alongside colorful fruit rocket skewers.",
+    "cultural_context": "Nutritious, delicious, and themed to delight kids and health-conscious parents.",
+    "cost_bracket": "₹"
+  },
+  {
+    "id": "i-bday-04",
+    "event_id": null,
+    "tab_category": "games",
+    "title": "Meteorite Hunt & Moon Landing Obstacle Course",
+    "description": "Soft foam asteroid challenges and crater balance beams designed to keep toddlers active and engaged.",
+    "cultural_context": "High-energy group teamwork promoting cooperative play.",
+    "cost_bracket": "₹"
+  },
+  {
+    "id": "i-bday-05",
+    "event_id": null,
+    "tab_category": "rituals",
+    "title": "Aayushya Homam Blessings & Milestone Photo Tree",
+    "description": "Brief family blessing prayer followed by a memory string showing Aarav's growth across his first 5 years.",
+    "cultural_context": "Traditional Indian prayer for longevity, vigor, and good health (*Aayushya*).",
+    "cost_bracket": "₹"
+  },
+  {
+    "id": "i-bday-06",
+    "event_id": null,
+    "tab_category": "gifts",
+    "title": "Cardboard Planetarium Kits & Plantable Seed Pencils",
+    "description": "Kids take home an assemble-it-yourself DIY night sky projector and basil seed pencils.",
+    "cultural_context": "Educational, zero-waste, and memorable sustainable favor.",
+    "cost_bracket": "₹₹"
+  }
+]

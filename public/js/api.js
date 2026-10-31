@@ -1,12 +1,16 @@
 /**
- * Samaroh (समारोह) - API Client
- * Connects UI with Python FastAPI backend endpoints, Firebase Auth tokens,
- * and Google Maps Places discovery proxy.
+ * Samaroh (समारोह) - API Client & Cold-Start Resilience Layer
+ * Connects UI with Python FastAPI backend, handles Render idle cold-starts with
+ * pre-warming and exponential backoff retry, and provides automatic graceful
+ * degradation to static demo celebration data if the server is unreachable.
  */
 const API = {
   baseUrl: (window.__API_BASE__ && window.__API_BASE__.trim()) || window.location.origin,
   authToken: null,
   appCheckToken: null,
+  isDegraded: false,
+  isServerWaking: false,
+  hasPrewarmed: false,
 
   setAuthToken(token) {
     this.authToken = token;
@@ -27,155 +31,223 @@ const API = {
     return headers;
   },
 
+  setServerWaking(waking) {
+    this.isServerWaking = waking;
+    const pill = document.getElementById('server-waking-pill');
+    if (pill) {
+      pill.style.display = waking ? 'flex' : 'none';
+    }
+  },
+
+  setDegradedMode(degraded) {
+    this.isDegraded = degraded;
+    this.setServerWaking(false);
+    const banner = document.getElementById('degraded-demo-banner');
+    if (banner) {
+      banner.style.display = degraded ? 'flex' : 'none';
+    }
+  },
+
+  prewarm() {
+    if (this.hasPrewarmed) return;
+    this.hasPrewarmed = true;
+
+    // Show waking indicator if server does not respond within 2.5s
+    const wakingTimer = setTimeout(() => {
+      this.setServerWaking(true);
+    }, 2500);
+
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 75000);
+
+    fetch(`${this.baseUrl}/api/health`, { signal: controller.signal })
+      .then(res => {
+        clearTimeout(wakingTimer);
+        clearTimeout(timeoutId);
+        if (res.ok) {
+          this.setServerWaking(false);
+        } else {
+          this.setServerWaking(true);
+        }
+      })
+      .catch(() => {
+        clearTimeout(wakingTimer);
+        clearTimeout(timeoutId);
+        // Server might be sleeping; keep waking state active
+        this.setServerWaking(true);
+      });
+  },
+
+  async fetchWithRetry(endpoint, options = {}, isIdempotent = true, fallbackPath = null, maxTimeoutMs = 85000) {
+    if (this.isDegraded && fallbackPath) {
+      try {
+        const fbRes = await fetch(fallbackPath);
+        if (fbRes.ok) return await fbRes.json();
+      } catch (e) {
+        console.warn('Degraded fetch failed:', e);
+      }
+    }
+
+    const startTime = Date.now();
+    let attempt = 0;
+    const url = endpoint.startsWith('http') ? endpoint : `${this.baseUrl}${endpoint}`;
+
+    while (true) {
+      attempt++;
+      try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 25000); // 25s per attempt
+        const res = await fetch(url, {
+          ...options,
+          headers: this.getHeaders(options.headers || {}),
+          signal: controller.signal
+        });
+        clearTimeout(timeoutId);
+
+        if (res.ok) {
+          this.setServerWaking(false);
+          return await res.json();
+        }
+
+        const isColdStartStatus = [502, 503, 504].includes(res.status);
+        const elapsed = Date.now() - startTime;
+
+        if (!isIdempotent || !isColdStartStatus || elapsed >= maxTimeoutMs) {
+          if (fallbackPath) {
+            console.warn(`API returned ${res.status}. Falling back to static demo data: ${fallbackPath}`);
+            this.setDegradedMode(true);
+            const fbRes = await fetch(fallbackPath);
+            return await fbRes.json();
+          }
+          const errData = await res.json().catch(() => ({ detail: res.statusText }));
+          throw new Error(errData.detail || `Server error (${res.status})`);
+        }
+      } catch (err) {
+        const elapsed = Date.now() - startTime;
+        if (!isIdempotent || elapsed >= maxTimeoutMs) {
+          if (fallbackPath) {
+            console.warn(`API connection failed (${err.message}). Falling back to static demo data: ${fallbackPath}`);
+            this.setDegradedMode(true);
+            const fbRes = await fetch(fallbackPath);
+            return await fbRes.json();
+          }
+          throw err;
+        }
+      }
+
+      // Idempotent retry loop (waking sleeping backend)
+      this.setServerWaking(true);
+      const delay = Math.min(6000, 1000 * Math.pow(1.4, attempt));
+      await new Promise(r => setTimeout(r, delay));
+    }
+  },
+
   async getHealth() {
-    const res = await fetch(`${this.baseUrl}/api/health`);
-    return await res.json();
+    return await this.fetchWithRetry('/api/health', {}, true, null, 15000);
   },
 
   async listEvents() {
-    const res = await fetch(`${this.baseUrl}/api/events`, {
-      headers: this.getHeaders()
-    });
-    return await res.json();
+    return await this.fetchWithRetry('/api/events', {}, true, '/demo-data/events.json');
   },
 
   async getEvent(id) {
-    const res = await fetch(`${this.baseUrl}/api/events/${id}`, {
-      headers: this.getHeaders()
-    });
-    return await res.json();
+    return await this.fetchWithRetry(`/api/events/${id}`, {}, true, `/demo-data/${id}.json`);
   },
 
   async getBudget(id) {
-    const res = await fetch(`${this.baseUrl}/api/events/${id}/budget`, {
-      headers: this.getHeaders()
-    });
-    return await res.json();
+    return await this.fetchWithRetry(`/api/events/${id}/budget`, {}, true, `/demo-data/${id}_budget.json`);
   },
 
   async updateBudget(id, items) {
-    const res = await fetch(`${this.baseUrl}/api/events/${id}/budget`, {
+    return await this.fetchWithRetry(`/api/events/${id}/budget`, {
       method: 'PUT',
-      headers: this.getHeaders(),
       body: JSON.stringify(items)
-    });
-    return await res.json();
+    }, false, null);
   },
 
   async rebalanceBudget(targetBudget, changedCategory, newAmount, currentItems) {
-    const res = await fetch(`${this.baseUrl}/api/ai/rebalance-budget`, {
+    return await this.fetchWithRetry('/api/ai/rebalance-budget', {
       method: 'POST',
-      headers: this.getHeaders(),
       body: JSON.stringify({
         target_budget: targetBudget,
         changed_category: changedCategory,
         new_amount: newAmount,
         current_items: currentItems
       })
-    });
-    return await res.json();
+    }, false, null);
   },
 
   async getTasks(id) {
-    const res = await fetch(`${this.baseUrl}/api/events/${id}/tasks`, {
-      headers: this.getHeaders()
-    });
-    return await res.json();
+    return await this.fetchWithRetry(`/api/events/${id}/tasks`, {}, true, `/demo-data/${id}_tasks.json`);
   },
 
   async toggleTask(eventId, taskId, newStatus) {
-    const res = await fetch(`${this.baseUrl}/api/events/${eventId}/tasks/${taskId}/toggle`, {
+    return await this.fetchWithRetry(`/api/events/${eventId}/tasks/${taskId}/toggle`, {
       method: 'POST',
-      headers: this.getHeaders(),
       body: JSON.stringify({ status: newStatus })
-    });
-    return await res.json();
+    }, false, null);
   },
 
   async getVendors(id) {
-    const res = await fetch(`${this.baseUrl}/api/events/${id}/vendors`, {
-      headers: this.getHeaders()
-    });
-    return await res.json();
+    return await this.fetchWithRetry(`/api/events/${id}/vendors`, {}, true, `/demo-data/${id}_vendors.json`);
   },
 
   async getIdeas(id) {
-    const res = await fetch(`${this.baseUrl}/api/events/${id}/ideas`, {
-      headers: this.getHeaders()
-    });
-    return await res.json();
+    return await this.fetchWithRetry(`/api/events/${id}/ideas`, {}, true, `/demo-data/${id}_ideas.json`);
   },
 
   async getGuests(id) {
-    const res = await fetch(`${this.baseUrl}/api/events/${id}/guests`, {
-      headers: this.getHeaders()
-    });
-    return await res.json();
+    return await this.fetchWithRetry(`/api/events/${id}/guests`, {}, true, `/demo-data/${id}_guests.json`);
   },
 
   async addGuest(id, guest) {
-    const res = await fetch(`${this.baseUrl}/api/events/${id}/guests`, {
+    return await this.fetchWithRetry(`/api/events/${id}/guests`, {
       method: 'POST',
-      headers: this.getHeaders(),
       body: JSON.stringify(guest)
-    });
-    return await res.json();
+    }, false, null);
   },
 
   async updateGuestRSVP(eventId, guestId, status) {
-    const res = await fetch(`${this.baseUrl}/api/events/${eventId}/guests/${guestId}/rsvp`, {
+    return await this.fetchWithRetry(`/api/events/${eventId}/guests/${guestId}/rsvp`, {
       method: 'POST',
-      headers: this.getHeaders(),
       body: JSON.stringify({ status })
-    });
-    return await res.json();
+    }, false, null);
   },
 
   async searchPlaces(query, city = 'Jaipur', category = 'venue') {
     const params = new URLSearchParams({ query, city, category });
-    const res = await fetch(`${this.baseUrl}/api/places/search?${params.toString()}`, {
-      headers: this.getHeaders()
-    });
-    return await res.json();
+    return await this.fetchWithRetry(`/api/places/search?${params.toString()}`, {}, true, null, 25000);
   },
 
   async generatePlan(brief) {
-    const res = await fetch(`${this.baseUrl}/api/ai/plan`, {
+    return await this.fetchWithRetry('/api/ai/plan', {
       method: 'POST',
-      headers: this.getHeaders(),
       body: JSON.stringify(brief)
-    });
-    if (!res.ok) {
-      const err = await res.json();
-      throw new Error(err.detail || 'Plan generation failed');
-    }
-    return await res.json();
+    }, false, null);
   },
 
   async getMuhurat(culture, eventType) {
-    const res = await fetch(`${this.baseUrl}/api/ai/muhurat?culture=${encodeURIComponent(culture)}&event_type=${encodeURIComponent(eventType)}`, {
-      headers: this.getHeaders()
-    });
-    return await res.json();
+    const params = new URLSearchParams({ culture, event_type: eventType });
+    return await this.fetchWithRetry(`/api/ai/muhurat?${params.toString()}`, {}, true, null, 25000);
   },
 
   async getNextMilestoneLink(id) {
-    const res = await fetch(`${this.baseUrl}/api/export/${id}/next-milestone-link`, {
-      headers: this.getHeaders()
-    });
-    return await res.json();
+    return await this.fetchWithRetry(`/api/export/${id}/next-milestone-link`, {}, true, null, 25000);
   },
 
   async getShareToken(id, ttlDays = 7) {
-    const res = await fetch(`${this.baseUrl}/api/export/${id}/share-token?ttl_days=${ttlDays}`, {
-      method: 'POST',
-      headers: this.getHeaders()
-    });
-    if (!res.ok) {
-      return null;
-    }
-    return await res.json();
+    return await this.fetchWithRetry(`/api/export/${id}/share-token?ttl_days=${ttlDays}`, {
+      method: 'POST'
+    }, false, null);
   }
 };
 
-window.API = API;
+// Initiate non-blocking pre-warm probe on page load
+if (typeof window !== 'undefined') {
+  window.API = API;
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => API.prewarm());
+  } else {
+    API.prewarm();
+  }
+}

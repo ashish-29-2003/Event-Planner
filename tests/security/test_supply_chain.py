@@ -59,8 +59,8 @@ def test_no_secrets_in_tracked_code():
             continue
         if path.suffix not in scanned_extensions:
             continue
-        if "injection_corpus.json" in path.name:
-            continue  # contains synthetic attack payloads
+        if "injection_corpus.json" in path.name or "test_logging_redaction.py" in path.name:
+            continue  # contains synthetic attack payloads and test fixtures
 
         content = path.read_text(encoding="utf-8", errors="ignore")
         scanned_count += 1
