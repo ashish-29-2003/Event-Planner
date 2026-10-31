@@ -11,7 +11,7 @@
 | **R6: Efficiency with Measured Numbers** | **PASSED** | 2026-10-30 | c6cbb5b | Measured Web Vitals (LCP <450ms, CLS 0.00, TTFT <150ms), bundle 26.5KB gzipped, AI cache hits/misses verified, GZip & static cache headers verified in test_performance_and_vitals.py |
 | **R7: Code Quality & CI** | **PASSED** | 2026-10-30 | 165ac45 | mypy --strict passing across 32/32 source files, expanded Ruff matrix (E,F,I,B,UP,S,SIM,C4) 0 errors, JS strict syntax verified, multi-job GitHub Actions CI pipeline active |
 | **R8: Live Deployment & Submission** | **PASSED** | 2026-10-30 | HEAD | README updated with 3-minute judge script, CHANGELOG.md generated, honest 6-criteria scorecard, 245 tests passing with 88% coverage, tag v1.0.0 |
-| **R9: Truth Audit & Release Lock** | **PASSED** | 2026-10-30 | ea48998..fa6bf4b | Truth audit (12 claims verified/fixed/documented), security scans (pip-audit, npm-audit, gitleaks, container scan), live environment audit, 246 tests passing (88.14% coverage), honest 6-criteria scorecard, test checklist (82 items), tagged v1.0.1 |
+| **R9: Truth Audit & Release Lock** | **REOPENED** | 2026-10-31 | ea48998..HEAD | Live deployment closure in progress (N1-N6): Netlify static proxy to dedicated Python API host, DEF-01 reopened as Critical |
 
 ---
 

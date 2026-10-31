@@ -15,18 +15,19 @@ This document tracks all bugs, regressions, security findings, and architectural
 ## Active & Resolved Defect Register
 
 ### DEF-01: Live Netlify Functions Returning 404 for Python Backend
-- **Severity:** High (P1)
+- **Severity:** Critical (P0)
 - **Component:** `deploy` / `netlify.toml`
 - **Discovered In:** R9-B Live Deployment Probing
 - **Symptoms:** Probing `https://utsav-ai.netlify.app/api/health` returned HTTP 404 (`{"detail":"Not Found"}`). Probing `/` returned Next.js HTML from an older deployment rather than the Python FastAPI app.
 - **Root Cause:**
   1. The deployed Netlify site at `https://utsav-ai.netlify.app` was linked to a separate legacy Next.js repository ("Utsav") without the Python Mangum backend build webhook.
-  2. The `netlify.toml` redirect originally had `to = "/.netlify/functions/api/api/:splat"` which doubled the `/api` prefix.
-- **Remediation:**
-  - Fixed redirect rule in `netlify.toml`.
-  - Created automated runner `scripts/run_smoke_and_record.py` that verifies 100% of API endpoints and security headers pass (6/6 checks PASS) on local server.
-  - Documented live deployment credentials required from user to trigger fresh deploy.
-- **Status:** **MITIGATED / DOCUMENTED LIMITATION**
+  2. Netlify Functions do not support Python runtimes natively in modern production (only JS, TS, and Go). Mangum in `netlify/functions/api.py` cannot execute as a native serverless runtime on Netlify.
+  3. The `netlify.toml` redirect originally had `to = "/.netlify/functions/api/api/:splat"` which doubled the `/api` prefix.
+- **Remediation Plan:**
+  - Architecture overhaul (ADR-014): Decouple frontend and backend. Netlify hosts static assets from `public/` and proxies `/api/*` via HTTP 200 rewrite to a dedicated Python API host (Cloud Run / Render / HF Spaces).
+  - Add build-skip rule in `netlify.toml` to protect Netlify credits.
+  - Implement trusted proxy client IP resolution for rate limiting.
+- **Status:** **OPEN**
 - **Evidence:** `docs/reports/smoke_test_local_report.txt`, `docs/reports/curl_headers_report.txt`.
 
 ---
@@ -84,7 +85,7 @@ This document tracks all bugs, regressions, security findings, and architectural
 ---
 
 ## Summary of Open Defects
-- **Critical (P0):** 0
-- **High (P1):** 0 (DEF-01 documented with full local proof and credentials needed)
+- **Critical (P0):** 1 (DEF-01: Live Netlify backend 404 pending API host decoupling N1-N6)
+- **High (P1):** 0
 - **Medium (P2):** 0
-- **Low (P3):** 0
+- **Low (P3):** 1 (DEF-04: Non-distributed in-memory cache on serverless)
