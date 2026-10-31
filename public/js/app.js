@@ -249,8 +249,27 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 });
 
-// Accessible Custom Celebration Switcher (U10)
-function setupCelebrationSwitcher() {
+// Accessible Custom Celebration Switcher with Dynamic Custom Plans (WP5)
+function getCustomPlans() {
+  try {
+    const raw = localStorage.getItem('samaroh-custom-plans');
+    return raw ? JSON.parse(raw) : [];
+  } catch (e) {
+    return [];
+  }
+}
+
+function saveCustomPlan(planMeta) {
+  try {
+    const existing = getCustomPlans();
+    const updated = [planMeta, ...existing.filter(p => p.id !== planMeta.id)].slice(0, 15);
+    localStorage.setItem('samaroh-custom-plans', JSON.stringify(updated));
+  } catch (e) {
+    console.warn('Could not save custom plan to localStorage:', e);
+  }
+}
+
+function bindSwitcherEvents() {
   const toggleBtn = document.getElementById('switcher-toggle-btn');
   const listbox = document.getElementById('celebration-listbox');
   const nativeSelect = document.getElementById('celebration-switcher');
@@ -259,40 +278,10 @@ function setupCelebrationSwitcher() {
 
   if (!toggleBtn || !listbox) return;
 
-  const openListbox = () => {
-    listbox.style.display = 'block';
-    toggleBtn.setAttribute('aria-expanded', 'true');
-    const activeItem = listbox.querySelector('.switcher-item.active') || listbox.querySelector('.switcher-item');
-    if (activeItem) activeItem.focus();
-  };
-
   const closeListbox = () => {
     listbox.style.display = 'none';
     toggleBtn.setAttribute('aria-expanded', 'false');
   };
-
-  toggleBtn.onclick = (e) => {
-    e.stopPropagation();
-    const isOpen = listbox.style.display === 'block';
-    if (isOpen) {
-      closeListbox();
-    } else {
-      openListbox();
-    }
-  };
-
-  document.addEventListener('click', (e) => {
-    if (!toggleBtn.contains(e.target) && !listbox.contains(e.target)) {
-      closeListbox();
-    }
-  });
-
-  document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape' && listbox.style.display === 'block') {
-      closeListbox();
-      toggleBtn.focus();
-    }
-  });
 
   const items = listbox.querySelectorAll('.switcher-item');
   items.forEach((item, idx) => {
@@ -337,6 +326,111 @@ function setupCelebrationSwitcher() {
       }
     };
   });
+}
+
+function renderSwitcherItems() {
+  const listbox = document.getElementById('celebration-listbox');
+  const nativeSelect = document.getElementById('celebration-switcher');
+  if (!listbox) return;
+
+  const defaultSeeds = [
+    { id: 'demo-wedding-jaipur', icon: '💍', title: 'Jaipur Royal Wedding', meta: 'Marwari Hindu • 15 Dec 2026 • ₹45L' },
+    { id: 'demo-birthday-blr', icon: '🎂', title: 'Bengaluru Cosmic Birthday', meta: 'Contemporary • 28 Oct 2026 • ₹85K' },
+    { id: 'demo-community-delhi', icon: '🪔', title: 'Delhi Diwali Dandiya Mela', meta: 'Gujarati Community • 01 Nov 2026 • ₹6.5L' }
+  ];
+
+  const customPlans = getCustomPlans();
+  const activeId = store.state.activeEventId;
+
+  let html = defaultSeeds.map(s => `
+    <li role="option" aria-selected="${s.id === activeId}" data-event-id="${s.id}" class="switcher-item ${s.id === activeId ? 'active' : ''}" tabindex="0">
+      <span class="switcher-icon">${s.icon}</span>
+      <div class="switcher-info">
+        <div class="switcher-title">${escapeHTML(s.title)}</div>
+        <div class="switcher-meta">${escapeHTML(s.meta)}</div>
+      </div>
+    </li>
+  `).join('');
+
+  if (customPlans.length > 0) {
+    html += `
+      <li style="padding: 0.4rem 0.85rem 0.2rem 0.85rem; font-size: 0.7rem; font-weight: 700; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.05em; border-top: 1px solid var(--border-color); margin-top: 0.35rem;">
+        My Celebrations
+      </li>
+    `;
+    html += customPlans.map(cp => {
+      const typeStr = (cp.event_type || '').toLowerCase();
+      const icon = typeStr.includes('wedding') ? '💍' : (typeStr.includes('birthday') ? '🎂' : (typeStr.includes('community') ? '🪔' : '✨'));
+      const isAct = cp.id === activeId;
+      return `
+        <li role="option" aria-selected="${isAct}" data-event-id="${cp.id}" class="switcher-item ${isAct ? 'active' : ''}" tabindex="0">
+          <span class="switcher-icon">${icon}</span>
+          <div class="switcher-info">
+            <div class="switcher-title">${escapeHTML(cp.title || 'Personal Plan')}</div>
+            <div class="switcher-meta">${escapeHTML(cp.culture || 'Custom')} • ${formatINR(cp.target_budget)}</div>
+          </div>
+        </li>
+      `;
+    }).join('');
+  }
+
+  listbox.innerHTML = html;
+
+  if (nativeSelect) {
+    let selectHtml = defaultSeeds.map(s => `<option value="${s.id}">${escapeHTML(s.title)}</option>`).join('');
+    if (customPlans.length > 0) {
+      selectHtml += `<optgroup label="My Celebrations">`;
+      selectHtml += customPlans.map(cp => `<option value="${cp.id}">${escapeHTML(cp.title)}</option>`).join('');
+      selectHtml += `</optgroup>`;
+    }
+    nativeSelect.innerHTML = selectHtml;
+    nativeSelect.value = activeId;
+  }
+
+  bindSwitcherEvents();
+}
+
+function setupCelebrationSwitcher() {
+  const toggleBtn = document.getElementById('switcher-toggle-btn');
+  const listbox = document.getElementById('celebration-listbox');
+  const nativeSelect = document.getElementById('celebration-switcher');
+
+  if (!toggleBtn || !listbox) return;
+
+  const openListbox = () => {
+    listbox.style.display = 'block';
+    toggleBtn.setAttribute('aria-expanded', 'true');
+    const activeItem = listbox.querySelector('.switcher-item.active') || listbox.querySelector('.switcher-item');
+    if (activeItem) activeItem.focus();
+  };
+
+  const closeListbox = () => {
+    listbox.style.display = 'none';
+    toggleBtn.setAttribute('aria-expanded', 'false');
+  };
+
+  toggleBtn.onclick = (e) => {
+    e.stopPropagation();
+    const isOpen = listbox.style.display === 'block';
+    if (isOpen) {
+      closeListbox();
+    } else {
+      openListbox();
+    }
+  };
+
+  document.addEventListener('click', (e) => {
+    if (!toggleBtn.contains(e.target) && !listbox.contains(e.target)) {
+      closeListbox();
+    }
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && listbox.style.display === 'block') {
+      closeListbox();
+      toggleBtn.focus();
+    }
+  });
 
   if (nativeSelect) {
     nativeSelect.onchange = async (e) => {
@@ -348,6 +442,8 @@ function setupCelebrationSwitcher() {
       }
     };
   }
+
+  renderSwitcherItems();
 }
 
 // Share Modal Controller (U9)
@@ -538,6 +634,32 @@ async function loadCelebration(eventId) {
       guests: Array.isArray(guests) ? guests : [],
       errors
     });
+
+    // Update header switcher display with active celebration title
+    const activeIcon = document.getElementById('switcher-active-icon');
+    const activeLabel = document.getElementById('switcher-active-label');
+    const nativeSelect = document.getElementById('celebration-switcher');
+    if (activeLabel && event.title) {
+      activeLabel.innerText = `${event.title} (${formatINR(event.target_budget)})`;
+      const typeStr = (event.event_type || '').toLowerCase();
+      if (activeIcon) {
+        activeIcon.innerText = typeStr.includes('wedding') ? '💍' : (typeStr.includes('birthday') ? '🎂' : (typeStr.includes('community') ? '🪔' : '✨'));
+      }
+    }
+    if (nativeSelect) nativeSelect.value = eventId;
+
+    // Update demo / draft mode banner message
+    const demoBanner = document.getElementById('demo-mode-banner');
+    if (demoBanner) {
+      const bannerSpan = demoBanner.querySelector('span');
+      if (bannerSpan) {
+        if (eventId.startsWith('demo-')) {
+          bannerSpan.innerHTML = '✨ <strong>Demo mode:</strong> Exploring pre-seeded celebrations. Click <strong>+ New Plan</strong> to create your personal celebration.';
+        } else {
+          bannerSpan.innerHTML = '✨ <strong>Draft mode:</strong> Your custom celebration is loaded in your browser. Sign in to save permanently across devices.';
+        }
+      }
+    }
 
     renderExecutiveOverview();
     renderBudgetMatrix();
@@ -1305,8 +1427,23 @@ function setupOnboardingWizard() {
       try {
         const result = await API.generatePlan(brief);
         modal.style.display = 'none';
+
+        // Save custom plan to localStorage for celebration switcher
+        saveCustomPlan({
+          id: result.event_id,
+          title: brief.title,
+          culture: brief.culture,
+          city: brief.city,
+          target_budget: brief.target_budget,
+          event_type: brief.event_type,
+          target_date: brief.target_date
+        });
+
+        renderSwitcherItems();
         await loadCelebration(result.event_id);
         triggerCelebrationConfetti();
+        showToast('Celebration plan generated successfully!', 'success');
+
         const fallbackBanner = document.getElementById('ai-fallback-banner');
         if (fallbackBanner) {
           if (result && result.is_fallback) {

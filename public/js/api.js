@@ -275,7 +275,17 @@ const API = {
   },
 
   async generatePlan(brief) {
-    return await this.fetchWithRetry('/api/ai/plan', {
+    if (this.authToken) {
+      try {
+        return await this.fetchWithRetry('/api/ai/plan', {
+          method: 'POST',
+          body: JSON.stringify(brief)
+        }, false, null);
+      } catch (err) {
+        if (err.status !== 401) throw err;
+      }
+    }
+    return await this.fetchWithRetry('/api/ai/plan/draft', {
       method: 'POST',
       body: JSON.stringify(brief)
     }, false, null);

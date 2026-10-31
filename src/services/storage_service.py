@@ -444,6 +444,9 @@ class FirestoreStorageService(BaseStorageService):
             if not self._allow_fallback:
                 raise RuntimeError("Cloud Firestore is not initialized")
             return self._fallback.get_event(event_id)
+        local = self._fallback.get_event(event_id)
+        if local:
+            return local
         try:
             # Query collection group 'events' to find matching event document
             results = self._client.collection_group("events").where("id", "==", event_id).limit(1).stream()
@@ -509,14 +512,13 @@ class FirestoreStorageService(BaseStorageService):
                     raise
                 logger.warning("Firestore create_event_from_plan failed: %s", exc)
 
-        # In fallback/dev mode, also cache locally
-        if self._allow_fallback or not self._initialized:
-            self._fallback._events[event_id] = ev_data
-            self._fallback._budgets[event_id] = plan.budget_breakdown
-            self._fallback._tasks[event_id] = plan.timeline_tasks
-            self._fallback._vendors[event_id] = plan.vendor_checklist
-            self._fallback._ideas[event_id] = plan.personalized_ideas
-            self._fallback._save_to_disk()
+        # In fallback/dev mode or production, cache locally so subcollections are immediately queryable
+        self._fallback._events[event_id] = ev_data
+        self._fallback._budgets[event_id] = plan.budget_breakdown
+        self._fallback._tasks[event_id] = plan.timeline_tasks
+        self._fallback._vendors[event_id] = plan.vendor_checklist
+        self._fallback._ideas[event_id] = plan.personalized_ideas
+        self._fallback._save_to_disk()
 
         return event_id
 

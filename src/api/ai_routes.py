@@ -62,6 +62,33 @@ async def create_event_plan(
     return {"success": True, "event_id": event_id, "is_fallback": is_fallback, "plan": plan}
 
 
+@router.post("/plan/draft")
+async def create_draft_event_plan(
+    brief: CelebrationBrief,
+    request: Request,
+    response: Response,
+    _app_check: bool = Depends(verify_app_check_token),
+) -> dict[str, Any]:
+    """
+    Synthesizes a celebration master plan in draft mode for unauthenticated guests (WP5).
+    Enforces IP-based rate limiting and persists transiently in memory under guest scope.
+    """
+    enforce_rate_limit(request=request, response=response, user=None)
+
+    plan, is_fallback = await gemini_service.generate_master_plan(brief)
+
+    # Persist in storage with demo/guest scope so subcollections can be fetched
+    event_id = storage_service.create_event_from_plan(brief, plan, user_id="demo-user")
+
+    return {
+        "success": True,
+        "event_id": event_id,
+        "is_fallback": is_fallback,
+        "plan": plan,
+        "is_draft": True,
+    }
+
+
 @router.post("/rebalance-budget", response_model=BudgetRebalanceResponse)
 async def rebalance_budget(
     req: BudgetRebalanceRequest,
