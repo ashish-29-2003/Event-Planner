@@ -49,3 +49,20 @@ async def test_app_check_invalid_token_rejected(monkeypatch):
         with pytest.raises(HTTPException) as exc_info:
             await verify_app_check_token("invalid-unverified-payload-xyz")
         assert exc_info.value.status_code == 401
+
+
+@pytest.mark.asyncio
+async def test_app_check_monitor_mode_permits_missing_and_invalid_token(monkeypatch):
+    """When APP_CHECK_MODE is 'monitor', missing or invalid tokens are logged and permitted."""
+    monkeypatch.setattr(settings, "ENABLE_APP_CHECK", True)
+    monkeypatch.setattr(settings, "APP_CHECK_MODE", "monitor")
+
+    # Missing token passes in monitor mode
+    assert await verify_app_check_token(None) is True
+
+    # Invalid token passes in monitor mode
+    with patch(
+        "firebase_admin.app_check.verify_token",
+        side_effect=ValueError("Invalid App Check signature"),
+    ):
+        assert await verify_app_check_token("invalid-unverified-payload-xyz") is True

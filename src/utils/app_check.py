@@ -27,6 +27,9 @@ async def verify_app_check_token(
 
     if not x_firebase_appcheck:
         logger.warning("App Check rejection: Missing X-Firebase-AppCheck header")
+        if settings.APP_CHECK_MODE == "monitor":
+            logger.info("App Check monitor mode active: permitting request without token.")
+            return True
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="App Check token missing. Unauthorized client request.",
@@ -55,6 +58,9 @@ async def verify_app_check_token(
         return True
     except Exception as exc:
         logger.warning("App Check token verification failed: %s", exc)
+        if settings.APP_CHECK_MODE == "monitor":
+            logger.info("App Check monitor mode active: permitting request after verification warning.")
+            return True
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail=f"Invalid Firebase App Check token: {exc}",

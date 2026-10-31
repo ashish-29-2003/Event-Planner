@@ -4,6 +4,7 @@ Validates Firebase ID tokens via firebase-admin with fallback to Google JWKS,
 and provides FastAPI security dependencies for protected routes and guest demo mode.
 """
 
+import json
 import logging
 import time
 from typing import Any
@@ -138,7 +139,16 @@ def _init_firebase_app() -> None:
         from firebase_admin import credentials
 
         if not firebase_admin._apps:
-            if settings.FIREBASE_CREDENTIALS_PATH:
+            if settings.FIREBASE_SERVICE_ACCOUNT_JSON:
+                try:
+                    sa_info = json.loads(settings.FIREBASE_SERVICE_ACCOUNT_JSON)
+                    cred = credentials.Certificate(sa_info)
+                    firebase_admin.initialize_app(
+                        cred, {"projectId": settings.FIREBASE_PROJECT_ID}
+                    )
+                except Exception as sa_err:
+                    logger.error("Failed to parse FIREBASE_SERVICE_ACCOUNT_JSON: %s", sa_err)
+            elif settings.FIREBASE_CREDENTIALS_PATH:
                 cred = credentials.Certificate(settings.FIREBASE_CREDENTIALS_PATH)
                 firebase_admin.initialize_app(
                     cred, {"projectId": settings.FIREBASE_PROJECT_ID}

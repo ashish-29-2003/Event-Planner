@@ -42,6 +42,7 @@ class Settings:
     # Firebase & Google Cloud Settings
     FIREBASE_PROJECT_ID: str = os.getenv("FIREBASE_PROJECT_ID", "samaroh-celebrations")
     FIREBASE_CREDENTIALS_PATH: str = os.getenv("FIREBASE_CREDENTIALS_PATH", "")
+    FIREBASE_SERVICE_ACCOUNT_JSON: str = os.getenv("FIREBASE_SERVICE_ACCOUNT_JSON", "")
     ENABLE_AUTH_ENFORCEMENT: bool = os.getenv("ENABLE_AUTH_ENFORCEMENT", "True").lower() in (
         "true",
         "1",
@@ -52,6 +53,7 @@ class Settings:
         "1",
         "yes",
     )
+    APP_CHECK_MODE: str = os.getenv("APP_CHECK_MODE", "enforcing").lower()
     APP_CHECK_DEV_BYPASS: bool = os.getenv("APP_CHECK_DEV_BYPASS", "False").lower() in (
         "true",
         "1",
