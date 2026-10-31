@@ -44,6 +44,14 @@ class GeminiService:
             except Exception as e:
                 logger.warning(f"Failed to initialize Google GenAI Client: {e}")
 
+    @property
+    def diagnostic_status(self) -> str:
+        if not self.api_key:
+            return "no_key"
+        if self._client is None:
+            return "client_failed"
+        return "ok"
+
     def normalize_brief_key(self, brief: CelebrationBrief) -> str:
         """
         Computes a deterministic cache key from normalized celebration brief parameters.

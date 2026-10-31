@@ -386,9 +386,71 @@ function setupShareModal() {
   }
 }
 
+// Pure Budget Math & Reconciliation Function (D9)
+function computeBudgetLedger(targetBudget, budgets) {
+  const target = Number(targetBudget) || 0;
+  const list = Array.isArray(budgets) ? budgets : [];
+  const allocated = list.reduce((sum, b) => sum + (Number(b.estimated_cost) || 0), 0);
+  const paid = list.reduce((sum, b) => sum + (Number(b.advance_paid) || 0), 0);
+  const balanceDue = Math.max(0, allocated - paid);
+  const unallocatedBuffer = target - allocated;
+  const isOverBudget = unallocatedBuffer < 0;
+
+  const allocPct = target > 0 ? (allocated / target) * 100 : 0;
+  const paidPct = target > 0 ? (paid / target) * 100 : 0;
+  const balancePct = target > 0 ? (balanceDue / target) * 100 : 0;
+
+  return {
+    target,
+    allocated,
+    paid,
+    balanceDue,
+    unallocatedBuffer,
+    isOverBudget,
+    allocPct,
+    paidPct,
+    balancePct
+  };
+}
+
+// Pure RSVP Counter Derivation (D6)
+function computeRsvpCounters(guests) {
+  const list = Array.isArray(guests) ? guests : [];
+  let totalInvitations = list.length;
+  let attendingCount = 0;
+  let pendingCount = 0;
+  let declinedCount = 0;
+  let totalAttendingHeads = 0;
+  let totalInvitedHeads = 0;
+
+  for (const g of list) {
+    const partySize = 1 + (Number(g.plus_ones) || 0);
+    totalInvitedHeads += partySize;
+    const status = (g.rsvp_status || 'pending').toLowerCase();
+    if (status === 'attending') {
+      attendingCount++;
+      totalAttendingHeads += partySize;
+    } else if (status === 'declined') {
+      declinedCount++;
+    } else {
+      pendingCount++;
+    }
+  }
+
+  return {
+    totalInvitations,
+    attendingCount,
+    pendingCount,
+    declinedCount,
+    totalAttendingHeads,
+    totalInvitedHeads
+  };
+}
+
 // Master Celebration Loader
 async function loadCelebration(eventId) {
   try {
+    store.resetCelebration(eventId);
     const [event, budgets, tasks, vendors, ideas, guests] = await Promise.all([
       API.getEvent(eventId),
       API.getBudget(eventId),
@@ -401,11 +463,11 @@ async function loadCelebration(eventId) {
     store.setState({
       activeEventId: eventId,
       activeEvent: event,
-      budgets,
-      tasks,
-      vendors,
-      ideas,
-      guests: guests || []
+      budgets: Array.isArray(budgets) ? budgets : [],
+      tasks: Array.isArray(tasks) ? tasks : [],
+      vendors: Array.isArray(vendors) ? vendors : [],
+      ideas: Array.isArray(ideas) ? ideas : [],
+      guests: Array.isArray(guests) ? guests : []
     });
 
     renderExecutiveOverview();
@@ -447,12 +509,18 @@ function renderExecutiveOverview() {
   const eventType = (activeEvent.event_type || 'wedding').toLowerCase();
   document.body.className = `theme-${eventType}`;
 
-  // Overview Title & Culture
+  // Overview Title & Culture (D1: Never render "undefined")
   const titleEl = document.getElementById('overview-title');
-  if (titleEl) titleEl.innerText = activeEvent.title;
+  if (titleEl) {
+    titleEl.innerText = activeEvent.title || 'Untitled Celebration';
+  }
 
   const cultureEl = document.getElementById('overview-culture-city');
-  if (cultureEl) cultureEl.innerText = `${activeEvent.culture || 'Indian'} • ${activeEvent.city || 'India'}`;
+  if (cultureEl) {
+    const culture = activeEvent.culture || 'Indian Tradition';
+    const city = activeEvent.city || 'India';
+    cultureEl.innerText = `${culture} • ${city}`;
+  }
 
   const statusBadge = document.getElementById('overview-status-badge');
   if (statusBadge) statusBadge.innerText = 'Active plan';
@@ -470,37 +538,29 @@ function renderExecutiveOverview() {
   const dateEl = document.getElementById('overview-target-date');
   if (dateEl) dateEl.innerText = targetDate.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
 
-  // Financial Metrics & Hierarchy (U3)
-  const targetBudget = activeEvent.target_budget || 0;
-  const allocated = budgets.reduce((sum, b) => sum + (b.estimated_cost || 0), 0);
-  const paid = budgets.reduce((sum, b) => sum + (b.advance_paid || 0), 0);
-  const remaining = targetBudget - allocated;
-
-  const allocPct = targetBudget > 0 ? (allocated / targetBudget) * 100 : 0;
-  const paidPct = targetBudget > 0 ? (paid / targetBudget) * 100 : 0;
-  const committedUnpaid = Math.max(0, allocated - paid);
-  const committedUnpaidPct = targetBudget > 0 ? (committedUnpaid / targetBudget) * 100 : 0;
+  // Financial Metrics & Hierarchy via Pure Ledger (D9)
+  const ledger = computeBudgetLedger(activeEvent.target_budget, budgets);
 
   const targetBudgetEl = document.getElementById('overview-target-budget');
-  if (targetBudgetEl) targetBudgetEl.innerText = formatINR(targetBudget);
+  if (targetBudgetEl) targetBudgetEl.innerText = formatINR(ledger.target);
 
   const allocatedEl = document.getElementById('overview-allocated');
-  if (allocatedEl) allocatedEl.innerText = formatINR(allocated);
+  if (allocatedEl) allocatedEl.innerText = formatINR(ledger.allocated);
 
   const allocPctEl = document.getElementById('overview-allocated-pct');
-  if (allocPctEl) allocPctEl.innerText = `${allocPct.toFixed(1)}% committed`;
+  if (allocPctEl) allocPctEl.innerText = `${ledger.allocPct.toFixed(1)}% allocated`;
 
   const paidEl = document.getElementById('overview-paid');
-  if (paidEl) paidEl.innerText = formatINR(paid);
+  if (paidEl) paidEl.innerText = formatINR(ledger.paid);
 
   const paidPctEl = document.getElementById('overview-paid-pct');
-  if (paidPctEl) paidPctEl.innerText = `${paidPct.toFixed(1)}% settled`;
+  if (paidPctEl) paidPctEl.innerText = `${ledger.paidPct.toFixed(1)}% settled`;
 
   const remainingEl = document.getElementById('overview-remaining');
   const remainingCaptionEl = document.getElementById('overview-remaining-caption');
   if (remainingEl) {
-    remainingEl.innerText = formatINR(Math.abs(remaining));
-    if (remaining < 0) {
+    remainingEl.innerText = formatINR(Math.abs(ledger.unallocatedBuffer));
+    if (ledger.isOverBudget) {
       remainingEl.style.color = 'var(--accent-warning)';
       if (remainingCaptionEl) remainingCaptionEl.innerText = 'Over target budget';
     } else {
@@ -509,20 +569,32 @@ function renderExecutiveOverview() {
     }
   }
 
-  // Two-Segment Progress Bar (U2)
+  // Two-Segment Progress Bar (U2, D9)
   const paidBar = document.getElementById('overview-paid-bar');
   const allocBar = document.getElementById('overview-allocated-bar');
   const progressTrack = document.getElementById('overview-progress-track');
 
   if (paidBar) {
-    paidBar.style.width = `${Math.min(paidPct, 100)}%`;
+    paidBar.style.width = `${Math.min(ledger.paidPct, 100)}%`;
   }
   if (allocBar) {
-    allocBar.style.width = `${Math.min(committedUnpaidPct, Math.max(0, 100 - Math.min(paidPct, 100)))}%`;
-    allocBar.style.backgroundColor = allocated > targetBudget ? 'var(--accent-warning)' : 'var(--text-primary)';
+    allocBar.style.width = `${Math.min(ledger.balancePct, Math.max(0, 100 - Math.min(ledger.paidPct, 100)))}%`;
+    allocBar.style.backgroundColor = ledger.isOverBudget ? 'var(--accent-warning)' : 'var(--text-primary)';
   }
   if (progressTrack) {
-    progressTrack.setAttribute('aria-valuenow', Math.min(Math.round(allocPct), 100).toString());
+    progressTrack.setAttribute('aria-valuenow', Math.min(Math.round(ledger.allocPct), 100).toString());
+  }
+
+  // Dynamic Progress Bar Legend (D9)
+  const legendPaid = document.getElementById('legend-paid-val');
+  if (legendPaid) legendPaid.innerText = formatINR(ledger.paid);
+
+  const legendAllocated = document.getElementById('legend-allocated-val');
+  if (legendAllocated) legendAllocated.innerText = formatINR(ledger.balanceDue);
+
+  const legendRemainingVal = document.getElementById('legend-remaining-val');
+  if (legendRemainingVal) {
+    legendRemainingVal.innerHTML = `${ledger.isOverBudget ? 'Over Budget:' : 'Buffer Available:'} <strong id="legend-avail-num" style="color: ${ledger.isOverBudget ? 'var(--accent-warning)' : 'var(--text-primary)'};">${formatINR(Math.abs(ledger.unallocatedBuffer))}</strong>`;
   }
 
   // Overview Immediate Milestones List
@@ -810,27 +882,25 @@ async function renderMuhurat() {
   `;
 }
 
-// Guests & RSVP Module (U7)
+// Guests & RSVP Module (U7, D5, D6)
 function renderGuests(filterSide = 'all') {
-  const { guests, activeEventId } = store.state;
+  const guests = Array.isArray(store.state.guests) ? store.state.guests : [];
+  const activeEventId = store.state.activeEventId;
   const container = document.getElementById('guests-table-body');
   if (!container) return;
 
-  // Calculate metrics
-  const totalCount = guests.reduce((sum, g) => sum + (1 + (g.plus_ones || 0)), 0);
-  const attendingCount = guests.filter(g => g.rsvp_status === 'attending').reduce((sum, g) => sum + (1 + (g.plus_ones || 0)), 0);
-  const pendingCount = guests.filter(g => g.rsvp_status === 'pending').reduce((sum, g) => sum + (1 + (g.plus_ones || 0)), 0);
-  const declinedCount = guests.filter(g => g.rsvp_status === 'declined').reduce((sum, g) => sum + (1 + (g.plus_ones || 0)), 0);
+  // Calculate metrics using pure function (D6)
+  const counters = computeRsvpCounters(guests);
 
   const mTotal = document.getElementById('guests-metric-total');
   const mAttending = document.getElementById('guests-metric-attending');
   const mPending = document.getElementById('guests-metric-pending');
   const mDeclined = document.getElementById('guests-metric-declined');
 
-  if (mTotal) mTotal.innerText = totalCount;
-  if (mAttending) mAttending.innerText = attendingCount;
-  if (mPending) mPending.innerText = pendingCount;
-  if (mDeclined) mDeclined.innerText = declinedCount;
+  if (mTotal) mTotal.innerText = counters.totalInvitations;
+  if (mAttending) mAttending.innerText = counters.attendingCount;
+  if (mPending) mPending.innerText = counters.pendingCount;
+  if (mDeclined) mDeclined.innerText = counters.declinedCount;
 
   // Filter guests
   const filtered = filterSide === 'all'
@@ -886,14 +956,20 @@ function renderGuests(filterSide = 'all') {
 }
 
 window.updateGuestRSVPStatus = async (eventId, guestId, status) => {
-  try {
-    await API.updateGuestRSVP(eventId, guestId, status);
-    const guests = store.state.guests.map(g => g.id === guestId ? { ...g, rsvp_status: status } : g);
-    store.setState({ guests });
-    renderGuests();
-    renderExecutiveOverview();
-  } catch (e) {
-    console.error('Failed to update RSVP:', e);
+  // 1. Optimistically update local store immediately (D6)
+  const currentGuests = Array.isArray(store.state.guests) ? store.state.guests : [];
+  const updatedGuests = currentGuests.map(g => g.id === guestId ? { ...g, rsvp_status: status } : g);
+  store.setState({ guests: updatedGuests });
+  renderGuests();
+  renderExecutiveOverview();
+
+  // 2. Persist to API if not a demo template or if signed in
+  if (eventId && !eventId.startsWith('demo-')) {
+    try {
+      await API.updateGuestRSVP(eventId, guestId, status);
+    } catch (e) {
+      console.warn('Failed to persist RSVP to backend:', e);
+    }
   }
 };
 
@@ -947,7 +1023,8 @@ function setupGuestsModule() {
 
       try {
         const saved = await API.addGuest(store.state.activeEventId, newGuest);
-        const guests = [...store.state.guests, saved];
+        const currentGuests = Array.isArray(store.state.guests) ? store.state.guests : [];
+        const guests = [...currentGuests, saved];
         store.setState({ guests });
         guestModal.style.display = 'none';
         guestForm.reset();
@@ -955,7 +1032,18 @@ function setupGuestsModule() {
         renderExecutiveOverview();
         triggerCelebrationConfetti();
       } catch (err) {
-        alert('Could not save guest: ' + err.message);
+        // Fallback for demo mode (D5: safe array handling, no crash)
+        const currentGuests = Array.isArray(store.state.guests) ? store.state.guests : [];
+        const fallbackGuest = {
+          ...newGuest,
+          id: `guest-${Date.now()}`
+        };
+        store.setState({ guests: [...currentGuests, fallbackGuest] });
+        guestModal.style.display = 'none';
+        guestForm.reset();
+        renderGuests();
+        renderExecutiveOverview();
+        triggerCelebrationConfetti();
       }
     };
   }

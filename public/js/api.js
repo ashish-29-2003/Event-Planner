@@ -151,11 +151,16 @@ const API = {
   },
 
   async getEvent(id) {
-    return await this.fetchWithRetry(`/api/events/${id}`, {}, true, `/demo-data/${id}.json`);
+    const data = await this.fetchWithRetry(`/api/events/${id}`, {}, true, `/demo-data/${id}.json`);
+    if (typeof window !== 'undefined' && window.normalizeEvent) {
+      return window.normalizeEvent(data);
+    }
+    return data;
   },
 
   async getBudget(id) {
-    return await this.fetchWithRetry(`/api/events/${id}/budget`, {}, true, `/demo-data/${id}_budget.json`);
+    const data = await this.fetchWithRetry(`/api/events/${id}/budget`, {}, true, `/demo-data/${id}_budget.json`);
+    return Array.isArray(data) ? data : [];
   },
 
   async updateBudget(id, items) {
@@ -178,7 +183,8 @@ const API = {
   },
 
   async getTasks(id) {
-    return await this.fetchWithRetry(`/api/events/${id}/tasks`, {}, true, `/demo-data/${id}_tasks.json`);
+    const data = await this.fetchWithRetry(`/api/events/${id}/tasks`, {}, true, `/demo-data/${id}_tasks.json`);
+    return Array.isArray(data) ? data : [];
   },
 
   async toggleTask(eventId, taskId, newStatus) {
@@ -189,15 +195,18 @@ const API = {
   },
 
   async getVendors(id) {
-    return await this.fetchWithRetry(`/api/events/${id}/vendors`, {}, true, `/demo-data/${id}_vendors.json`);
+    const data = await this.fetchWithRetry(`/api/events/${id}/vendors`, {}, true, `/demo-data/${id}_vendors.json`);
+    return Array.isArray(data) ? data : [];
   },
 
   async getIdeas(id) {
-    return await this.fetchWithRetry(`/api/events/${id}/ideas`, {}, true, `/demo-data/${id}_ideas.json`);
+    const data = await this.fetchWithRetry(`/api/events/${id}/ideas`, {}, true, `/demo-data/${id}_ideas.json`);
+    return Array.isArray(data) ? data : [];
   },
 
   async getGuests(id) {
-    return await this.fetchWithRetry(`/api/events/${id}/guests`, {}, true, `/demo-data/${id}_guests.json`);
+    const data = await this.fetchWithRetry(`/api/events/${id}/guests`, {}, true, `/demo-data/${id}_guests.json`);
+    return Array.isArray(data) ? data : [];
   },
 
   async addGuest(id, guest) {

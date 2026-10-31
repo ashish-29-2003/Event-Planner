@@ -19,6 +19,7 @@ class Settings:
     VERSION: str = "1.0.0"
     ENVIRONMENT: str = os.getenv("ENVIRONMENT", "development").lower()
     DEBUG: bool = os.getenv("DEBUG", "True").lower() in ("true", "1", "yes")
+    GIT_COMMIT: str = os.getenv("RENDER_GIT_COMMIT", os.getenv("GIT_COMMIT", ""))
 
     # Server network settings
     HOST: str = os.getenv("HOST", "127.0.0.1")

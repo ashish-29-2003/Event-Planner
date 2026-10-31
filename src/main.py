@@ -223,7 +223,22 @@ def create_app() -> FastAPI:
     @app.get("/api/health")
     @app.get("/health")
     async def health_check() -> dict[str, Any]:
-        ai_status = (
+        commit_sha = settings.GIT_COMMIT
+        if not commit_sha:
+            try:
+                import subprocess
+
+                commit_sha = (
+                    subprocess.check_output(
+                        ["git", "rev-parse", "HEAD"], timeout=1
+                    )
+                    .decode()
+                    .strip()
+                )
+            except Exception:
+                commit_sha = "unknown"
+
+        ai_live = (
             "live"
             if (gemini_service._client is not None and bool(gemini_service.api_key))
             else "fallback"
@@ -232,12 +247,20 @@ def create_app() -> FastAPI:
             "status": "healthy",
             "project": "Samaroh (समारोह)",
             "version": settings.VERSION,
+            "commit": commit_sha[:7] if commit_sha else "unknown",
+            "commit_sha": commit_sha,
             "environment": settings.ENVIRONMENT,
             "storage": settings.STORAGE_BACKEND,
-            "ai": ai_status,
+            "ai": ai_live,
+            "ai_status": gemini_service.diagnostic_status,
             "gemini_configured": bool(settings.GEMINI_API_KEY),
             "gemini_model": settings.GEMINI_MODEL,
             "google_maps_configured": bool(settings.GOOGLE_MAPS_API_KEY),
+            "auth": (
+                "configured"
+                if bool(settings.FIREBASE_PROJECT_ID and settings.FIREBASE_SERVICE_ACCOUNT_JSON)
+                else "unconfigured"
+            ),
         }
 
     # Serve static assets if public directory exists

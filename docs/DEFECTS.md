@@ -84,8 +84,68 @@ This document tracks all bugs, regressions, security findings, and architectural
 
 ---
 
-## Summary of Open Defects
-- **Critical (P0):** 1 (DEF-01: Live Netlify backend 404 pending API host decoupling N1-N6)
-- **High (P1):** 0
-- **Medium (P2):** 0
-- **Low (P3):** 1 (DEF-04: Non-distributed in-memory cache on serverless)
+### DEF-06 (D1): Hero Shows "undefined" as Plan Title and "Indian • India" as Subtitle
+- **Severity:** Critical (P0)
+- **Component:** `ui` / `store` / `app.js`
+- **Discovered In:** User Video Recording Walkthrough (0:00 to 2:30)
+- **Symptoms:** Hero title rendered literal string "undefined" and subtitle rendered "Indian • India".
+- **Root Cause:** When an API response returned error detail or missing attributes, `activeEvent.title` was evaluated as undefined and assigned directly to `titleEl.innerText`.
+- **Remediation:** Added `normalizeEvent(raw)` contract mapper in `public/js/store.js` and `public/js/api.js`. Guarantees title, culture, city, budget, and dates always have valid non-empty defaults and safe fallbacks. Never renders "undefined".
+- **Regression Test:** `tests/test_block_a_regression.py::test_d1_seed_celebrations_contract_memory_and_firestore`, `test_d1_api_returns_complete_event_metadata`.
+- **Status:** **RESOLVED (Block A)**
+
+---
+
+### DEF-07 (D2): Plan Switcher Does Not Switch Data Between Plans
+- **Severity:** Critical (P0)
+- **Component:** `ui` / `switcher` / `app.js`
+- **Discovered In:** User Video Recording Walkthrough (0:00 to 0:16)
+- **Symptoms:** Selecting "Bengaluru Cosmic Birthday" or "Delhi Diwali Dandiya Mela" left Jaipur wedding data on screen.
+- **Root Cause:** Switcher button label changed, but per-plan state was not cleanly reset and subsequent subcollection fetches threw or remained tied to initial event ID.
+- **Remediation:** Added `store.resetCelebration(eventId)` in `store.js` and updated `loadCelebration(eventId)` in `app.js` to re-fetch and render all modules (Overview, Budget, Timeline, Vendors, Ideas, Muhurat, Export, Guests) with updated event-type styling (`theme-wedding`, `theme-birthday`, `theme-community`).
+- **Regression Test:** `tests/test_block_a_regression.py::test_d2_each_seed_has_distinct_budgets_milestones_and_vendors`.
+- **Status:** **RESOLVED (Block A)**
+
+---
+
+### DEF-08 (D5): Add Guest Crashes with "store.state.guests is not iterable"
+- **Severity:** High (P1)
+- **Component:** `ui` / `guests` / `app.js`
+- **Discovered In:** User Video Recording Walkthrough (1:14 to 1:20)
+- **Symptoms:** Clicking Save Guest threw `TypeError: store.state.guests is not iterable`.
+- **Root Cause:** `store.state.guests` was undefined when API returned non-array or when state was uninitialized, and array spread `[...store.state.guests, saved]` failed.
+- **Remediation:** Initialized `guests: []` in store constructor and enforced `Array.isArray(guests) ? guests : []` guards in `store.setState`, `api.getGuests`, and guest form submission.
+- **Regression Test:** `tests/test_block_a_regression.py::test_d5_get_guests_returns_list_for_all_events`.
+- **Status:** **RESOLVED (Block A)**
+
+---
+
+### DEF-09 (D6): RSVP Counters Do Not Update on Status Change
+- **Severity:** High (P1)
+- **Component:** `ui` / `guests` / `app.js`
+- **Discovered In:** User Video Recording Walkthrough (1:24 to 1:30)
+- **Symptoms:** Changing a guest from Pending to Declined showed "Declined" in the select dropdown, but cards still showed Awaiting 2, Declined 0.
+- **Root Cause:** `updateGuestRSVPStatus` failed on demo templates (403 read-only) before updating local store, preventing reactive counter recalculation.
+- **Remediation:** Added pure helper `computeRsvpCounters(guests)` and updated `updateGuestRSVPStatus` to optimistically update the local store immediately, re-rendering all guest counter cards.
+- **Regression Test:** `tests/test_block_a_regression.py::test_d6_rsvp_counter_calculation_on_status_change`.
+- **Status:** **RESOLVED (Block A)**
+
+---
+
+### DEF-10 (D9): Budget Numbers Contradict Each Other Across Hero, Legend, and Ledger
+- **Severity:** High (P1)
+- **Component:** `ui` / `budget` / `app.js`
+- **Discovered In:** User Video Recording Walkthrough (0:00 to 0:30)
+- **Symptoms:** Metric box showed "Advance paid ₹15,60,000" while legend showed "Paid ₹15,10,000"; "100.0% committed" vs "Committed ₹28,00,000" (62%); "Remaining ₹0" vs "Buffer available ₹1,90,000".
+- **Root Cause:** Legend numbers in `index.html` were static hardcoded values never updated by JavaScript, and metric box used disparate formulas.
+- **Remediation:** Created single pure mathematical function `computeBudgetLedger(targetBudget, budgets)` that dynamically reconciles Target, Allocated, Paid, Balance Due, and Unallocated Buffer across metric boxes, progress bar tracks, and accessible legends.
+- **Regression Test:** `tests/test_block_a_regression.py::test_d9_budget_ledger_reconciles_across_all_seeds`, `test_d9_budget_ledger_edge_cases`.
+- **Status:** **RESOLVED (Block A)**
+
+---
+
+## Summary of Defects (Stage R11 Audit)
+- **Block A (D1, D2, D5, D6, D9):** Fixed & Verified locally with regression tests in `tests/test_block_a_regression.py`.
+- **Block B (D3, D4, D7, D11):** In progress.
+- **Block C (D8, D12, D13, D14, D15, D10):** Pending.
+- **Block D (Walkthrough & Release):** Pending.

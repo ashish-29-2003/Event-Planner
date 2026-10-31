@@ -20,4 +20,7 @@ async def test_health_check_endpoint():
         assert "version" in data
         assert "storage" in data
         assert data["ai"] in ("live", "fallback")
+        assert "ai_status" in data
+        assert "commit" in data
+        assert "auth" in data
         assert "gemini_model" in data
