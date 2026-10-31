@@ -6,6 +6,7 @@ and a resilient file-backed local adapter for zero-friction demo and offline jud
 
 import json
 import logging
+import os
 import uuid
 from abc import ABC, abstractmethod
 from pathlib import Path
@@ -585,8 +586,8 @@ def get_storage_service() -> BaseStorageService:
 
     if is_prod or backend == "firestore":
         logger.info("Initializing Cloud Firestore persistent storage...")
-        # Production fails fast with no silent fallback
-        allow_fallback = not is_prod
+        # Production fails fast unless explicit fallback flag is configured for bootstrap
+        allow_fallback = os.getenv("ALLOW_STORAGE_FALLBACK", "false").lower() in ("true", "1") or not is_prod
         return FirestoreStorageService(
             fallback_adapter=InMemoryStorageService(persistence_path=None) if allow_fallback else None,
             allow_fallback=allow_fallback,

@@ -11,6 +11,8 @@ services:
         value: production
       - key: STORAGE_BACKEND
         value: firestore
+      - key: ALLOW_STORAGE_FALLBACK
+        value: "true"
       - key: GEMINI_MODEL
         value: gemini-2.0-flash
       - key: FIREBASE_PROJECT_ID
