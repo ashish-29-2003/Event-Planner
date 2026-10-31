@@ -252,11 +252,28 @@ async def require_authenticated_user(
 
 
 async def get_current_user_or_demo(
-    user: AuthenticatedUser | None = Depends(get_current_user_optional),
+    auth: HTTPAuthorizationCredentials | None = Depends(bearer_scheme),
 ) -> AuthenticatedUser:
     """
-    Returns the authenticated user if logged in; falls back to DEMO_USER for guest browsing.
+    Returns the authenticated user if valid token is present; falls back to DEMO_USER for guest browsing.
+    If a token is invalid/expired/mock on optional/demo routes, falls back to DEMO_USER
+    so public demo celebrations are universally accessible without authentication errors.
     """
-    if user is not None:
-        return user
-    return DEMO_USER
+    if not auth or not auth.credentials:
+        return DEMO_USER
+
+    try:
+        decoded = verify_firebase_id_token(auth.credentials)
+        return AuthenticatedUser(
+            uid=decoded.get("uid", "anonymous"),
+            email=decoded.get("email"),
+            name=decoded.get("name"),
+            picture=decoded.get("picture"),
+            is_demo=False,
+        )
+    except Exception as exc:
+        logger.info(
+            "Optional token verification failed (%s); falling back to DEMO_USER for public browsing.",
+            exc,
+        )
+        return DEMO_USER

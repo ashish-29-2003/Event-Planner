@@ -20,6 +20,20 @@ const Auth = {
   },
 
   init() {
+    // Stage R12 Session Purge: Invalidate stale mock tokens and upgrade storage version
+    const STORAGE_VERSION_KEY = 'samaroh-storage-version';
+    const CURRENT_STORAGE_VERSION = '2.0.0';
+    const currentVersion = localStorage.getItem(STORAGE_VERSION_KEY);
+
+    const savedToken = localStorage.getItem('samaroh-auth-token');
+    const isMockToken = savedToken && (savedToken.startsWith('test-token-') || savedToken.startsWith('mock-token-'));
+
+    if (currentVersion !== CURRENT_STORAGE_VERSION || isMockToken) {
+      localStorage.removeItem('samaroh-auth-token');
+      localStorage.removeItem('samaroh-auth-user');
+      localStorage.setItem(STORAGE_VERSION_KEY, CURRENT_STORAGE_VERSION);
+    }
+
     try {
       if (typeof firebase !== 'undefined' && firebase.apps) {
         if (!firebase.apps.length) {
@@ -97,11 +111,22 @@ const Auth = {
       }
     }
 
-    // Client/Testing fallback for automated Playwright & offline demo testing
+    // If running in production or without emulator, notify the user honestly
+    const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+    if (!isLocalhost) {
+      if (window.showToast) {
+        window.showToast("Sign-in is currently unconfigured in this demo deployment. You can browse all celebrations and create drafts.", "info");
+      } else {
+        alert("Sign-in is currently unconfigured in this demo deployment. You can browse all celebrations and create drafts.");
+      }
+      return;
+    }
+
+    // Localhost test fallback only
     const testUser = {
-      uid: "google-user-" + Math.random().toString(36).substring(2, 8),
-      name: "Ashish Kushwaha",
-      email: "ashish.planner@gmail.com",
+      uid: "google-user-local",
+      name: "Local Tester",
+      email: "tester@samaroh.local",
       picture: null,
       is_demo: false
     };

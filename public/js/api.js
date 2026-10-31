@@ -109,6 +109,22 @@ const API = {
           return await res.json();
         }
 
+        // 401 resilience: if a demo resource was requested with a stale token, retry without token
+        if (res.status === 401 && endpoint.includes('demo-') && this.authToken) {
+          console.warn("Received 401 on demo endpoint with token; retrying without Authorization header");
+          const retryHeaders = { ...(options.headers || {}) };
+          delete retryHeaders['Authorization'];
+          const retryRes = await fetch(url, {
+            ...options,
+            headers: { 'Content-Type': 'application/json', ...retryHeaders },
+            signal: controller.signal
+          });
+          if (retryRes.ok) {
+            this.setServerWaking(false);
+            return await retryRes.json();
+          }
+        }
+
         const isColdStartStatus = [502, 503, 504].includes(res.status);
         const elapsed = Date.now() - startTime;
 

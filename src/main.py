@@ -27,7 +27,7 @@ ROOT_DIR = Path(__file__).resolve().parent.parent
 if str(ROOT_DIR) not in sys.path:
     sys.path.insert(0, str(ROOT_DIR))
 
-from fastapi import FastAPI, HTTPException, Request, Response
+from fastapi import Depends, FastAPI, HTTPException, Request, Response
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.gzip import GZipMiddleware
@@ -40,6 +40,7 @@ from src.api.export_routes import router as export_router
 from src.api.places_routes import router as places_router
 from src.config import SECURITY_HEADERS, settings
 from src.services.gemini_service import gemini_service
+from src.utils.auth import AuthenticatedUser, require_authenticated_user
 
 PUBLIC_DIR = ROOT_DIR / "public"
 
@@ -218,6 +219,19 @@ def create_app() -> FastAPI:
     app.include_router(event_router)
     app.include_router(export_router)
     app.include_router(places_router)
+
+    # User Profile endpoint (WP1)
+    @app.get("/api/me")
+    async def get_current_user_profile(
+        user: AuthenticatedUser = Depends(require_authenticated_user),
+    ) -> dict[str, Any]:
+        """Returns profile for currently authenticated user."""
+        return {
+            "uid": user.uid,
+            "email": user.email,
+            "name": user.name,
+            "picture": user.picture,
+        }
 
     # Health check endpoint
     @app.get("/api/health")
