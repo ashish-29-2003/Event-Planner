@@ -307,3 +307,52 @@ Adopt a **Dual-Topology Hosting Architecture**:
 ### Consequences
 - **Positive:** Uncompromised streaming GenAI performance on Google Cloud; seamless static CDN caching on Netlify; resilient fallback guarantees zero broken demo states for hackathon evaluators.
 - **Negative:** Requires maintaining both `Dockerfile` and `netlify.toml` / serverless function configuration.
+
+
+---
+
+## ADR 014: Decoupled Architecture: Netlify Static Edge Frontend with Dedicated Containerized Python API Host Proxy
+
+- **Status:** Accepted (Supersedes serverless Netlify Functions component in ADR-003 and ADR-013)
+- **Date:** 2026-10-31
+- **Decider:** Principal Software Architect & DevOps Lead
+
+### Context
+Official Netlify documentation (`docs.netlify.com/functions/overview`) confirms that Netlify Functions natively support only **JavaScript/TypeScript** and **Go**. Python is supported exclusively during build time (e.g. for static site generators such as MkDocs, Sphinx, or Pelican), not as a serverless function execution runtime. Consequently, deploying Python FastAPI wrapped with Mangum in `netlify/functions/api.py` fails in modern Netlify production environments, resulting in HTTP 404 responses for all `/api/*` endpoints (defect DEF-01).
+
+Furthermore, Netlify credit usage imposes a cost (~15 credits) on every production build deploy, and the account has a finite credit reserve (~236 credits remaining). Pushing backend or test changes without frontend impact wastes credits needlessly.
+
+### Decision
+Decouple the live hosting architecture into two specialized tiers:
+
+1. **Frontend Presentation Tier (Netlify Edge CDN):**
+   - **Static Serving:** Netlify hosts the pre-rendered, vanilla ES6+ web application directly from `public/` (HTML, CSS, modular JS, SVG assets, audio).
+   - **Credit Hygiene Build Rule:** Configure `build.ignore` in `netlify.toml` to only deploy when changes touch `public/` or `netlify.toml`:
+     ```toml
+     [build]
+       publish = "public"
+       ignore = "git diff --quiet $CACHED_COMMIT_REF $COMMIT_REF -- public/ netlify.toml"
+     ```
+   - **Edge API Proxy Rewrite:** Proxy all API traffic seamlessly using an HTTP 200 rewrite rule in `public/_redirects`:
+     ```
+     /api/*  https://<api-host>/api/:splat  200!
+     ```
+   - **Edge Security Headers:** Enforce strict CSP, HSTS, `X-Content-Type-Options: nosniff`, `Referrer-Policy: strict-origin-when-cross-origin`, and `Cross-Origin-Opener-Policy: same-origin-allow-popups` (for Firebase Google OAuth popups) at the Netlify Edge via `public/_headers`.
+   - **Functions Retirement:** Remove `netlify/functions/api.py` and delete the `[functions]` configuration block from `netlify.toml`.
+
+2. **Backend Application Tier (Dedicated Containerized Python Host):**
+   - Containerized deployment using the multi-stage `Dockerfile` (`python:3.13-slim`, non-root `samaroh` user, `0.0.0.0:$PORT`).
+   - Host selection:
+     - **Option A (Google Cloud Run):** Production host in `asia-south1` (Mumbai), co-located with Cloud Firestore and Google Gemini API, utilizing native IAM workload identity for credential-free Firestore authentication.
+     - **Option B (Render / Hugging Face Spaces):** Fallback container host without credit card requirements, using Firebase service account credentials stored in host secrets.
+   - **Proxy-Aware Client IP Extraction:** Rate limiter in `src/utils/rate_limiter.py` updated to extract client IP from `X-Nf-Client-Connection-Ip` or `X-Forwarded-For` when requests arrive from Netlify's proxy, preventing all Netlify users from sharing a single rate-limit bucket.
+   - **Streaming Resilience:** If Netlify proxy buffers or truncates Server-Sent Events (SSE) connections exceeding 26 seconds, frontend chat can stream directly from `window.__API_BASE__` with CORS enabled on the backend.
+
+### Consequences
+- **Positive:**
+  - Fully resolves DEF-01 by providing an official, supported Python 3.13 runtime.
+  - Retains Netlify's ultra-fast global CDN for static frontend assets.
+  - Protects user's Netlify credit balance by skipping builds on backend-only or doc-only commits.
+  - Transparent to frontend users; client JavaScript fetches `/api/*` directly on the same origin without CORS complexity in standard mode.
+- **Negative:**
+  - Requires maintaining the containerized backend deployment on the dedicated API host alongside the Netlify frontend configuration.
