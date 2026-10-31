@@ -25,6 +25,7 @@ from src.models.budget import (
     CategoryAllocation,
 )
 from src.models.event import CelebrationBrief
+from src.services.planner_service import generate_deterministic_plan
 from src.utils.sanitizer import sanitize_prompt_input
 
 logger = logging.getLogger("samaroh.gemini")
@@ -107,29 +108,11 @@ class GeminiService:
 
         self._cache_stats["misses"] += 1
 
-        # If API key is missing or client not initialized, return curated seed immediately
+        # If API key is missing or client not initialized, generate customized plan
         client = self._client
         if not client or not self.api_key:
-            logger.info("Gemini API key not configured. Serving curated seed celebration.")
-            seed = self.get_seed_for_event_type(
-                brief.event_type.value if hasattr(brief.event_type, "value") else brief.event_type
-            )
-            # Personalize title and parameters from user's brief
-            plan = EventMasterPlan(
-                celebration_title=brief.title or seed.celebration_title,
-                event_type=brief.event_type.value
-                if hasattr(brief.event_type, "value")
-                else str(brief.event_type),
-                cultural_summary=f"Curated {brief.culture} celebration in {brief.city} for {brief.guest_count} guests honoring sacred traditions.",
-                target_budget=brief.target_budget,
-                guest_count=brief.guest_count,
-                budget_breakdown=seed.budget_breakdown,
-                timeline_tasks=seed.timeline_tasks,
-                vendor_checklist=seed.vendor_checklist,
-                personalized_ideas=seed.personalized_ideas,
-                auspicious_guidance=seed.auspicious_guidance,
-                disclaimer="Notice: Timings, muhurat guidance, and vendor quotes are AI-assisted estimates for budgeting purposes only.",
-            )
+            logger.info("Gemini API key not configured. Generating deterministic customized plan.")
+            plan = generate_deterministic_plan(brief)
             self._cache[cache_key] = (plan, True)
             return plan, True
 
@@ -215,18 +198,18 @@ ORIGINAL RAW JSON:
                 self._cache[cache_key] = (plan, False)
                 return plan, False
             except Exception as repair_e:
-                logger.error(f"Repair prompt failed: {repair_e}. Falling back to curated seed.")
-                seed_plan = self.get_seed_for_event_type(brief.event_type)
-                self._cache[cache_key] = (seed_plan, True)
-                return seed_plan, True
+                logger.error(f"Repair prompt failed: {repair_e}. Generating deterministic plan.")
+                plan = generate_deterministic_plan(brief)
+                self._cache[cache_key] = (plan, True)
+                return plan, True
 
         except Exception as e:
             logger.warning(
-                f"Gemini API call failed ({e}). Gracefully falling back to curated seed."
+                f"Gemini API call failed ({e}). Generating deterministic plan."
             )
-            seed_plan = self.get_seed_for_event_type(brief.event_type)
-            self._cache[cache_key] = (seed_plan, True)
-            return seed_plan, True
+            plan = generate_deterministic_plan(brief)
+            self._cache[cache_key] = (plan, True)
+            return plan, True
 
     async def rebalance_budget(self, request: BudgetRebalanceRequest) -> BudgetRebalanceResponse:
         """
